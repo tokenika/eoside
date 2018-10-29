@@ -1,0 +1,51 @@
+{
+  "name": "eoside",
+  "description": "Integrated Development Environment for EOSIO smart contracts",
+  "version": "0.0.1",
+  "publisher": "ms-vscode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tokenika/eoside"
+  },
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*",
+    "onCommand:eoside.getStarted"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "eoside.getStarted",
+        "title": "Start EOSIde session",
+        "category": "EOSIde"
+      }
+    ],
+    "menus": {
+      "editor/title": [{
+          "command": "eoside.getStarted",
+          "group": "navigation"
+      }]
+  }    
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "dependencies": {
+    "file-system": "^2.2.2",
+    "openurl": "^1.1.1",
+    "vscode": "^1.1.18"
+  },
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "typescript": "^2.9.2"
+  }
+}
