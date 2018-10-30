@@ -11,3 +11,5 @@ webview-sample/node_modules/
 vscode_ext/recent.json
 .build
 eoside/node_modules
+eoside/out/src/extension.js.map
+*.vsix

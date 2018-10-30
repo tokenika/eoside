@@ -3,6 +3,7 @@
   "description": "Integrated Development Environment for EOSIO smart contracts",
   "version": "0.0.1",
   "publisher": "Tokenika",
+  "icon": "media/tokenika.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/tokenika/eoside"
