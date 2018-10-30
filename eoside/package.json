@@ -1,8 +1,8 @@
 {
-  "name": "eoside",
+  "name": "EOSIde",
   "description": "Integrated Development Environment for EOSIO smart contracts",
   "version": "0.0.1",
-  "publisher": "ms-vscode",
+  "publisher": "Tokenika",
   "repository": {
     "type": "git",
     "url": "https://github.com/tokenika/eoside"

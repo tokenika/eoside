@@ -8,6 +8,8 @@ printf "%s\n" "
 ###############################################################################
 "
 
+
+
 python3 -c "$(cat <<'END'
 import importlib
 
@@ -20,16 +22,6 @@ has to be installed in order to make EOSIde productive.
 ''')
 END
 )"
-
-printf "%s" "
-Installing the 'eoside' package locally with the Python pip system...
-"
-
-###############################################################################
-# It is essentioal that the package is installed as a symlink, with 
-# the flag '-e'
-###############################################################################
-sudo  -H python3 -m pip install -e .
 
 txtbld=$(tput bold)
 bldred=${txtbld}$(tput setaf 1)
