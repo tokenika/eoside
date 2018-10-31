@@ -3,6 +3,11 @@
 // https://code.visualstudio.com/docs/extensions/publish-extension
 // https://code.visualstudio.com/docs/editor/extension-gallery#_install-from-a-vsix
 
+// - Open this folder in VS Code 1.25+
+// - `npm install`
+// - `npm run watch` or `npm run compile`
+// - `F5` to start debugging
+
 import * as path from 'path'
 import * as vscode from 'vscode'
 import fs = require('fs')
@@ -23,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.getStarted', () => {
-            GetStartedPanel.createOrShow(context.extensionPath)
+            GetStartedPanel.createOrShow(context.extensionPath, false)
         }
     ))
     GetStartedPanel.createOrShow(context.extensionPath)
@@ -47,7 +52,11 @@ class GetStartedPanel {
     public readonly _extensionPath: string
     private _disposables: vscode.Disposable[] = []
 
-    public static createOrShow(extensionPath: string) {
+    public static createOrShow(
+        extensionPath: string, checkFolders:boolean=true) {
+        if(checkFolders && vscode.workspace.workspaceFolders){
+            return
+        }
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 
@@ -74,11 +83,6 @@ class GetStartedPanel {
 
         GetStartedPanel.currentPanel = new GetStartedPanel(
                                                         panel, extensionPath)        
-    }
-
-    public static revive(panel: vscode.WebviewPanel, extensionPath: string) {
-        GetStartedPanel.currentPanel = new GetStartedPanel(
-                                                        panel, extensionPath)
     }
 
     private constructor(
