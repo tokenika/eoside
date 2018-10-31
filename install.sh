@@ -8,20 +8,8 @@ printf "%s\n" "
 ###############################################################################
 "
 
-
-
-python3 -c "$(cat <<'END'
-import importlib
-
-if importlib.util.find_spec("eosfactory"):
-    print("EOSFactory package is already installed in the system.")
-else:
-    print('''
-EOSFactory python package, downloaded from https://github.com/tokenika/eoside",
-has to be installed in order to make EOSIde productive.
-''')
-END
-)"
+......................
+......................
 
 txtbld=$(tput bold)
 bldred=${txtbld}$(tput setaf 1)
@@ -36,11 +24,8 @@ printf "${bldred}%s${txtrst}" '
                                                       
 '
 printf "%s\n" "
-To verify EOSide installation navigate to the 'eoside' folder and run 
-these tests:
-"
-printf "%s\n" "    
-    $ python3 tests/01_hello_world.py
-    $ python3 tests/02_eosio_token.py
-    $ python3 tests/03_tic_tac_toe.py
+To verify installation navigate to the 'eoside' folder and execute 
+'eoside.ps1'.
+
+Alternatively, run 'code -n ""'.
 "

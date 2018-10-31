@@ -10,6 +10,51 @@ Write-Host "
 ###############################################################################
 "
 
+$ver=""
+Try{
+    $ver=$ver=(code -v)[0]
+}
+Catch{}
+
+if(-Not $ver){
+    Write-Host "
+###############################################################################
+# One prerequisite is that the Visual Studio Code is installed in the System
+# with its 'code' binary is on the system path.
+#
+# The condition seems unfulfilled as the command 'code -v' does not return 
+# any valid response.
+#
+# Exiting the installer...
+###############################################################################
+"
+exit
+}
+
+$ubuntu=""
+Try{
+    $ubuntu=ubuntu run ubuntu run uname -a
+}
+Catch{}
+
+if(-Not $ubuntu){
+    Write-Host "
+###############################################################################
+# One prerequisite is that the WLS (Windows Linux Subsystem) is installed in 
+# the System.
+#
+# The condition seems unfulfilled as the command 
+# 'ubuntu run ubuntu run uname -a' does not return any valid response.
+#
+# Exiting the installer...
+###############################################################################
+"
+exit
+}
+
+
+
+
 cd .\eoside\
 
 $vsceVersion=$vsceVersion=npm list -g vsce
@@ -28,7 +73,7 @@ code --install-extension $vsixFiles[0]
 
 cd ..
 
-Write-Host '
+Write-Host "
          ______ ____   _____  _  _____   ______  
         |  ____/ __ \ / ____|| ||  __ \ |  ____| 
         | |__ | |  | | (___  | || |  | || |__
@@ -36,4 +81,11 @@ Write-Host '
         | |___| |__| |____) || || |__| || |____ 
         |______\____/|_____/ |_||_____/ |______| 
                                                       
-'
+"
+
+Write-Host "
+To verify installation navigate to the 'eoside' folder and execute 
+'eoside.ps1'.
+
+# Alternatively, run 'code -n ""'.
+# "

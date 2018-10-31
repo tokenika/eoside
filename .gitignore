@@ -13,3 +13,4 @@ vscode_ext/recent.json
 eoside/node_modules
 eoside/out/src/extension.js.map
 *.vsix
+eoside/out
