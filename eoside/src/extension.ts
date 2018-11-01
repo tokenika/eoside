@@ -32,11 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
         }
     ))
     GetStartedPanel.createOrShow(context.extensionPath)
-    if(vscode.env.appRoot.indexOf("\\") != -1){
-        IS_WINDOWS = true
-        vscode.workspace.getConfiguration().update(
-            "terminal.integrated.shell.windows", "bash.exe", true)        
-    }
+    // if(vscode.env.appRoot.indexOf("\\") != -1){
+    //     IS_WINDOWS = true
+    //     vscode.workspace.getConfiguration().update(
+    //         "terminal.integrated.shell.windows", "bash.exe", true)        
+    // }
 }
 
 /**

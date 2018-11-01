@@ -8,6 +8,7 @@ Write-Host "
 contracts by Tokenika.
 "
 
+Write-Host "Checking the current directory ..."
 $workingDirectory = Convert-Path (Resolve-Path -path ".")
 If(![System.IO.File]::Exists("$workingDirectory\eoside\package.json")){
     Write-Host "
@@ -19,6 +20,7 @@ If(![System.IO.File]::Exists("$workingDirectory\eoside\package.json")){
     exit    
 }
 
+Write-Host "Checking whether the Visual Studio Code is installed ..."
 Try{
     $ver=(code -v)[0]
 }
@@ -27,13 +29,15 @@ Catch{
 # One prerequisite is that the Visual Studio Code is installed in the System
 # with its 'code' binary on the system path.
 #
-# The condition seems unfulfilled as the command 'code -v' fails.
+# The condition seems unfulfilled as the command 'code -v' fails. See
+# https://code.visualstudio.com/
 #
 # EXITING the installer...
 "
 exit
 }
 
+Write-Host "Checking whether the Windows Linux Subsystem is installed ..."
 Try{
     $ubuntu=ubuntu run uname -a
 }
@@ -43,13 +47,15 @@ Catch{
 # the System.
 #
 # The condition seems unfulfilled as the command 
-# 'ubuntu run ubuntu run uname -a' fails.
+# 'ubuntu run ubuntu run uname -a' fails. See
+# https://docs.microsoft.com/en-us/windows/wsl/install-win10
 #
 # EXITING the installer...
 "
     exit
 }
 
+Write-Host "Checking whether the EOSFactory Python package is available ..."
 $eosfactory=ubuntu run "pip list | grep -F  eosfactory"
 if(-Not $eosfactory){
     Write-Host "
@@ -57,7 +63,8 @@ if(-Not $eosfactory){
 # the System.
 #
 # The condition seems unfulfilled as the command 
-# 'ubuntu run 'pip list | grep -F  eosfactory' fails.
+# 'ubuntu run 'pip list | grep -F  eosfactory' fails. See
+# https://github.com/tokenika/eosfactory
 #
 # EXITING the installer...
 "
@@ -66,7 +73,7 @@ exit
 
 $proceed=Read-Host "
 # What about installing the EOSIde extension to the VSCode?
-# It is essential for the EOSIde.
+# It is essential for EOSIde.
 #
 # Input y/n.
 "
@@ -76,6 +83,63 @@ If($proceed -ne "y"){
 "
     exit
 }
+
+$root=""
+Write-Host "
+Checking configuration of the EOSFactory Python package ...
+"
+$Lxss="hkcu\Software\Microsoft\Windows\CurrentVersion\Lxss"
+$basePath=REG QUERY $Lxss  -s -v BasePath
+If($basePath){
+    $x=$basePath[2] -match 'REG_SZ\s*(.*)'
+    If($basePath[2] -match 'REG_SZ\s*(.*)'){
+        $root=$matches[1]
+        $root="$root\rootfs"
+        $user=ubuntu run whoami
+        $bashrc=""
+        $bashrc=Get-ChildItem -Path "${root}\home\${user}\.bashrc" -Name
+        
+        If($bashrc -And $bashrc -eq ".bashrc"){
+            Write-Host "
+WSL root directory is
+$root
+
+    "
+        }
+    }
+}
+$ErrorActionPreference='SilentlyContinue' # Continue
+
+If(-Not $root){
+    $root=Read-Host "
+# Cannot determine where is the root of the Ubuntu subsystem. 
+# It can be something like
+# 'C:\Users\cartman\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs',
+# containing folders like 'home', 'etc'.
+#
+# Enter a guess:
+"
+    $bashrc=""
+    $bashrc=Get-ChildItem -Path "${root}\home\${user}\.bashrc" -Name
+    
+    If(-Not $bashrc -Or $bashrc -ne ".bashrc"){
+        Write-Host "
+# The given entry is not like any Ubuntu root. Especially, it does not have the
+# '.bashrc' file in the user's directory.
+#
+# EXITING the installer...
+"
+    exit
+    } else{
+            Write-Host "
+WSL root directory is
+$root
+
+    "        
+    }
+}
+
+ubuntu run "python3 -m eosfactory.install $root"
 
 # cd .\eoside\
 
@@ -95,19 +159,19 @@ If($proceed -ne "y"){
 
 # cd ..
 
-# Write-Host "
-#          ______ ____   _____  _  _____   ______  
-#         |  ____/ __ \ / ____|| ||  __ \ |  ____| 
-#         | |__ | |  | | (___  | || |  | || |__
-#         |  __|| |  | |\___ \ | || |  | ||  __|
-#         | |___| |__| |____) || || |__| || |____ 
-#         |______\____/|_____/ |_||_____/ |______| 
+Write-Host "
+         ______ ____   _____  _  _____   ______  
+        |  ____/ __ \ / ____|| ||  __ \ |  ____| 
+        | |__ | |  | | (___  | || |  | || |__
+        |  __|| |  | |\___ \ | || |  | ||  __|
+        | |___| |__| |____) || || |__| || |____ 
+        |______\____/|_____/ |_||_____/ |______| 
                                                       
+"
+
+Write-Host "
+To verify installation navigate to the 'eoside' folder and execute 
+'eoside.ps1'.
+
+# Alternatively, run 'code -n ""'.
 # "
-
-# Write-Host "
-# To verify installation navigate to the 'eoside' folder and execute 
-# 'eoside.ps1'.
-
-# # Alternatively, run 'code -n ""'.
-# # "
