@@ -16,23 +16,34 @@
   ],
   "activationEvents": [
     "*",
-    "onCommand:eoside.getStarted"
+    "onCommand:eoside.EOSIde"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
-        "command": "eoside.getStarted",
-        "title": "Start EOSIde session",
+        "command": "eoside.EOSIde",
+        "title": "| EOS IDE |",
+        "category": "EOSIde"
+      },
+      {
+        "command": "eoside.Setup",
+        "title": "| Setup |",
         "category": "EOSIde"
       }
     ],
     "menus": {
-      "editor/title": [{
-          "command": "eoside.getStarted",
+      "editor/title": [
+        {
+          "command": "eoside.EOSIde",
           "group": "navigation"
-      }]
-  }    
+        },
+        {
+          "command": "eoside.Setup",
+          "group": "navigation"
+        }        
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

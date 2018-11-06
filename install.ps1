@@ -72,7 +72,7 @@ exit
 }
 
 $proceed=Read-Host "
-# What about installing the EOSIde extension to the VSCode?
+# What about installing locally this EOSIde extension to the VSCode?
 # It is essential for EOSIde.
 #
 # Input y/n.
@@ -141,31 +141,31 @@ $root
 
 ubuntu run "python3 -m eosfactory.install $root"
 
-# cd .\eoside\
+cd .\eoside\
 
-# $vsceVersion=$vsceVersion=npm list -g vsce
-# If ($vsceVersion -contains "(empty)"){
-#     npm install -g vsce
-# }
+$vsceVersion=$vsceVersion=npm list -g vsce
+If ($vsceVersion -contains "(empty)"){
+    npm install -g vsce
+}
 
-# Remove-Item .\*.vsix
-# vsce package
-# $vsixFiles=Get-ChildItem .\*.vsix
+Remove-Item .\*.vsix
+vsce package
+$vsixFiles=Get-ChildItem .\*.vsix
 
-# # --install-extension (<extension-id> | <extension-vsix-path>)
-# #       Installs or updates the extension. 
-# #       Use `--force` argument to avoid prompts.
-# code --install-extension $vsixFiles[0]
+# --install-extension (<extension-id> | <extension-vsix-path>)
+#       Installs or updates the extension. 
+#       Use `--force` argument to avoid prompts.
+code --install-extension $vsixFiles[0]
 
-# cd ..
+cd ..
 
 Write-Host "
-         ______ ____   _____  _  _____   ______  
-        |  ____/ __ \ / ____|| ||  __ \ |  ____| 
-        | |__ | |  | | (___  | || |  | || |__
-        |  __|| |  | |\___ \ | || |  | ||  __|
-        | |___| |__| |____) || || |__| || |____ 
-        |______\____/|_____/ |_||_____/ |______| 
+         ______   ____    _____  _  _____   ______  
+        |  ____| / __ \  / ____|| ||  __ \ |  ____| 
+        | |__   | |  | || (___  | || |  | || |__
+        |  __|  | |  | | \___ \ | || |  | ||  __|
+        | |___  | |__| | ____) || || |__| || |____ 
+        |______| \____/ |_____/ |_||_____/ |______| 
                                                       
 "
 
