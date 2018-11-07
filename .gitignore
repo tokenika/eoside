@@ -16,3 +16,12 @@ eoside/out/src/extension.js.map
 eoside/out
 docs/build
 eoside/recent.json
+
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
