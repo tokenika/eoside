@@ -15,3 +15,4 @@ eoside/out/src/extension.js.map
 *.vsix
 eoside/out
 docs/build
+eoside/recent.json
