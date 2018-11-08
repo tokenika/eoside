@@ -5,6 +5,7 @@ import fs = require('fs')
 import * as def from './definitions'
 
 const INCLUDE: string = "include"
+const LINK: string = "link"
 const UP: string = "up"
 const DOWN: string = "down"
 const DELETE:string = "del"
@@ -83,8 +84,11 @@ export default class SetupPanel {
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case INCLUDE:
-                    Include.createOrGet(this._extensionPath).action(message)
+                    Includes.createOrGet(this._extensionPath).action(message)
                     return
+                case LINK:
+                    Libs.createOrGet(this._extensionPath).action(message)
+                    return                
             }
         }, null, this._disposables)
     }
@@ -134,7 +138,10 @@ export default class SetupPanel {
             .replace(/\$\{scriptUri\}/gi, scriptUri)
             .replace(
                 /\$\{includeList\}/gi, 
-                Include.createOrGet(this._extensionPath).includeList())
+                Includes.createOrGet(this._extensionPath).itemList())
+            .replace(
+                /\$\{libList\}/gi, 
+                Libs.createOrGet(this._extensionPath).itemList())
             .replace(
         /\$\{wslRoot\}/gi, 
         `WSL root is ${def.root()}`)
@@ -143,21 +150,14 @@ export default class SetupPanel {
     }
 }
 
-class Include {
-    public static instance: Include | undefined
+abstract class Dependencies {
 
-    public static createOrGet(extensionPath:string) {
-        if(! Include.instance){
-            Include.instance = new Include(extensionPath)
-        }
-        return Include.instance
-    }
+    protected readonly _extensionPath: string
+    protected readonly _c_cpp_properties: string | undefined
+    protected json: any = undefined
+    protected entries: string[] = []
 
-    private readonly _extensionPath: string
-    private readonly _c_cpp_properties: string | undefined
-    private json: any = undefined
-
-    private constructor(extensionPath:string){
+    protected constructor(extensionPath:string){
         this._extensionPath = extensionPath
         if(vscode.workspace.workspaceFolders){
             this._c_cpp_properties = path.join(
@@ -166,7 +166,7 @@ class Include {
         }
     }
 
-    private read(){
+    protected read(){
         if(this._c_cpp_properties && fs.existsSync(this._c_cpp_properties)){
             try {
                 this.json = JSON.parse(
@@ -180,12 +180,14 @@ class Include {
         }
     }
 
-    private insert(index: number){
+    protected abstract setEntries(entries: string[]): void
+
+    protected insert(index: number, selectFiles: boolean=true){
         let path = undefined
         const options: vscode.OpenDialogOptions = {
             canSelectMany: false,
-            canSelectFiles: false,
-            canSelectFolders: true,
+            canSelectFiles: selectFiles,
+            canSelectFolders: !selectFiles,
             defaultUri: vscode.Uri.file(def.root()),
             openLabel: 'Open'
         }
@@ -197,73 +199,73 @@ class Include {
                 path = fileUri[0].fsPath
                 path = path.replace(/\\/gi, "/")
                 path = path.replace(path[0], path[0].toUpperCase())
-                let includes = this.json["configurations"][0]["includePath"]
+                let entries = this.entries
                 let list: string[] = []
-                index = index == -1 ? includes.length : index + 1
-                for(let i = 0, j = 0; i < includes.length + 1; i++){
+                index = index == -1 ? entries.length : index + 1
+                for(let i = 0, j = 0; i < entries.length + 1; i++){
                     if(i === index){
                         list[index] = path
                         continue
                     }
-                    list[i] = includes[j++]
+                    list[i] = entries[j++]
                 }
-                this.json["configurations"][0]["includePath"] = list
+                this.setEntries(list)
                 this.update()                 
         })
     }
 
-    private update(){
+    protected update(){
         if(this._c_cpp_properties) {
             def.writeJson(this._c_cpp_properties, this.json)
-        }
-        if(SetupPanel.currentPanel){
-            SetupPanel.currentPanel.update()
-        }   
+            if(SetupPanel.currentPanel){
+                SetupPanel.currentPanel.update()
+            }            
+        } 
     }
 
     public action(message: any){        
         if(message.id === INCLUDE){
-            this.insert(-1)
+            this.insert(-1, )
         }
 
         if(message.id.includes(DOWN)){
             let index = Number(message.id.replace(DOWN, ""))
-            let includes = this.json["configurations"][0]["includePath"]
-            if(index === includes.length - 1){
+            let entries = this.entries
+            if(index === entries.length - 1){
                 return
             }            
             let newIndex = index + 1
-            let temp = includes[newIndex]
-            includes[newIndex] = includes[index]
-            includes[index] = temp;
-            this.json["configurations"][0]["includePath"] = includes
+            let temp = entries[newIndex]
+            entries[newIndex] = entries[index]
+            entries[index] = temp;
+            this.setEntries(entries)
             this.update()
         }
 
         if(message.id.includes(UP)){
             let index = Number(message.id.replace(UP, ""))
-            let includes = this.json["configurations"][0]["includePath"]
+            let entries = this.entries
             if(index === 0){
                 return
             }                 
             let newIndex = index - 1
-            let temp = includes[newIndex]
-            includes[newIndex] = includes[index]
-            includes[index] = temp;
-            this.json["configurations"][0]["includePath"] = includes
+            let temp = entries[newIndex]
+            entries[newIndex] = entries[index]
+            entries[index] = temp;
+            this.setEntries(entries)
             this.update()
         }
         
         if(message.id.includes(DELETE)){
             let index = Number(message.id.replace(DELETE, ""))
-            let includes = this.json["configurations"][0]["includePath"]
+            let entries = this.entries
             let list: string[] = []
-            for(let i = 0, j = 0; i < includes.length; i++){
+            for(let i = 0, j = 0; i < entries.length; i++){
                 if(i !== index){
-                    list[j++] = includes[i]
+                    list[j++] = entries[i]
                 }
             }              
-            this.json["configurations"][0]["includePath"] = list
+            this.setEntries(list)
             this.update()
         }  
         
@@ -271,23 +273,89 @@ class Include {
             this.insert(Number(message.id.replace(INSERT, "")))
         }     
     }
+}
 
-    public includeList(){
-        let includes: string[] = ["${workspaceFolder}"]
+class Includes extends Dependencies{
+    public static instance: Includes | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! Includes.instance){
+            Includes.instance = new Includes(extensionPath)
+        }
+        return Includes.instance
+    }
+
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0]["includePath"] = entries
+    }
+
+    protected read(){
+        super.read()
+        this.entries = this.json["configurations"][0]["includePath"].slice()
+    }
+
+    public insert(index: number){
+        super.insert(index, false)
+    }
+
+    public itemList(){
+        let entries: string[] = ["${workspaceFolder}"]
         this.read()
-        if(this.json && this.json["configurations"][0]["includePath"]){
-            includes = this.json["configurations"][0]["includePath"]
+        if(this.entries && this.entries){
+            entries = this.entries
         }
         let root = def.root()
-        for(let i = 0; i < includes.length; i++){
-            includes[i] = includes[i].replace(root, "${root)");
+        for(let i = 0; i < entries.length; i++){
+            entries[i] = entries[i].replace(root, "${root)");
         }
 
-        let includeList = ""
-        for(let i = 0; i < includes.length; i++){
-            includeList += setupEntry(i, "include", includes[i])
+        let itemList = ""
+        for(let i = 0; i < entries.length; i++){
+            itemList += setupEntry(i, "include", entries[i])
         }
-        return includeList;
+        return itemList;
+    }
+}
+
+class Libs extends Dependencies{
+    public static instance: Libs | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! Libs.instance){
+            Libs.instance = new Libs(extensionPath)
+        }
+        return Libs.instance
+    }
+    
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0]["libs"] = entries
+    }
+
+    protected read(){
+        super.read()
+        this.entries = this.json["configurations"][0]["libs"].slice()
+    }
+
+    public insert(index: number){
+        super.insert(index, true)
+    }
+
+    public itemList(){
+        let entries: string[] = []
+        this.read()
+        if(this.entries && this.entries){
+            entries = this.entries
+        }
+        let root = def.root()
+        for(let i = 0; i < entries.length; i++){
+            entries[i] = entries[i].replace(root, "${root)");
+        }
+
+        let itemList = ""
+        for(let i = 0; i < entries.length; i++){
+            itemList += setupEntry(i, "link", entries[i])
+        }
+        return itemList;
     }
 }
 

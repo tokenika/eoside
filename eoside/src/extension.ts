@@ -7,6 +7,7 @@
 // - `npm install`
 // - `npm run watch` or `npm run compile`
 // - `F5` to start debugging
+// "terminal.integrated.shell.windows": "bash.exe"
 
 import * as path from 'path'
 import * as vscode from 'vscode'

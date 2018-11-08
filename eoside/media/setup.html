@@ -34,6 +34,10 @@
             font-size: 13;
         }
 
+        .row {
+            margin-top: 50px;
+        }
+
         .clickable {
             background-color: unset;
             color: unset;
@@ -64,8 +68,7 @@
 
 <body class="body">
     <script nonce="${nonce}" src="${scriptUri}"></script>
-
-    <div>
+    <div class="row">
         <button class="btn"
             class="btn"; 
             id="include"; 
@@ -77,6 +80,20 @@
         <p>${wslRoot}</p>
 
         ${includeList}
+    </div>
+
+    <div class="row">
+        <button class="btn"
+            class="btn"; 
+            id="link"; 
+            title="lib">&#8627</button>
+        <label 
+            style="
+                color: unset;
+                font-size: 20px;">Link</label>
+        <p>${wslRoot}</p>
+
+        ${libList}
     </div>    
 </body>
 
