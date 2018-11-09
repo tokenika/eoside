@@ -5,7 +5,8 @@ import fs = require('fs')
 import * as def from './definitions'
 
 const INCLUDE: string = "include"
-const LINK: string = "link"
+const LIBS: string = "libs"
+const OPTIONS: string = "options"
 const UP: string = "up"
 const DOWN: string = "down"
 const DELETE:string = "del"
@@ -86,8 +87,11 @@ export default class SetupPanel {
                 case INCLUDE:
                     Includes.createOrGet(this._extensionPath).action(message)
                     return
-                case LINK:
+                case LIBS:
                     Libs.createOrGet(this._extensionPath).action(message)
+                    return
+                case OPTIONS:
+                    Options.createOrGet(this._extensionPath).action(message)
                     return                
             }
         }, null, this._disposables)
@@ -142,6 +146,10 @@ export default class SetupPanel {
             .replace(
                 /\$\{libList\}/gi, 
                 Libs.createOrGet(this._extensionPath).itemList())
+            .replace(
+                /\$\{optionList\}/gi, 
+                Options.createOrGet(this._extensionPath).itemList())
+                
             .replace(
         /\$\{wslRoot\}/gi, 
         `WSL root is ${def.root()}`)
@@ -199,15 +207,14 @@ abstract class Dependencies {
                 path = fileUri[0].fsPath
                 path = path.replace(/\\/gi, "/")
                 path = path.replace(path[0], path[0].toUpperCase())
-                let entries = this.entries
                 let list: string[] = []
-                index = index == -1 ? entries.length : index + 1
-                for(let i = 0, j = 0; i < entries.length + 1; i++){
+                index = index == -1 ? this.entries.length : index + 1
+                for(let i = 0, j = 0; i < this.entries.length + 1; i++){
                     if(i === index){
                         list[index] = path
                         continue
                     }
-                    list[i] = entries[j++]
+                    list[i] = this.entries[j++]
                 }
                 this.setEntries(list)
                 this.update()                 
@@ -225,7 +232,7 @@ abstract class Dependencies {
 
     public action(message: any){        
         if(message.id === INCLUDE){
-            this.insert(-1, )
+            this.insert(-1)
         }
 
         if(message.id.includes(DOWN)){
@@ -311,11 +318,68 @@ class Includes extends Dependencies{
 
         let itemList = ""
         for(let i = 0; i < entries.length; i++){
-            itemList += setupEntry(i, "include", entries[i])
+            itemList += setupEntry(i, INCLUDE, entries[i])
         }
         return itemList;
     }
 }
+
+class Options extends Dependencies{
+    public static instance: Options | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! Options.instance){
+            Options.instance = new Options(extensionPath)
+        }
+        return Options.instance
+    }
+
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0]["compilerOptions"] = entries
+    }
+
+    protected read(){
+        super.read()
+        this.entries = this.json["configurations"][0]["compilerOptions"].slice()
+    }
+
+    public insert(index: number){
+        vscode.window.showInputBox().then((option) => {
+            if(option){
+                let list: string[] = []
+                index = index == -1 ? this.entries.length : index + 1
+                for(let i = 0, j = 0; i < this.entries.length + 1; i++){
+                    if(i === index){
+                        list[index] = option
+                        continue
+                    }
+                    list[i] = this.entries[j++]
+                }
+                this.setEntries(list)
+                this.update()   
+            }
+        })       
+    }
+
+    public itemList(){
+        let entries: string[] = ["${workspaceFolder}"]
+        this.read()
+        if(this.entries && this.entries){
+            entries = this.entries
+        }
+        let root = def.root()
+        for(let i = 0; i < entries.length; i++){
+            entries[i] = entries[i].replace(root, "${root)");
+        }
+
+        let itemList = ""
+        for(let i = 0; i < entries.length; i++){
+            itemList += setupEntry(i, OPTIONS, entries[i])
+        }
+        return itemList;
+    }
+}
+
 
 class Libs extends Dependencies{
     public static instance: Libs | undefined
@@ -353,11 +417,13 @@ class Libs extends Dependencies{
 
         let itemList = ""
         for(let i = 0; i < entries.length; i++){
-            itemList += setupEntry(i, "link", entries[i])
+            itemList += setupEntry(i, LIBS, entries[i])
         }
         return itemList;
     }
 }
+
+
 
 function setupEntry(index:number, title:string, text:string){
     return `

@@ -85,16 +85,29 @@
     <div class="row">
         <button class="btn"
             class="btn"; 
-            id="link"; 
-            title="lib">&#8627</button>
+            id="include"; 
+            title="libs">&#8627</button>
         <label 
             style="
                 color: unset;
-                font-size: 20px;">Link</label>
+                font-size: 20px;">Libs</label>
         <p>${wslRoot}</p>
 
         ${libList}
-    </div>    
+    </div>
+
+    <div class="row">
+        <button class="btn"
+            class="btn"; 
+            id="include"; 
+            title="options">&#8627</button>
+        <label 
+            style="
+                color: unset;
+                font-size: 20px;">Compiler Options</label>
+        <br><br>
+        ${optionList}
+        </div>    
 </body>
 
 </html>

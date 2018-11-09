@@ -98,7 +98,7 @@ c_cpp_properties_default = """
         {
             "includePath": %s,
             "libs": %s,
-            "compilerOptions: %s,
+            "compilerOptions": %s,
             "defines": [],
             "intelliSenseMode": "clang-x64",
             "browse": {
@@ -478,7 +478,8 @@ def project_from_template(
             
         template = template.replace(
                             "${" + TEMPLATE_NAME + "}", project_name)
-        template = template.replace(C_CPP_PROP, c_cpp_properties)
+        template = template.replace(
+                                C_CPP_PROP, c_cpp_properties_default)
 
 
         with open(contract_path, "w") as output:
