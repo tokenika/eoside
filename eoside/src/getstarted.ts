@@ -12,15 +12,12 @@ const GET_STARTED: string = "getstarted"
 const GET_STARTED_JSON: string = GET_STARTED + ".json"
 const OPEN: string = "open"
 
-export default class GetStartedPanel {
+export default class GetStartedPanel extends def.Panel {
     /**
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: GetStartedPanel | undefined
     public static readonly viewType = "EOS IDE"
-    private readonly _panel: vscode.WebviewPanel
-    public readonly _extensionPath: string
-    private _disposables: vscode.Disposable[] = []
 
     public static createOrShow(
         extensionPath: string, checkFolders:boolean=true) {
@@ -55,31 +52,20 @@ export default class GetStartedPanel {
                                                         panel, extensionPath)        
     }
 
-    private constructor(
+    protected constructor(
         panel: vscode.WebviewPanel,
         extensionPath: string
     ) {
-        this._panel = panel
-        this._extensionPath = extensionPath
-
+        super(panel, extensionPath)
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
-
-        // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel 
-        // is closed programmatically
-        this._panel.onDidDispose(
-                            () => this.dispose(), null, this._disposables)
-        // Update the content based on view changes
-        this._panel.onDidChangeViewState(
-            e => {}, null, this._disposables)
 
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case TEMPLATE:
                     Templates.createOrGet(this._extensionPath)
-                        .template(message.id)
+                        .action(message.id)
                     return
                 case RECENT:
                     Recent.createOrGet(this._extensionPath).open(message.id)
@@ -96,17 +82,8 @@ export default class GetStartedPanel {
     }
 
     public dispose() {
+        super.dispose()
         GetStartedPanel.currentPanel = undefined
-
-        // Clean up our resources
-        this._panel.dispose()
-
-        while (this._disposables.length) {
-            const x = this._disposables.pop()
-            if (x) {
-                x.dispose()
-            }
-        }
     }
 
     private _getHtmlForWebview() {
@@ -171,7 +148,7 @@ class Templates {
         return list
     }
 
-    public template(templateName:string){
+    public action(templateName:string){
         const options: vscode.OpenDialogOptions = {
             canSelectMany: false,
             canSelectFiles: false,

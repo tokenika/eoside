@@ -4,24 +4,21 @@ import fs = require('fs')
 
 import * as def from './definitions'
 
-const INCLUDE: string = "include"
+const INCLUDE: string = "includePath"
 const LIBS: string = "libs"
-const OPTIONS: string = "options"
+const OPTIONS: string = "compilerOptions"
 const UP: string = "up"
 const DOWN: string = "down"
 const DELETE:string = "del"
 const INSERT:string = "insert"
+const CONTROL:string = "ctr"
 
-export default class SetupPanel {
+export default class SetupPanel extends def.Panel{
     /**
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: SetupPanel | undefined
     public static readonly viewType = "Setup"
-
-    public readonly _extensionPath: string    
-    private readonly _panel: vscode.WebviewPanel
-    private _disposables: vscode.Disposable[] = []
 
     public static createOrShow(extensionPath: string) {
         if(!vscode.workspace.workspaceFolders){
@@ -66,20 +63,10 @@ export default class SetupPanel {
         panel: vscode.WebviewPanel,
         extensionPath: string
     ) {
-        this._panel = panel
-        this._extensionPath = extensionPath
+        super(panel, extensionPath)
 
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
-
-        // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel 
-        // is closed programmatically
-        this._panel.onDidDispose(
-                            () => this.dispose(), null, this._disposables)
-        // Update the content based on view changes
-        this._panel.onDidChangeViewState(
-            e => {}, null, this._disposables)
 
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
@@ -92,23 +79,18 @@ export default class SetupPanel {
                     return
                 case OPTIONS:
                     Options.createOrGet(this._extensionPath).action(message)
-                    return                
+                    return
+                case CONTROL:
+                    if(SetupPanel.currentPanel){
+                        action(message, SetupPanel.currentPanel)
+                    }
             }
         }, null, this._disposables)
     }
 
     public dispose() {
         SetupPanel.currentPanel = undefined
-
-        // Clean up our resources
-        this._panel.dispose()
-
-        while (this._disposables.length) {
-            const x = this._disposables.pop()
-            if (x) {
-                x.dispose()
-            }
-        }
+        super.dispose()
     }
 
     public update(){
@@ -121,12 +103,6 @@ export default class SetupPanel {
 
         // And the uri we use to load this script in the webview
         const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        if(vscode.workspace.workspaceFolders){
-            let folder = path.join(
-                        vscode.workspace.workspaceFolders[0].uri.fsPath, 
-                        "CMakeLists.txt")
-        }
 
         const htmlUri = vscode.Uri.file(
             path.join(this._extensionPath, def.RESOURCE_DIR, 'setup.html'))
@@ -142,19 +118,57 @@ export default class SetupPanel {
             .replace(/\$\{scriptUri\}/gi, scriptUri)
             .replace(
                 /\$\{includeList\}/gi, 
-                Includes.createOrGet(this._extensionPath).itemList())
+                Includes.createOrGet(this._extensionPath).items())
             .replace(
                 /\$\{libList\}/gi, 
-                Libs.createOrGet(this._extensionPath).itemList())
+                Libs.createOrGet(this._extensionPath).items())
             .replace(
                 /\$\{optionList\}/gi, 
-                Options.createOrGet(this._extensionPath).itemList())
-                
-            .replace(
-        /\$\{wslRoot\}/gi, 
-        `WSL root is ${def.root()}`)
+                Options.createOrGet(this._extensionPath).items())
+            .replace(/\$\{wslRoot\}/gi, `WSL root is ${def.root()}`)
+
+        if(def.IS_WINDOWS){
+            html = html.replace(/\$\{bash\}/gi, 
+            `
+            <button 
+            class="ctr"; 
+            id="bash"; 
+            title="ctr">bash</button>`)
+        }
         
         return html
+    }
+}
+
+function action(message: any, panel: def.Panel){
+    switch(message.id) {
+        case "compile": {
+                let terminalName = "compile"
+                if(vscode.workspace.workspaceFolders){
+                    let terminal = def.getTerminal(terminalName, true, true)
+                    let cl = `python3 -m eoside.utils.build '${
+                vscode.workspace.workspaceFolders[0].uri.fsPath}' --compile`
+                    terminal.sendText(cl)
+                }
+            }
+            break
+        case "build": {
+                let terminalName = "build"
+                if(vscode.workspace.workspaceFolders){
+                    let terminal = def.getTerminal(terminalName, true, true)
+                    let cl = `python3 -m eoside.utils.build '${
+                        vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+                    terminal.sendText(cl)
+                }       
+            }
+            break
+        case "EOSIde":
+            vscode.commands.executeCommand("eoside.EOSIde")
+            break
+        case "bash":
+            let terminal = vscode.window.createTerminal("bash", def.SHELL_PATH)
+            terminal.show()
+            break
     }
 }
 
@@ -163,7 +177,6 @@ abstract class Dependencies {
     protected readonly _extensionPath: string
     protected readonly _c_cpp_properties: string | undefined
     protected json: any = undefined
-    protected entries: string[] = []
 
     protected constructor(extensionPath:string){
         this._extensionPath = extensionPath
@@ -188,6 +201,7 @@ abstract class Dependencies {
         }
     }
 
+    protected abstract getEntries(): string[]
     protected abstract setEntries(entries: string[]): void
 
     protected insert(index: number, selectFiles: boolean=true){
@@ -208,13 +222,14 @@ abstract class Dependencies {
                 path = path.replace(/\\/gi, "/")
                 path = path.replace(path[0], path[0].toUpperCase())
                 let list: string[] = []
-                index = index == -1 ? this.entries.length : index + 1
-                for(let i = 0, j = 0; i < this.entries.length + 1; i++){
+                let entries = this.getEntries()
+                index = index == -1 ? entries.length : index + 1
+                for(let i = 0, j = 0; i < entries.length + 1; i++){
                     if(i === index){
                         list[index] = path
                         continue
                     }
-                    list[i] = this.entries[j++]
+                    list[i] = entries[j++]
                 }
                 this.setEntries(list)
                 this.update()                 
@@ -237,7 +252,7 @@ abstract class Dependencies {
 
         if(message.id.includes(DOWN)){
             let index = Number(message.id.replace(DOWN, ""))
-            let entries = this.entries
+            let entries = this.getEntries()
             if(index === entries.length - 1){
                 return
             }            
@@ -251,7 +266,7 @@ abstract class Dependencies {
 
         if(message.id.includes(UP)){
             let index = Number(message.id.replace(UP, ""))
-            let entries = this.entries
+            let entries = this.getEntries()
             if(index === 0){
                 return
             }                 
@@ -265,7 +280,7 @@ abstract class Dependencies {
         
         if(message.id.includes(DELETE)){
             let index = Number(message.id.replace(DELETE, ""))
-            let entries = this.entries
+            let entries = this.getEntries()
             let list: string[] = []
             for(let i = 0, j = 0; i < entries.length; i++){
                 if(i !== index){
@@ -280,6 +295,24 @@ abstract class Dependencies {
             this.insert(Number(message.id.replace(INSERT, "")))
         }     
     }
+
+    public items(title=""){
+        let entries: string[] = ["${workspaceFolder}"]
+        this.read()
+        if(this.getEntries()){
+            entries = this.getEntries()
+        }
+        let root = def.root()
+        for(let i = 0; i < entries.length; i++){
+            entries[i] = entries[i].replace(root, "${root)");
+        }
+
+        let items = ""
+        for(let i = 0; i < entries.length; i++){
+            items += setupEntry(i, title, entries[i])
+        }
+        return items;
+    }    
 }
 
 class Includes extends Dependencies{
@@ -292,35 +325,21 @@ class Includes extends Dependencies{
         return Includes.instance
     }
 
-    protected setEntries(entries: string[]){
-        this.json["configurations"][0]["includePath"] = entries
+    protected getEntries() {
+        return this.json["configurations"][0][INCLUDE].slice()
     }
 
-    protected read(){
-        super.read()
-        this.entries = this.json["configurations"][0]["includePath"].slice()
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0][INCLUDE] = entries
+        this.json["configurations"][0]["browse"]["path"] = entries
     }
 
     public insert(index: number){
         super.insert(index, false)
     }
 
-    public itemList(){
-        let entries: string[] = ["${workspaceFolder}"]
-        this.read()
-        if(this.entries && this.entries){
-            entries = this.entries
-        }
-        let root = def.root()
-        for(let i = 0; i < entries.length; i++){
-            entries[i] = entries[i].replace(root, "${root)");
-        }
-
-        let itemList = ""
-        for(let i = 0; i < entries.length; i++){
-            itemList += setupEntry(i, INCLUDE, entries[i])
-        }
-        return itemList;
+    public items(){
+        return super.items(INCLUDE)
     }
 }
 
@@ -334,26 +353,26 @@ class Options extends Dependencies{
         return Options.instance
     }
 
-    protected setEntries(entries: string[]){
-        this.json["configurations"][0]["compilerOptions"] = entries
+    protected getEntries() {
+        return this.json["configurations"][0][OPTIONS].slice()
     }
 
-    protected read(){
-        super.read()
-        this.entries = this.json["configurations"][0]["compilerOptions"].slice()
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0][OPTIONS] = entries
     }
 
     public insert(index: number){
         vscode.window.showInputBox().then((option) => {
             if(option){
                 let list: string[] = []
-                index = index == -1 ? this.entries.length : index + 1
-                for(let i = 0, j = 0; i < this.entries.length + 1; i++){
+                let entries = this.getEntries()
+                index = index == -1 ? entries.length : index + 1
+                for(let i = 0, j = 0; i < entries.length + 1; i++){
                     if(i === index){
                         list[index] = option
                         continue
                     }
-                    list[i] = this.entries[j++]
+                    list[i] = entries[j++]
                 }
                 this.setEntries(list)
                 this.update()   
@@ -361,22 +380,8 @@ class Options extends Dependencies{
         })       
     }
 
-    public itemList(){
-        let entries: string[] = ["${workspaceFolder}"]
-        this.read()
-        if(this.entries && this.entries){
-            entries = this.entries
-        }
-        let root = def.root()
-        for(let i = 0; i < entries.length; i++){
-            entries[i] = entries[i].replace(root, "${root)");
-        }
-
-        let itemList = ""
-        for(let i = 0; i < entries.length; i++){
-            itemList += setupEntry(i, OPTIONS, entries[i])
-        }
-        return itemList;
+    public items(){
+        return super.items(OPTIONS)
     }
 }
 
@@ -390,36 +395,21 @@ class Libs extends Dependencies{
         }
         return Libs.instance
     }
+
+    protected getEntries() {
+        return this.json["configurations"][0][LIBS].slice()
+    }    
     
     protected setEntries(entries: string[]){
-        this.json["configurations"][0]["libs"] = entries
-    }
-
-    protected read(){
-        super.read()
-        this.entries = this.json["configurations"][0]["libs"].slice()
+        this.json["configurations"][0][LIBS] = entries
     }
 
     public insert(index: number){
         super.insert(index, true)
     }
 
-    public itemList(){
-        let entries: string[] = []
-        this.read()
-        if(this.entries && this.entries){
-            entries = this.entries
-        }
-        let root = def.root()
-        for(let i = 0; i < entries.length; i++){
-            entries[i] = entries[i].replace(root, "${root)");
-        }
-
-        let itemList = ""
-        for(let i = 0; i < entries.length; i++){
-            itemList += setupEntry(i, LIBS, entries[i])
-        }
-        return itemList;
+    public items(){
+        return super.items(LIBS)
     }
 }
 

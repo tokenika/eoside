@@ -31,24 +31,11 @@
             background-color: rgb(30, 30, 30);
             color: DodgerBlue;
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 13;
+            font-size: 13px;
         }
 
         .row {
-            margin-top: 50px;
-        }
-
-        .clickable {
-            background-color: unset;
-            color: unset;
-            border: 0px;
-            text-align: left;
-            font-family: unset;
-            font-size: unset;        
-        }
-
-        .clickable:hover {
-            color: rgb(150, 150, 150);
+            margin-top: 40px;
         }
 
         .btn {
@@ -63,16 +50,47 @@
             background-color: RoyalBlue;
         }
 
+        .ctr {
+            background-color: indianred;
+            border: none;
+            color: black;
+            padding: 2px 2px;
+            cursor: pointer;
+            font-size: 16px;            
+        }
+
+        .ctr:hover {
+            background-color: RoyalBlue;
+        }
+
     </style>
 </head>
 
 <body class="body">
     <script nonce="${nonce}" src="${scriptUri}"></script>
+
     <div class="row">
-        <button class="btn"
+            <button
+                class="ctr"; 
+                id="compile"; 
+                title="ctr">Compile</button>
+            <button 
+                class="ctr"; 
+                id="build"; 
+                title="ctr">Build</button>    
+            <button 
+                class="ctr"; 
+                id="EOSIde"; 
+                title="ctr">EOS IDE</button>
+                
+            ${bash}
+    </div>
+
+    <div class="row">
+        <button 
             class="btn"; 
             id="include"; 
-            title="include">&#8627</button>
+            title="includePath">&#8627</button>
         <label 
             style="
                 color: unset;
@@ -83,7 +101,7 @@
     </div>
 
     <div class="row">
-        <button class="btn"
+        <button 
             class="btn"; 
             id="include"; 
             title="libs">&#8627</button>
@@ -97,10 +115,10 @@
     </div>
 
     <div class="row">
-        <button class="btn"
+        <button 
             class="btn"; 
             id="include"; 
-            title="options">&#8627</button>
+            title="compilerOptions">&#8627</button>
         <label 
             style="
                 color: unset;

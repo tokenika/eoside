@@ -14,6 +14,8 @@ parser.add_argument(
     "template", nargs="?", help="Template name or directory.", 
     default="01_hello_world")
 parser.add_argument(
+    "--vsc", help="Open Visual Studio Code.", action="store_true")
+parser.add_argument(
     "--throw", help="Throw error if the project exists.", action="store_true")
 parser.add_argument(
     "--ovr", help="Overwrite any existing project.", action="store_true")
@@ -22,7 +24,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 project_from_template(
-    args.name, template=args.template, 
+    args.name, template=args.template, open_vscode=args.vsc,
     throw_exists=args.throw, remove_existing=args.ovr,
     verbosity=[] if args.silent else None
     )

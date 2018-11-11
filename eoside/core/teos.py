@@ -117,25 +117,31 @@ c_cpp_properties_default = """
     json.dumps(includes(), indent=4))
 
 
-def get_c_cpp_properties(c_cpp_properties_path):
-    if c_cpp_properties_path:
-        if os.path.exists(c_cpp_properties_path):
-            try:
-                with open(path, "r") as input:
-                    return json.loads(input.read())
-            except Exception as e:
-                raise errors.Error(str(e))
-        else:
+def get_c_cpp_properties(contract_dir, c_cpp_properties_path):
+    if not c_cpp_properties_path:
+        c_cpp_properties_path = os.path.join(
+                                contract_dir, ".vscode/c_cpp_properties.json")
+    else:
+        c_cpp_properties_path = utils.wslMapWindowsLinux(c_cpp_properties_path)
+        if not os.path.exists(c_cpp_properties_path):
             raise errors.Error('''
                 The given path does not exist:
                 ${}       
             '''.format(c_cpp_properties_path))
+    
+    if os.path.exists(c_cpp_properties_path):
+        try:
+            with open(c_cpp_properties_path, "r") as input:
+                return json.loads(input.read())
+        except Exception as e:
+            raise errors.Error(str(e))
     else:
         return json.loads(c_cpp_properties_default)
 
 
-def ABI(c_cpp_properties_path=None,
-        contract_dir_hint=None, code_name=None, verbosity=None):
+def ABI(
+        contract_dir_hint=None, c_cpp_properties_path=None,
+        verbosity=None):
     '''Given a hint to a contract directory, produce ABI file.
     '''
     contract_dir = config.contract_dir(contract_dir_hint)
@@ -148,9 +154,8 @@ def ABI(c_cpp_properties_path=None,
         '''.format(contract_dir))
         return
 
-    if not code_name:
-        code_name = os.path.splitext(os.path.basename(srcs[0]))[0]
-    target_dir = get_target_dir(source[0])
+    code_name = os.path.splitext(os.path.basename(srcs[0]))[0]
+    target_dir = teos.get_target_dir(source[0])
     target_path_abi = os.path.normpath(
                         os.path.join(target_dir, code_name  + ".abi"))
 
@@ -178,11 +183,11 @@ def ABI(c_cpp_properties_path=None,
         "-extra-arg=--target=wasm32", "-extra-arg=-nostdinc", 
         "-extra-arg=-nostdinc++", "-extra-arg=-DABIGEN"
     ]
-
-    c_cpp_properties = get_c_cpp_properties(c_cpp_properties_path)
+    c_cpp_properties = get_c_cpp_properties(
+                                        contract_dir, c_cpp_properties_path)
     includes = c_cpp_properties["configurations"][0]["includePath"]
     for entry in includes:
-        command_line.append("-extra-arg=-I" + entry)
+        command_line.append("-extra-arg=-I" + strip_wsl_root(entry))
         if entry == "${workspaceFolder}":
             command_line.append("-extra-arg=-I" + source_dir)
 
@@ -200,19 +205,18 @@ def ABI(c_cpp_properties_path=None,
         print("######## {}:".format(config.abigen_exe()))
         print(" ".join(command_line))
 
-    process(command_line)
+    teos.process(command_line)
 
     logger.TRACE('''
     ABI file writen to file: {}
     '''.format(target_path_abi), verbosity)
 
 
-def WAST(c_cpp_properties_path,
-        contract_dir_hint, code_name=None, 
+def WAST(
+        contract_dir_hint, c_cpp_properties_path=None,
         compile_only=False, verbosity=None):
     '''Given a hint to a contract directory, produce WAST and WASM code.
     '''
-
     contract_dir = config.contract_dir(contract_dir_hint)
     source = config.contract_source_files(contract_dir)
     srcs = source[1]
@@ -224,7 +228,7 @@ def WAST(c_cpp_properties_path,
         return
 
     targetPathWast = None
-    target_dir_path = get_target_dir(source[0])
+    target_dir_path = teos.get_target_dir(source[0])
 
     workdir = os.path.join(target_dir_path, "working_dir")
     if not os.path.exists(workdir):
@@ -236,14 +240,15 @@ def WAST(c_cpp_properties_path,
 
     objectFileList = []
     extensions = [".h", ".hpp", ".hxx", ".c", ".cpp",".cxx", ".c++"]
-    if not code_name:
-        code_name = os.path.splitext(os.path.basename(srcs[0]))[0]
+
+    code_name = os.path.splitext(os.path.basename(srcs[0]))[0]
     targetPathWast = os.path.join(
         target_dir_path, code_name + ".wast")
     target_path_wasm = os.path.join(
         target_dir_path, code_name + ".wasm")
 
-    c_cpp_properties = get_c_cpp_properties(c_cpp_properties_path)
+    c_cpp_properties = get_c_cpp_properties(
+                                        contract_dir, c_cpp_properties_path)
     for file in srcs:
         if not os.path.splitext(file)[1].lower() in extensions:
             continue
@@ -258,7 +263,7 @@ def WAST(c_cpp_properties_path,
 
         includes = c_cpp_properties["configurations"][0]["includePath"]
         for entry in includes:
-            command_line.append("-I" + entry)
+            command_line.append("-I" + strip_wsl_root(entry))
         if entry == "${workspaceFolder}":
             command_line.append("-I" + contract_dir)
 
@@ -271,7 +276,7 @@ def WAST(c_cpp_properties_path,
             print(" ".join(command_line))
 
         try:
-            process(command_line)
+            teos.process(command_line)
         except Exception as e:
             try:
                 shutil.rmtree(workdir)
@@ -290,14 +295,14 @@ def WAST(c_cpp_properties_path,
 
         links = c_cpp_properties["configurations"][0]["libs"]
         for entry in links:
-            command_line.append(entry)
+            command_line.append(strip_wsl_root(entry))
 
         if setup.is_print_command_line:
             print("######## {}:".format(config.wasm_llvm_link_exe()))
             print(" ".join(command_line))
 
         try:
-            process(command_line)
+            teos.process(command_line)
         except Exception as e:                           
             raise errors.Error(str(e))
 
@@ -312,7 +317,7 @@ def WAST(c_cpp_properties_path,
             print(" ".join(command_line))
 
         try:
-            process(command_line)
+            teos.process(command_line)
         except Exception as e:
             raise errors.Error(str(e))
             try:
@@ -333,7 +338,7 @@ def WAST(c_cpp_properties_path,
             print(" ".join(command_line))
 
         try:
-            process(command_line)
+            teos.process(command_line)
         except Exception as e:
             try:
                 shutil.rmtree(workdir)
@@ -355,7 +360,7 @@ def WAST(c_cpp_properties_path,
             print(" ".join(command_line))
 
         try:
-            process(command_line)
+            teos.process(command_line)
         except Exception as e:
             try:
                 shutil.rmtree(workdir)
@@ -363,15 +368,14 @@ def WAST(c_cpp_properties_path,
                 pass
                         
             raise errors.Error(str(e))
+        
+        logger.TRACE('''
+            WASM file writen to file: {}
+            '''.format(os.path.normpath(target_path_wasm)), verbosity)
     try:
         shutil.rmtree(workdir)
     except:
         pass
-
-    logger.TRACE('''
-    WASM file writen to file: {}
-    '''.format(os.path.normpath(target_path_wasm)), verbosity)
-
 
 def project_from_template(
         project_name, template=None, workspace_dir=None, 
@@ -392,7 +396,6 @@ def project_from_template(
         verbosity: The logging configuration.
     '''
     project_name = project_name.strip()
-
     template = template.strip()    
     template = utils.wslMapWindowsLinux(template)
     if not template:
@@ -510,4 +513,6 @@ def project_from_template(
     return project_dir
 
 
-
+def strip_wsl_root(path):
+    wsl_root = config.wsl_root()
+    return path.replace(wsl_root, "")

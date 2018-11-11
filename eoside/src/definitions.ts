@@ -1,10 +1,45 @@
-const TERMINAL: string = "eoside"
-const SHELL_PATH = "bash.exe"
 
 import * as vscode from 'vscode'
+import fs = require('fs')
+
 export var IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
-import fs = require('fs')
+export const SHELL_PATH = "bash.exe"
+
+export abstract class Panel{
+    public readonly _extensionPath: string
+    protected readonly _panel: vscode.WebviewPanel
+    protected _disposables: vscode.Disposable[] = []
+
+    protected constructor(
+        panel: vscode.WebviewPanel,
+        extensionPath: string
+    ){
+        this._panel = panel
+        this._extensionPath = extensionPath
+        // Listen for when the panel is disposed
+        // This happens when the user closes the panel or when the panel 
+        // is closed programmatically
+        this._panel.onDidDispose(
+            () => this.dispose(), null, this._disposables)
+        // Update the content based on view changes
+        this._panel.onDidChangeViewState(
+        e => {}, null, this._disposables)
+    }
+
+    public dispose() {
+        // Clean up our resources
+        this._panel.dispose()
+
+        while (this._disposables.length) {
+            const x = this._disposables.pop()
+            if (x) {
+                x.dispose()
+            }
+        }
+    }
+}
+
 
 export function writeJson(file:string, json:Object){
     try{
@@ -15,10 +50,21 @@ export function writeJson(file:string, json:Object){
     } 
 }
 
-export function getTerminal(showTerminal: boolean = false){
+
+export function getTerminal(
+        name: string, showTerminal=false, reset=false){
+    if(reset){
+        for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
+            let terminal = (<any>vscode.window).terminals[i]
+            if( !terminal._disposed && terminal.name === name){
+               terminal.dispose()
+            }
+        }         
+    }        
+   
     for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
         let terminal = (<any>vscode.window).terminals[i]
-        if( terminal.name === TERMINAL){
+        if( !terminal._disposed && terminal.name === name){
             if(showTerminal){
                 terminal.show()
             } else{
@@ -28,8 +74,7 @@ export function getTerminal(showTerminal: boolean = false){
         }
     }
 
-    var terminal = vscode.window.createTerminal(
-        TERMINAL, SHELL_PATH)
+    var terminal = vscode.window.createTerminal(name, SHELL_PATH)
     if(showTerminal){
         terminal.show()
     } else{
@@ -37,6 +82,7 @@ export function getTerminal(showTerminal: boolean = false){
     }
     return terminal
 }
+
 
 export function getNonce() {
     let text = ""
@@ -48,12 +94,14 @@ export function getNonce() {
     return text
 }
 
+
 export function clickable(id:string, title:string, text:string){
     return `<label id="${id}" 
                 title=${title} class="clickable">
                 ${text}
             </label><br>`
 }
+
 
 export function callEosfactory(cl:string, result:Function){
     const child_process = require("child_process");
@@ -81,6 +129,7 @@ export function callEosfactory(cl:string, result:Function){
         (code:number) => {}
         )
 }
+
 
 export var config: any = undefined
 
