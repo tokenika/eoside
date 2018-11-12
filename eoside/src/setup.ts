@@ -37,7 +37,7 @@ export default class SetupPanel extends def.Panel{
 
         // If we already have a panel, show it.
         if (SetupPanel.currentPanel) {
-            SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside)
+            SetupPanel.currentPanel._panel.reveal(column)
             return
         }
 
@@ -140,50 +140,52 @@ export default class SetupPanel extends def.Panel{
     }
 }
 
+
+export function compile(){
+    let terminalName = "compile"
+    if(vscode.workspace.workspaceFolders){
+        let terminal = def.getTerminal(terminalName, true, true)
+        let cl = `python3 -m eoside.utils.build '${
+    vscode.workspace.workspaceFolders[0].uri.fsPath}' --compile`
+        terminal.sendText(cl)
+    }    
+}
+
+
+export function build(){
+    let terminalName = "build"
+    if(vscode.workspace.workspaceFolders){
+        let terminal = def.getTerminal(terminalName, true, true)
+        let cl = `python3 -m eoside.utils.build '${
+            vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+        terminal.sendText(cl)
+    }      
+}
+
+
+export function bash(){
+    if(SetupPanel.currentPanel){
+        SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two)
+    }
+    let terminal = vscode.window.createTerminal("bash", def.SHELL_PATH)
+    terminal.show()
+}
+
 function action(message: any, panel: def.Panel){
     switch(message.id) {
         case "compile": {
-                let terminalName = "compile"
-                if(vscode.workspace.workspaceFolders){
-                    let terminal = def.getTerminal(terminalName, true, true)
-                    let cl = `python3 -m eoside.utils.build '${
-                vscode.workspace.workspaceFolders[0].uri.fsPath}' --compile`
-                    terminal.sendText(cl)
-                }
+                compile()
             }
             break
         case "build": {
-                let terminalName = "build"
-                if(vscode.workspace.workspaceFolders){
-                    let terminal = def.getTerminal(terminalName, true, true)
-                    let cl = `python3 -m eoside.utils.build '${
-                        vscode.workspace.workspaceFolders[0].uri.fsPath}'`
-                    terminal.sendText(cl)
-                }       
+                build()
             }
             break
         case "EOSIde":
             vscode.commands.executeCommand("eoside.EOSIde")
             break
-        case "bash":
-            async function cc(){
-                let success = await vscode.commands.executeCommand(
-                    'vscode.setEditorLayout', 
-                    { orientation: 0, 
-                        groups: [
-                            { groups: [{}], size: 0.8 }, 
-                            { groups: [{}], size: 0.2 }
-                        ]
-                    });
-            }
-            cc()
-            
-            if(SetupPanel.currentPanel){
-                SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two)
-            }
-            
-            let terminal = vscode.window.createTerminal("bash", def.SHELL_PATH)
-            terminal.show()
+        case "bash":            
+            bash()
             break
     }
 }

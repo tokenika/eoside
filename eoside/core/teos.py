@@ -23,6 +23,7 @@ TEMPLATE_EOSIO_DIR = "${EOSIO_DIR}"
 TEMPLATE_HOME = "${HOME}"
 TEMPLATE_ROOT = "${ROOT}"
 C_CPP_PROP = "${c_cpp_prop}"
+TASK_JSON = "${tasks}"
 INCLUDES = [
         "${EOSIO_DIR}/contracts",
         "${EOSIO_DIR}/contracts/libc++/upstream/include",
@@ -32,13 +33,11 @@ INCLUDES = [
         "${EOSIO_DIR}/externals/magic_get/include",
         "${workspaceFolder}"
     ]
-
 LIBS = [
         "${EOSIO_DIR}/build/contracts/musl/libc.bc",
         "${EOSIO_DIR}/build/contracts/libc++/libc++.bc",
         "${EOSIO_DIR}/build/contracts/eosiolib/eosiolib.bc"
 ]
-
 COMPILER_OPTIONS = [
     "-emit-llvm", 
     "-O3", 
@@ -53,6 +52,156 @@ COMPILER_OPTIONS = [
     "-fno-rtti", 
     "-fno-exceptions"
 ]
+TASKS = '''
+{
+    "version": "2.0.0",   
+    "tasks": [
+        {
+            "taskName": "Compile",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
+            },
+            "osx": {
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
+            },
+            "linux": {
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+            ]
+        },
+        {
+            "taskName": "Build",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"        
+            },
+            "osx": {
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"
+            },
+            "linux": {
+                "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+            ]
+        },
+        {
+            "taskName": "Test",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },            
+                "command": "python3 ./tests/test1.py"
+            },
+            "osx": {
+                "command": "python3 ./tests/test1.py"
+            },
+            "linux": {
+                "command": "python3 ./tests/test1.py"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+            ]
+        },
+        {
+            "taskName": "Unittest",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },            
+                "command": "python3 ./tests/unittest1.py"
+            },
+            "osx": {
+                "command": "python3 ./tests/unittest1.py"
+            },
+            "linux": {
+                "command": "python3 ./tests/unittest1.py"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+            ]
+        },
+        {
+            "taskName": "EOSIO API",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },            
+                "command": "explorer.exe"
+            },
+            "osx": {
+                "command": "open"
+            },
+            "linux": {
+                "command": "sensible-browser"
+            },
+            "args": [
+                "https://developers.eos.io/eosio-cpp/reference"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+            ]
+        }
+    ]
+}
+''' 
 
 
 def includes():
@@ -72,6 +221,7 @@ def includes():
                 .replace(TEMPLATE_ROOT, root) \
                 .replace(TEMPLATE_EOSIO_DIR, eosio_dir))
     return retval
+
 
 def libs():
     home = os.environ["HOME"]
@@ -479,11 +629,9 @@ def project_from_template(
             template = template.replace(TEMPLATE_ROOT, root)
             template = template.replace(TEMPLATE_EOSIO_DIR, eosio_dir)
             
-        template = template.replace(
-                            "${" + TEMPLATE_NAME + "}", project_name)
-        template = template.replace(
-                                C_CPP_PROP, c_cpp_properties_default)
-
+        template = template.replace("${" + TEMPLATE_NAME + "}", project_name)
+        template = template.replace(C_CPP_PROP, c_cpp_properties_default)
+        template = template.replace(TASK_JSON, TASKS)
 
         with open(contract_path, "w") as output:
             output.write(template)

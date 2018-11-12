@@ -31,6 +31,22 @@
         "title": "| Setup |",
         "category": "EOSIde"
       }
+      ,
+      {
+        "command": "eoside.Compile",
+        "title": "compile",
+        "category": "EOSIde"
+      },
+      {
+        "command": "eoside.Build",
+        "title": "build",
+        "category": "EOSIde"
+      },
+      {
+        "command": "eoside.bash",
+        "title": "bash terminal",
+        "category": "EOSIde"
+      }
     ],
     "menus": {
       "editor/title": [

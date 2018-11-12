@@ -14,8 +14,10 @@ import * as vscode from 'vscode'
 import fs = require('fs')
 
 import * as def from './definitions'
+import * as setup from './setup'
 import GetStartedPanel from "./getstarted"
 import SetupPanel from "./setup"
+import { setupMaster } from 'cluster';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -28,6 +30,24 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.Setup', () => {
             SetupPanel.createOrShow(context.extensionPath)
+        }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.Compile', () => {
+            setup.compile()
+        }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.Build', () => {
+            setup.build()
+        }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.bash', () => {
+            setup.bash()
         }
     ))    
 
