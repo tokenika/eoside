@@ -8,7 +8,7 @@ export const SHELL_PATH = "bash.exe"
 
 export abstract class Panel{
     public readonly _extensionPath: string
-    protected readonly _panel: vscode.WebviewPanel
+    public readonly _panel: vscode.WebviewPanel
     protected _disposables: vscode.Disposable[] = []
 
     protected constructor(

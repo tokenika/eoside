@@ -7,13 +7,21 @@
         "taskName": "Compile",
         "type": "shell",
         "windows": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.WAST(r\"${workspaceFolder}/src\", compile_only=True)'"
+            "options": {
+                "shell": {
+                    "executable": "bash.exe",
+                    "args": [
+                        "-c"
+                    ]
+                }
+            },
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
         },
         "osx": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.WAST(\"${workspaceFolder}/src\", compile_only=True)'"
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
         },
         "linux": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.WAST(\"${workspaceFolder}/src\", compile_only=True)'"
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}' --compile"
         },
         "presentation": {
             "reveal": "always",
@@ -26,13 +34,21 @@
         "taskName": "Build",
         "type": "shell",
         "windows": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.ABI(r\"${workspaceFolder}/src\"); teos.WAST(r\"${workspaceFolder}/src\")'"
+            "options": {
+                "shell": {
+                    "executable": "bash.exe",
+                    "args": [
+                        "-c"
+                    ]
+                }
+            },
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"        
         },
         "osx": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.ABI(\"${workspaceFolder}/src\"); teos.WAST(\"${workspaceFolder}/src\")'"
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"
         },
         "linux": {
-            "command": "mkdir -p build; python3 -c 'import eosfactory.core.teos as teos; teos.ABI(\"${workspaceFolder}/src\"); teos.WAST(\"${workspaceFolder}/src\")'"
+            "command": "mkdir -p build; python3 -m eoside.utils.build '${workspaceFolder}'"
         },
         "problemMatcher": [],
         "presentation": {
@@ -50,6 +66,14 @@
         "taskName": "Test",
         "type": "shell",
         "windows": {
+            "options": {
+                "shell": {
+                    "executable": "bash.exe",
+                    "args": [
+                        "-c"
+                    ]
+                }
+            },            
             "command": "python3 ./tests/test1.py"
         },
         "osx": {
@@ -69,6 +93,14 @@
         "taskName": "Unittest",
         "type": "shell",
         "windows": {
+            "options": {
+                "shell": {
+                    "executable": "bash.exe",
+                    "args": [
+                        "-c"
+                    ]
+                }
+            },            
             "command": "python3 ./tests/unittest1.py"
         },
         "osx": {
@@ -88,6 +120,14 @@
         "taskName": "EOSIO API",
         "type": "shell",
         "windows": {
+            "options": {
+                "shell": {
+                    "executable": "bash.exe",
+                    "args": [
+                        "-c"
+                    ]
+                }
+            },            
             "command": "explorer.exe"
         },
         "osx": {

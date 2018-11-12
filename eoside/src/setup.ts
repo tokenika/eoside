@@ -37,7 +37,7 @@ export default class SetupPanel extends def.Panel{
 
         // If we already have a panel, show it.
         if (SetupPanel.currentPanel) {
-            SetupPanel.currentPanel._panel.reveal(column)
+            SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside)
             return
         }
 
@@ -166,6 +166,22 @@ function action(message: any, panel: def.Panel){
             vscode.commands.executeCommand("eoside.EOSIde")
             break
         case "bash":
+            async function cc(){
+                let success = await vscode.commands.executeCommand(
+                    'vscode.setEditorLayout', 
+                    { orientation: 0, 
+                        groups: [
+                            { groups: [{}], size: 0.8 }, 
+                            { groups: [{}], size: 0.2 }
+                        ]
+                    });
+            }
+            cc()
+            
+            if(SetupPanel.currentPanel){
+                SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two)
+            }
+            
             let terminal = vscode.window.createTerminal("bash", def.SHELL_PATH)
             terminal.show()
             break
