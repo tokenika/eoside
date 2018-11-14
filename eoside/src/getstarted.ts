@@ -20,10 +20,17 @@ export default class GetStartedPanel extends def.Panel {
     public static readonly viewType = "EOS IDE"
 
     public static createOrShow(
-        extensionPath: string, checkFolders:boolean=true) {
-        if(checkFolders && vscode.workspace.workspaceFolders){
-            return
+                        extensionPath: string, checkFolders:boolean=true) {
+            
+        if(checkFolders){
+            if(
+                vscode.workspace.workspaceFolders 
+                    || !vscode.workspace.getConfiguration()
+                        .eoside.startWithEosIde){
+                return
+            }
         }
+
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 

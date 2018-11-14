@@ -56,8 +56,7 @@ export function getTerminal(
     if(reset){
         for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
             let terminal = (<any>vscode.window).terminals[i]
-            if( !terminal._disposed && terminal.name === name){
-               terminal.dispose()
+            if( !terminal._disposed && terminal.name === name){terminal.dispose()
             }
         }         
     }        

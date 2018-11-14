@@ -8,6 +8,7 @@ const INCLUDE: string = "includePath"
 const LIBS: string = "libs"
 const OPTIONS: string = "compilerOptions"
 const UP: string = "up"
+const ADD: string = "include"
 const DOWN: string = "down"
 const DELETE:string = "del"
 const INSERT:string = "insert"
@@ -264,7 +265,7 @@ abstract class Dependencies {
     }
 
     public action(message: any){        
-        if(message.id === INCLUDE){
+        if(message.id === ADD){
             this.insert(-1)
         }
 
@@ -446,7 +447,7 @@ function setupEntry(index:number, title:string, text:string){
         <button class="btn"
             class="btn"; 
             id="${DELETE}${index}"; 
-            title="${title}">del</button>
+            title="${title}";>X</button>
         <button class="btn"
             class="btn"; 
             id="${INSERT}${index}"; 

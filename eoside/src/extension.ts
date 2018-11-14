@@ -9,15 +9,11 @@
 // - `F5` to start debugging
 // "terminal.integrated.shell.windows": "bash.exe"
 
-import * as path from 'path'
 import * as vscode from 'vscode'
-import fs = require('fs')
 
-import * as def from './definitions'
 import * as setup from './setup'
 import GetStartedPanel from "./getstarted"
 import SetupPanel from "./setup"
-import { setupMaster } from 'cluster';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -52,10 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
     ))    
 
     GetStartedPanel.createOrShow(context.extensionPath)
-    // if(def.IS_WINDOWS){
-    //     vscode.workspace.getConfiguration().update(
-    //         "terminal.integrated.shell.windows", "bash.exe", true)        
-    // }    
 
 }
 

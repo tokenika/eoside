@@ -139,7 +139,7 @@ $root
     }
 }
 
-ubuntu run "python3 -m eosfactory.install $root"
+ubuntu run "python3 -m eosfactory.install '$root'"
 
 cd .\eoside\
 

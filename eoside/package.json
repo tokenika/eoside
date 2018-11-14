@@ -19,7 +19,23 @@
     "onCommand:eoside.EOSIde"
   ],
   "main": "./out/src/extension",
-  "contributes": {
+    "contributes": {
+      "configuration": {
+        "type": "object",
+        "title": "EOSIde configuration",
+        "properties": {
+            "eoside.startWithEosIde": {
+                "type": "boolean",
+                "default": true,
+                "description": "If Explorer is empty, start with the EOSIde 'Get Started Page' view."
+            },
+            "eoside.menu": {
+                "type": "boolean",
+                "default": false,
+                "description": "Show EOSIde editor-title menu items."
+            }            
+        }
+    },
     "commands": [
       {
         "command": "eoside.EOSIde",
@@ -48,15 +64,29 @@
         "category": "EOSIde"
       }
     ],
+    "keybindings": [
+      {
+        "command": "eoside.Compile",
+        "key": "ctrl+shift+c",
+        "mac": "cmd++shift+c"
+      },
+      {
+        "command": "eoside.Build",
+        "key": "ctrl+shift+b",
+        "mac": "cmd++shift+b"
+      }
+    ],
     "menus": {
       "editor/title": [
         {
           "command": "eoside.EOSIde",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "config.eosid.menu"
         },
         {
           "command": "eoside.Setup",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "config.eosid.menu"
         }        
       ]
     }
