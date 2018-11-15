@@ -1,6 +1,6 @@
 # *EOSIde* -- Integrated Development Environment for EOSIO smart contracts
 
- With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+ With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIde* organizes the workflow of development process for EOSIO smart contracts, if such a process can be seen as composed of the following elements:
 
 * project standardization and bookkeeping,
 * referencing documentation and tutorials,

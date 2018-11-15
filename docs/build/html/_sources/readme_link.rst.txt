@@ -1,0 +1,4 @@
+eosfactory
+----------
+
+.. include:: ../eoside/README

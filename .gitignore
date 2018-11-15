@@ -14,7 +14,8 @@ eoside/node_modules
 eoside/out/src/extension.js.map
 *.vsix
 eoside/out
-docs/build
+docs/build/doctrees
+!docs/build/html
 eoside/recent.json
 
 # Compiled python modules.
