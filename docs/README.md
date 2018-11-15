@@ -16,7 +16,7 @@
 
 User interface of EOSIde is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
 
-![Get Started view](readme_images/get_started.png)
+![Get Started view](https://github.com/tokenika/eoside/raw/master/eoside/readme_images/get_started.png)
 
 * *Get Started* entries link to tutorials and other documentation.
 * *New project* entries trigger creation of template projects.
@@ -27,7 +27,7 @@ User interface of EOSIde is composed of two views: one is displayed -- with the 
 
 Another view is about the setup of the current EOSIO smart contract project. It is shown in the picture below.
 
-![Setup view](readme_images/setup.png)
+![Setup view](https://github.com/tokenika/eoside/raw/master/eoside/readme_images/setup.png)
 
 * *Include* lists directories containing headers involved in the project. The list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from the *ms-vscode.cpptools* extension that is a dependence of EOSIde. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed modulo the `WSL root`.
 * *Libs* lists libraries resolving outer dependencies of the project.
