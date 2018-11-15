@@ -18,7 +18,7 @@ for EOSIO smart-contracts.
 .. toctree::
     :maxdepth: 1
 
-    ./README
+    README
 
 Indices and tables
 ==================

@@ -1,41 +1,74 @@
 {
   "name": "EOSIde",
-  "description": "Integrated Development Environment for EOSIO smart contracts",
+  "displayName": "EOS IDE",
   "version": "0.0.1",
   "publisher": "Tokenika",
-  "icon": "media/tokenika.png",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tokenika/eoside"
-  },
-  "engines": {
-    "vscode": "^1.25.0"
+  "description": "Integrated Development Environment for EOSIO smart contracts",
+  "author": {
+    "name": "sz"
   },
   "categories": [
     "Other"
   ],
+  "icon": "media/tokenika.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
   "activationEvents": [
     "*",
     "onCommand:eoside.EOSIde"
   ],
+  "engines": {
+    "vscode": "^1.25.0"
+  },
   "main": "./out/src/extension",
-    "contributes": {
-      "configuration": {
-        "type": "object",
-        "title": "EOSIde configuration",
-        "properties": {
-            "eoside.startWithEosIde": {
-                "type": "boolean",
-                "default": true,
-                "description": "If Explorer is empty, start with the EOSIde 'Get Started Page' view."
-            },
-            "eoside.menu": {
-                "type": "boolean",
-                "default": false,
-                "description": "Show EOSIde editor-title menu items."
-            }            
-        }
-    },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "typescript": "^2.9.2"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/tokenika/eoside/issues",
+    "email": "contact@tokenika.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tokenika/eoside"
+  },
+  "dependencies": {
+    "file-system": "^2.2.2",
+    "openurl": "^1.1.1",
+    "vscode": "^1.1.18"
+  },
+  "extensionDependencies": [
+    "ms-vscode.cpptools"
+  ],
+  "homepage": "https://github.com/tokenika/eoside/master/README.md",
+
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "EOSIde configuration",
+      "properties": {
+          "eoside.startWithEosIde": {
+              "type": "boolean",
+              "default": true,
+              "description": "If Explorer is empty, start with the EOSIde 'Get Started Page' view."
+          },
+          "eoside.menu": {
+              "type": "boolean",
+              "default": true,
+              "description": "Show EOSIde editor-title menu items."
+          }            
+      }
+  },
     "commands": [
       {
         "command": "eoside.EOSIde",
@@ -81,29 +114,14 @@
         {
           "command": "eoside.EOSIde",
           "group": "navigation",
-          "when": "config.eosid.menu"
+          "when": "config.eoside.menu"
         },
         {
           "command": "eoside.Setup",
           "group": "navigation",
-          "when": "config.eosid.menu"
+          "when": "config.eoside.menu"
         }        
       ]
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -p ./",
-    "watch": "tsc -w -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
-  },
-  "dependencies": {
-    "file-system": "^2.2.2",
-    "openurl": "^1.1.1",
-    "vscode": "^1.1.18"
-  },
-  "devDependencies": {
-    "@types/node": "^10.5.2",
-    "typescript": "^2.9.2"
   }
 }
