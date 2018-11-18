@@ -173,5 +173,5 @@ Write-Host "
 To verify installation navigate to the 'eoside' folder and execute 
 'eoside.ps1'.
 
-# Alternatively, run 'code -n ""'.
+# Alternatively, run 'code -n'.
 # "

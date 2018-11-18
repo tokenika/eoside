@@ -73,17 +73,19 @@ export default class GetStartedPanel extends def.Panel {
                 case TEMPLATE:
                     Templates.createOrGet(this._extensionPath)
                         .action(message.id)
-                    return
+                    break
                 case RECENT:
                     Recent.createOrGet(this._extensionPath).open(message.id)
-                    return
+                    break
                 case GET_STARTED:
                     GetStarted.createOrGet(this._extensionPath)
                         .open(message.id)
+                    break
                 case OPEN:
                     if(message.id === "open_folder"){
                         vscode.commands.executeCommand('vscode.openFolder')
                     }
+                    break
             }
         }, null, this._disposables)
     }

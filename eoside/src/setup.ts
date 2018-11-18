@@ -74,17 +74,18 @@ export default class SetupPanel extends def.Panel{
             switch (message.title) {
                 case INCLUDE:
                     Includes.createOrGet(this._extensionPath).action(message)
-                    return
+                    break
                 case LIBS:
                     Libs.createOrGet(this._extensionPath).action(message)
-                    return
+                    break
                 case OPTIONS:
                     Options.createOrGet(this._extensionPath).action(message)
-                    return
+                    break
                 case CONTROL:
                     if(SetupPanel.currentPanel){
                         action(message, SetupPanel.currentPanel)
                     }
+                    break
             }
         }, null, this._disposables)
     }
