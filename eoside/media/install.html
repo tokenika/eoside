@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Get Started EOSIde</title>
+    <meta charset="utf-8">
+
+    <!--
+    Use a content security policy to only allow loading images from https 
+    or from our extension directory,
+    and only allow scripts that have a specific nonce.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'nonce-${nonce}' 'unsafe-inline';
+        style-src 'unsafe-inline';
+        img-src vscode-resource: https:; 
+    ">
+
+    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="${htmlBase}">
+    <title>EOSIde install page</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        .body {
+            background-color: rgb(30, 30, 30);
+            color: rgb(83, 157, 241);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13;
+        }
+        .btn {
+            background-color: DodgerBlue;
+            border: none;
+            color: black;
+            padding: 2px 2px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: RoyalBlue;
+        }
+        .row {
+            margin-bottom: 20px;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body class="body">
+    <script nonce="${nonce}" src="${scriptUri}"></script>
+
+    <div class="row">
+        <div style="float:left">
+            <img src="tokenika.png" 
+                alt="Tokenika" 
+                style="height:150px; padding: 10px">
+        </div>
+    </div>
+    <div class="row">
+        <label 
+            style="
+                color: unset;
+                font-size: 20px;">Checklist
+        </label>
+        ${checkList}
+    </div> 
+</body>
+
+</html>

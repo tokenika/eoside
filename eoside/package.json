@@ -71,6 +71,11 @@
   },
     "commands": [
       {
+        "command": "eoside.Install",
+        "title": "Install",
+        "category": "EOSIde"
+      },      
+      {
         "command": "eoside.EOSIde",
         "title": "| EOS IDE |",
         "category": "EOSIde"

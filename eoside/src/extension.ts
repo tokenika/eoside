@@ -12,10 +12,16 @@
 import * as vscode from 'vscode'
 
 import * as setup from './setup'
+import InstallPanel from "./install"
 import GetStartedPanel from "./getstarted"
 import SetupPanel from "./setup"
 
 export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.Install', () => {
+            InstallPanel.createOrShow(context.extensionPath)
+        }
+    ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.EOSIde', () => {

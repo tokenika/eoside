@@ -1,7 +1,197 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
+import fs = require('fs')
 
 import * as def from './definitions'
+
+export var config: any = undefined
+export const PYTHON: string = "python3"
+const ERROR_COLOR = "indianred"
+const WSL_VERSION_MIN = "4.3"
+
+export var isError = false
+var checkList = ""
+
+function errorConditions(){
+    const spawn = require("child_process").spawnSync;
+    if(def.IS_WINDOWS){
+        const process = spawn("bash.exe", ["--version"])
+        let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
+        if(process.status){
+            errorMsg(
+`It seems that Windows Subsystem Linux is not in the System, or the 
+<em>bash.exe</em> executable is not in the System path.<br> 
+EOSIde cannot do without WSL.`)
+            isError = true
+            return            
+        }
+        if(version >= WSL_VERSION_MIN){
+            conditionMsg(
+            `<em>Windows Subsystem Linux</em> version ${version} detected.`)
+        } else {
+            errorMsg(
+`The version of the WSL installation is <em>${version}</em>, while the 
+minimum is <em>${WSL_VERSION_MIN}</em>.<br>
+EOSIde cannot do without proper WSL.`)
+            isError = true
+            return            
+        }        
+    }  
+    {
+        const process = def.IS_WINDOWS 
+            ? spawn("bash.exe", ["-c", `${PYTHON} -V`])
+            : spawn(`${PYTHON}`, ["-V"])
+        if(!process.status){
+            conditionMsg(`<em>${process.stdout}</em> detected.`)
+        } else{
+            let msg = 
+`It seams that <em>${PYTHON}</em> is not in the System, as the 
+<em>python3</em> executable is not in the System path.<br>
+EOSIde cannot do without <em>${PYTHON}</em>.`
+
+            if(def.IS_WINDOWS){
+                msg +=
+`
+<br>
+Note that the Python has to be installed in the Windows Subsystem Linux.`
+            }
+            errorMsg(msg)
+            isError = true
+            return
+        }
+    }
+    {
+        let cl = `${PYTHON} -c 'import eosfactory'`
+        let clExe = def.IS_WINDOWS
+            ? `bash.exe -c "${cl}"`
+            : `"${cl}"`
+        const process = spawn(clExe, [], {shell: true})
+        if(!process.status){
+            conditionMsg(`<em>eosfactory</em> package detected.`)
+        } else {
+            let msg =
+`It seems that <em>eosfactory</em> package is not installed in 
+the System.<br>
+EOSIde cannot do without <em>eosfactory</em>.
+`
+            if(def.IS_WINDOWS){
+                msg += 
+`<br>
+Note that the package has to be installed in the Windows Subsystem Linux.`
+            }
+            errorMsg(msg)
+            isError = true
+            return
+        }
+    }
+    {
+        let cl = `${PYTHON} -c 'import eoside'`
+        let clExe = def.IS_WINDOWS
+            ? `bash.exe -c "${cl}"`
+            : `"${cl}"`
+        const process = spawn(clExe, [], {shell: true})
+        if(!process.status){
+            conditionMsg(`<em>eoside</em> package detected.`)
+        } else {
+            let msg =
+`it seems that <em>eoside</em> package is not installed in 
+the System.<br>
+EOSIde cannot do without <em>eoside</em>.
+`
+            if(def.IS_WINDOWS){
+                msg += 
+`<br>
+Note that the package has to be installed in the Windows Subsystem Linux.`
+            }
+            errorMsg(msg)
+            isError = true
+            return
+        }        
+    }
+    {
+        let cl = `${PYTHON} -m eosfactory.core.config`
+        let clExe = def.IS_WINDOWS
+            ? `bash.exe -c "${cl}"`
+            : `"${cl}"`
+        const process = spawn(clExe, [], {shell: true})
+        if(!process.status){
+            conditionMsg(`<em>EOSFactory</em> configuration file detected`)
+        } else {
+            errorMsg(
+`It seems that the eosfactory package is corrupted, as its configuration 
+file cannot be found.`)
+            isError = true
+            return
+        }
+        config = JSON.parse(process.stdout)
+        conditionMsg(
+`Configuration file is ${def.wslMapLinuxWindows(config["CONFIG_FILE"])}`)
+
+        if(def.IS_WINDOWS){
+            if(!config["WSL_ROOT"] && !writeRoot()){
+                errorMsg(
+`Cannot determine the root of the WSL.<br>
+EOSIde cannot do without it.`)
+                setWslRoot()
+                isError = true
+                return
+            } else {
+                conditionMsg(`<em>WSL</em> root directory detected.<br>`)
+            } 
+        }        
+    }
+    passed()
+}
+
+
+function conditionMsg(msg:string){
+    checkList += `<li>${msg}</li>`
+}
+
+
+function errorMsg(msg:string){
+    checkList += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
+}
+
+
+function setWslRoot(){
+    checkList += 
+`
+    <div class="row">
+        <p>
+You can indicate the WSL root in your system. Click the button below to open
+file dialog. Then navigate to a directory containing the Ubuntu file system.
+        </p>
+        <p>
+            <button 
+                class="btn"; 
+                id="findWsl"; 
+                title="findWsl">find WSL root
+            </button>
+        </p>
+    </div>   
+`
+}
+
+function passed(){
+    checkList += 
+`
+<div class="row">
+    <label 
+        style="
+            color: unset;
+            font-size: 20px;">Smart Contract Workspace
+    </label>
+    <p>
+        <button 
+            class="btn"; 
+            id="changeWorkspace"; 
+            title="includePath">change</button>
+        C:\Workspaces\EOS\contracts
+    </p>
+</div>   
+`
+}
 
 
 export default class InstallPanel extends def.Panel {
@@ -9,10 +199,10 @@ export default class InstallPanel extends def.Panel {
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: InstallPanel | undefined
-    public static readonly viewType = "EOS IDE"
+    public static readonly viewType = "Install"
 
     public static createOrShow(extensionPath: string) {
-        if(def.IS_WINDOWS && (!def.config || !def.root())){
+        if(def.IS_WINDOWS && (!config || !root())){
             // In Windows and Linux Subsystem is not installed
         }
 
@@ -27,7 +217,7 @@ export default class InstallPanel extends def.Panel {
 
         // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
-                InstallPanel.viewType, "EOS IDE", 
+                InstallPanel.viewType, "Install", 
                 column || vscode.ViewColumn.One, {
             // Enable javascript in the webview
             enableScripts: true,
@@ -54,6 +244,42 @@ export default class InstallPanel extends def.Panel {
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
+                case "findWsl":
+                    let defaultUri = process.env.appdata
+                    defaultUri = defaultUri ? defaultUri: ""
+
+                    vscode.window.showOpenDialog({
+                        canSelectMany: false,
+                        canSelectFiles: false,
+                        canSelectFolders: true,
+                        defaultUri: vscode.Uri.file(defaultUri),
+                        openLabel: 'Open'
+                    }).then(fileUri => {
+                        let root = ""
+                        if (fileUri && fileUri[0]) {
+                            root = fileUri[0].fsPath
+                            if(fs.existsSync(path.join(root, "home"))){
+                                config["WSL_ROOT"] = root
+                                if(def.writeJson(
+                                    config["CONFIG_FILE"], config)){
+                                    vscode.commands.executeCommand("eoside.Install")
+                                } else {
+                                    vscode.window.showErrorMessage(
+`Cannot write to the config file of EOSFactory. The path tried is
+ ${config["CONFIG_FILE"]}.
+`)                            
+                                }
+                            } else {
+                                vscode.window.showErrorMessage(
+`The selected directory 
+${root}
+is not like the root of an Ubuntu file system as it
+misses the 'home' directory.
+                                `)
+                            }
+                        }
+                    })
+                    break
             }
         }, null, this._disposables)
     }
@@ -83,9 +309,49 @@ export default class InstallPanel extends def.Panel {
                             this._extensionPath, def.RESOURCE_DIR, '/'))
                             .with({ scheme: 'vscode-resource' })
 
-        var html = require('fs').readFileSync(htmlUri.fsPath).toString()
-                                .replace(/\$\{nonce\}/gi, def.getNonce())
-                                .replace(/\$\{scriptUri\}/gi, scriptUri)
-        return html
+        return require('fs')
+                            .readFileSync(htmlUri.fsPath).toString()
+                            .replace(/\$\{nonce\}/gi, def.getNonce())
+                            .replace(/\$\{scriptUri\}/gi, scriptUri)
+                            .replace(/\$\{htmlBase\}/gi, htmlBase)
+                            .replace(/\$\{checkList\}/gi, checkList)
     }
 }
+
+export function root(){
+    if(config){
+        return config["WSL_ROOT"]
+    }
+    return ""
+}
+
+
+export function writeRoot(){
+    const spawn = require("child_process").spawnSync;
+    {
+        let lxss="hkcu\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss"
+        let cl = `REG QUERY ${lxss} -s -v BasePath`
+        const process = spawn(cl, [], {shell: true})
+        if(process.status){
+            return -1
+        }
+        try{
+            var basePath = process.stdout.toString().match(/REG_SZ(.*)/)[1].trim()
+        } catch(err){
+            return -1
+        }
+        
+    } 
+    {
+        let cl = `bash.exe -c whoami`
+        const process = spawn(cl, [], {shell: true})
+        var user = process.stdout.toString()
+        if(process.status){
+            return -1
+        }
+    }
+    config["WSL_ROOT"] = `${basePath}`//\\home\\${user}`
+    return def.writeJson(config["CONFIG_FILE"], config)
+}
+
+errorConditions()

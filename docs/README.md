@@ -29,7 +29,7 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 ![Setup view](https://github.com/tokenika/eoside/raw/master/docs/readme_images/setup.png)
 
-* *Include* lists directories containing headers involved in the project. The list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from the *ms-vscode.cpptools* extension that is a dependence of EOSIde. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed modulo the `WSL root`.
+* *Include* lists directories containing headers involved in the project. The list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from the *ms-vscode.cpptools* extension that is a dependence of EOSIde. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
 * *Libs* lists libraries resolving outer dependencies of the project.
 * *Compiler Options* lists parameters of the wasm compiler.
 * The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal. All this actions can be invoked with keyboard shortcuts or with extension commands.

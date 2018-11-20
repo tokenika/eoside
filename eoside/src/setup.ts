@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import fs = require('fs')
 
 import * as def from './definitions'
+import * as inst from './install'
 
 const INCLUDE: string = "includePath"
 const LIBS: string = "libs"
@@ -127,7 +128,7 @@ export default class SetupPanel extends def.Panel{
             .replace(
                 /\$\{optionList\}/gi, 
                 Options.createOrGet(this._extensionPath).items())
-            .replace(/\$\{wslRoot\}/gi, `WSL root is ${def.root()}`)
+            .replace(/\$\{wslRoot\}/gi, `WSL root is ${inst.root()}`)
 
         if(def.IS_WINDOWS){
             html = html.replace(/\$\{bash\}/gi, 
@@ -226,14 +227,13 @@ abstract class Dependencies {
 
     protected insert(index: number, selectFiles: boolean=true){
         let path = undefined
-        const options: vscode.OpenDialogOptions = {
+        vscode.window.showOpenDialog({
             canSelectMany: false,
             canSelectFiles: selectFiles,
             canSelectFolders: !selectFiles,
-            defaultUri: vscode.Uri.file(def.root()),
+            defaultUri: vscode.Uri.file(inst.root()),
             openLabel: 'Open'
-        }
-        vscode.window.showOpenDialog(options).then(fileUri => {
+        }).then(fileUri => {
             if (!fileUri || !fileUri[0]) {
                 return
             }
@@ -322,7 +322,7 @@ abstract class Dependencies {
         if(this.getEntries()){
             entries = this.getEntries()
         }
-        let root = def.root()
+        let root = inst.root()
         for(let i = 0; i < entries.length; i++){
             entries[i] = entries[i].replace(root, "${root)");
         }
