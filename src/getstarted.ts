@@ -170,7 +170,7 @@ class Templates {
                     this._extensionPath, 
                     TEMPLATE_DIR, templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
-                let cl = 'python3 -m eoside.utils.create_project '                  
+                let cl = 'python3 -m eosfactory.eoside.create_project '                  
                     + `\\"${fileUri[0].fsPath}\\" \\"${templateDir}\\" --silent`
 
                 def.callEosfactory(cl, (stdout:string) =>{

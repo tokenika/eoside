@@ -147,7 +147,7 @@ export function compile(){
     let terminalName = "compile"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
-        let cl = `python3 -m eoside.utils.build '${
+        let cl = `python3 -m eosfactory.eoside.build '${
     vscode.workspace.workspaceFolders[0].uri.fsPath}' --compile`
         terminal.sendText(cl)
     }    
@@ -158,7 +158,7 @@ export function build(){
     let terminalName = "build"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
-        let cl = `python3 -m eoside.utils.build '${
+        let cl = `python3 -m eosfactory.eoside.build '${
             vscode.workspace.workspaceFolders[0].uri.fsPath}'`
         terminal.sendText(cl)
     }      

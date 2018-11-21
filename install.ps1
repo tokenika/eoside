@@ -71,19 +71,6 @@ if(-Not $eosfactory){
 exit
 }
 
-$proceed=Read-Host "
-# What about installing locally this EOSIde extension to the VSCode?
-# It is essential for EOSIde.
-#
-# Input y/n.
-"
-If($proceed -ne "y"){
-    Write-Host "
-# EXITING the installer...
-"
-    exit
-}
-
 $root=""
 Write-Host "
 Checking configuration of the EOSFactory Python package ...
@@ -108,38 +95,6 @@ $root
         }
     }
 }
-$ErrorActionPreference='SilentlyContinue' # Continue
-
-If(-Not $root){
-    $root=Read-Host "
-# Cannot determine where is the root of the Ubuntu subsystem. 
-# It can be something like
-# 'C:\Users\cartman\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs',
-# containing folders like 'home', 'etc'.
-#
-# Enter a guess:
-"
-    $bashrc=""
-    $bashrc=Get-ChildItem -Path "${root}\home\${user}\.bashrc" -Name
-    
-    If(-Not $bashrc -Or $bashrc -ne ".bashrc"){
-        Write-Host "
-# The given entry is not like any Ubuntu root. Especially, it does not have the
-# '.bashrc' file in the user's directory.
-#
-# EXITING the installer...
-"
-    exit
-    } else{
-            Write-Host "
-WSL root directory is
-$root
-
-    "        
-    }
-}
-
-ubuntu run "python3 -m eosfactory.install '$root'"
 
 cd .\eoside\
 

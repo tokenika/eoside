@@ -34,7 +34,7 @@ EOSIde cannot do without WSL.`)
 minimum is <em>${WSL_VERSION_MIN}</em>.<br>
 EOSIde cannot do without proper WSL.`)
             isError = true
-            return            
+            return
         }        
     }
     {
@@ -84,30 +84,6 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
             isError = true
             return
         }
-    }
-    {
-        let cl = `${PYTHON} -c 'import eoside'`
-        let clExe = def.IS_WINDOWS
-            ? `bash.exe -c "${cl}"`
-            : `"${cl}"`
-        const process = spawn(clExe, [], {shell: true})
-        if(!process.status){
-            conditionMsg(`<em>eoside</em> package detected.`)
-        } else {
-            let msg =
-`it seems that <em>eoside</em> package is not installed in 
-the System.<br>
-EOSIde cannot do without <em>eoside</em>.
-`
-            if(def.IS_WINDOWS){
-                msg += 
-`<br>
-Note that the package has to be installed in the Windows Subsystem Linux.`
-            }
-            errorMsg(msg)
-            isError = true
-            return
-        }        
     }
     {
         let cl = `${PYTHON} -m eosfactory.core.config`

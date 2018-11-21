@@ -10,19 +10,16 @@ vscode_ext/test1.html
 webview-sample/node_modules/
 vscode_ext/recent.json
 .build
-eoside/node_modules
-eoside/out/src/extension.js.map
+node_modules
+out/src/extension.js.map
 *.vsix
-eoside/out
+out
 docs/build/doctrees
 !docs/build/html
-eoside/recent.json
+recent.json
 
 # Compiled python modules.
 *.pyc
 
 # Setuptools distribution folder.
 /dist/
-
-# Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
