@@ -115,10 +115,9 @@ export default class SetupPanel extends def.Panel{
                             .with({ scheme: 'vscode-resource' })
         
         
-        let html = require('fs')
-            .readFileSync(htmlUri.fsPath).toString()
+        let html = fs.readFileSync(htmlUri.fsPath).toString()
             .replace(/\$\{nonce\}/gi, def.getNonce())
-            .replace(/\$\{scriptUri\}/gi, scriptUri)
+            .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
             .replace(
                 /\$\{includeList\}/gi, 
                 Includes.createOrGet(this._extensionPath).items())

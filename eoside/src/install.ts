@@ -36,13 +36,14 @@ EOSIde cannot do without proper WSL.`)
             isError = true
             return            
         }        
-    }  
+    }
     {
         const process = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${PYTHON} -V`])
             : spawn(`${PYTHON}`, ["-V"])
         if(!process.status){
-            conditionMsg(`<em>${process.stdout}</em> detected.`)
+            conditionMsg(
+`<em>${process.stdout}</em> detected.`)
         } else{
             let msg = 
 `It seams that <em>${PYTHON}</em> is not in the System, as the 
@@ -140,12 +141,24 @@ EOSIde cannot do without it.`)
             } 
         }        
     }
-    passed()
+    {
+        if(!config["EOSIO_SOURCE_DIR"]){
+            errorMsg(
+`Cannot determine the repository of <em>EOS</em>.<br>
+EOSIde cannot do without it.`)
+            setEosRepository()
+            isError = true
+            return
+        } else {
+            conditionMsg(`<em>EOS</em> repository detected.<br>`)
+        } 
+    }
+    passed(def.wslMapLinuxWindows(config["EOSIO_CONTRACT_WORKSPACE"]))
 }
 
 
 function conditionMsg(msg:string){
-    checkList += `<li>${msg}</li>`
+    checkList += `<li>${msg}</li>\n`
 }
 
 
@@ -157,39 +170,55 @@ function errorMsg(msg:string){
 function setWslRoot(){
     checkList += 
 `
-    <div class="row">
-        <p>
+<p>
 You can indicate the WSL root in your system. Click the button below to open
 file dialog. Then navigate to a directory containing the Ubuntu file system.
-        </p>
-        <p>
-            <button 
-                class="btn"; 
-                id="findWsl"; 
-                title="findWsl">find WSL root
-            </button>
-        </p>
-    </div>   
+</p>
+<p>
+    <button 
+        class="btn"; 
+        id="findWsl"; 
+        title="findWsl">find WSL root
+    </button>
+</p>
 `
 }
 
-function passed(){
+
+function setEosRepository(){
     checkList += 
 `
-<div class="row">
-    <label 
-        style="
-            color: unset;
-            font-size: 20px;">Smart Contract Workspace
-    </label>
-    <p>
-        <button 
-            class="btn"; 
-            id="changeWorkspace"; 
-            title="includePath">change</button>
-        C:\Workspaces\EOS\contracts
-    </p>
-</div>   
+<p>
+You can indicate the EOS repository in your system. Click the button below to 
+open file dialog. Then navigate to the repository's folder.
+</p>
+<p>
+    <button 
+        class="btn"; 
+        id="eosRepository"; 
+        title="eosRepository">find WSL root
+    </button>
+</p>
+`
+}
+
+
+function passed(workspace:string){
+    checkList += 
+`
+<p 
+    style="
+    color: unset;
+    font-size: 20px;
+    ">Smart Contract Workspace
+</p>
+<p>
+    <button 
+        class="btn"; 
+        id="changeWorkspace"; 
+        title="changeWorkspace">change</button>
+    ${workspace}
+</p>
 `
 }
 
@@ -245,8 +274,65 @@ export default class InstallPanel extends def.Panel {
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case "findWsl":
-                    let defaultUri = process.env.appdata
-                    defaultUri = defaultUri ? defaultUri: ""
+                    {
+                        let defaultUri = process.env.appdata
+                        defaultUri = defaultUri ? defaultUri: ""
+
+                        vscode.window.showOpenDialog({
+                            canSelectMany: false,
+                            canSelectFiles: false,
+                            canSelectFolders: true,
+                            defaultUri: vscode.Uri.file(defaultUri),
+                            openLabel: 'Open'
+                        }).then(fileUri => {
+                            let root = ""
+                            if (fileUri && fileUri[0]) {
+                                root = fileUri[0].fsPath
+                                if(fs.existsSync(path.join(root, "home"))){
+                                    config["WSL_ROOT"] = root
+                                    if(def.writeJson(
+                                            config["CONFIG_FILE"], config)){
+                                        this.update()
+                                    }
+                                } else {
+                                    vscode.window.showErrorMessage(
+`The selected directory 
+${root}
+is not like the root of an Ubuntu file system as it
+misses the 'home' directory.
+`)
+                                }
+                            }
+                        })
+                    }   
+                    break
+                case "changeWorkspace":
+                    {
+                        let defaultUri = def.wslMapLinuxWindows(
+                                            config["EOSIO_CONTRACT_WORKSPACE"])
+
+                        vscode.window.showOpenDialog({
+                            canSelectMany: false,
+                            canSelectFiles: false,
+                            canSelectFolders: true,
+                            defaultUri: vscode.Uri.file(defaultUri),
+                            openLabel: 'Open'
+                        }).then(fileUri => {
+                            if (fileUri && fileUri[0]) {
+                                config["EOSIO_CONTRACT_WORKSPACE"] 
+                                    = def.wslMapWindowsLinux(fileUri[0].fsPath)
+                                if(!def.writeJson(
+                                            config["CONFIG_FILE"], config)){
+                                        this.update()
+                                } 
+                            }
+                        })
+                    }
+                    break
+                case "eosRepository":
+                {
+                    let defaultUri = def.IS_WINDOWS 
+                        ? "": "/home"
 
                     vscode.window.showOpenDialog({
                         canSelectMany: false,
@@ -255,31 +341,17 @@ export default class InstallPanel extends def.Panel {
                         defaultUri: vscode.Uri.file(defaultUri),
                         openLabel: 'Open'
                     }).then(fileUri => {
-                        let root = ""
                         if (fileUri && fileUri[0]) {
-                            root = fileUri[0].fsPath
-                            if(fs.existsSync(path.join(root, "home"))){
-                                config["WSL_ROOT"] = root
-                                if(def.writeJson(
-                                    config["CONFIG_FILE"], config)){
-                                    vscode.commands.executeCommand("eoside.Install")
-                                } else {
-                                    vscode.window.showErrorMessage(
-`Cannot write to the config file of EOSFactory. The path tried is
- ${config["CONFIG_FILE"]}.
-`)                            
-                                }
-                            } else {
-                                vscode.window.showErrorMessage(
-`The selected directory 
-${root}
-is not like the root of an Ubuntu file system as it
-misses the 'home' directory.
-                                `)
-                            }
+                            config["EOSIO_SOURCE_DIR"] 
+                                = def.wslMapWindowsLinux(fileUri[0].fsPath)
+                            if(!def.writeJson(
+                                        config["CONFIG_FILE"], config)){
+                                    this.update()
+                            } 
                         }
                     })
-                    break
+                }
+                break                                    
             }
         }, null, this._disposables)
     }
@@ -287,6 +359,12 @@ misses the 'home' directory.
     public dispose() {
         super.dispose()
         InstallPanel.currentPanel = undefined
+    }
+
+    public update(){
+        checkList = ""
+        errorConditions()
+        this._panel.webview.html = this._getHtmlForWebview();
     }
 
     private _getHtmlForWebview() {
@@ -309,12 +387,12 @@ misses the 'home' directory.
                             this._extensionPath, def.RESOURCE_DIR, '/'))
                             .with({ scheme: 'vscode-resource' })
 
-        return require('fs')
-                            .readFileSync(htmlUri.fsPath).toString()
+        let html = fs.readFileSync(htmlUri.fsPath).toString()
                             .replace(/\$\{nonce\}/gi, def.getNonce())
-                            .replace(/\$\{scriptUri\}/gi, scriptUri)
-                            .replace(/\$\{htmlBase\}/gi, htmlBase)
-                            .replace(/\$\{checkList\}/gi, checkList)
+                            .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
+                            .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
+                            .replace(/\$\{checkList\}/gi, checkList)                      
+        return html
     }
 }
 

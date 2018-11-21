@@ -115,16 +115,16 @@ export default class GetStartedPanel extends def.Panel {
                             this._extensionPath, def.RESOURCE_DIR, '/'))
                             .with({ scheme: 'vscode-resource' })
 
-        return require('fs').readFileSync(htmlUri.fsPath).toString()
-                                .replace(/\$\{nonce\}/gi, def.getNonce())
-                                .replace(/\$\{scriptUri\}/gi, scriptUri)
+        return fs.readFileSync(htmlUri.fsPath).toString()
+                .replace(/\$\{nonce\}/gi, def.getNonce())
+                .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
                 .replace(/\$\{getstartedList\}/gi, 
                     GetStarted.createOrGet(this._extensionPath).list())                
                 .replace(/\$\{templateList\}/gi, 
                     Templates.createOrGet(this._extensionPath).templateList())
                 .replace(/\$\{recentList\}/gi, 
                     Recent.createOrGet(this._extensionPath).recentList())
-                                        .replace(/\$\{htmlBase\}/gi, htmlBase)
+                .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
     }
 }
 

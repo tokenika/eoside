@@ -42,10 +42,15 @@ export abstract class Panel{
 
 
 export function writeJson(file:string, json:Object){
+    file = wslMapLinuxWindows(file)
     try{
         fs.writeFileSync(file, JSON.stringify(json, undefined, 4))
     } catch(err){
-        vscode.window.showErrorMessage(err)
+        vscode.window.showErrorMessage(
+`Cannot write to the config file of EOSFactory. The path tried is
+${file}.
+Error message is
+${err}`)
         return -1
     }
     return 0
@@ -139,4 +144,19 @@ export function wslMapLinuxWindows(path:string){
     path = `${path[5].toUpperCase()}:${path.substr(6)}`
     return path.replace(/\//gi, "\\")
 }
+
+export function wslMapWindowsLinux(path:string){
+    if(!IS_WINDOWS){
+        return path
+    }    
+    if(!path.includes(":\\")){
+        return path
+    }
+    path = path.replace(/\\/gi, "/")
+    let drive = path[0]
+    return path.replace(`${drive}:/`, `/mnt/${drive.toLowerCase()}/`)
+}
+
+
+
 

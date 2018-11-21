@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,14 +12,14 @@
     -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
-        script-src 'nonce-${nonce}' 'unsafe-inline';
+        script-src 'nonce-QrcvvT66bwdMZdt7urVHvccUC80Usj6q' 'unsafe-inline';
         style-src 'unsafe-inline';
         img-src vscode-resource: https:; 
     ">
 
     <meta name="theme-color" content="#000000">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="${htmlBase}">
+    <base href="vscode-resource:/c%3A/Workspaces/EOS/eoside/eoside/media/">
     <title>EOSIde install page</title>
 
     <style>
@@ -52,7 +52,7 @@
 </head>
 
 <body class="body">
-    <script nonce="${nonce}" src="${scriptUri}"></script>
+    <script nonce="QrcvvT66bwdMZdt7urVHvccUC80Usj6q" src="vscode-resource:/c%3A/Workspaces/EOS/eoside/eoside/media/install.js"></script>
 
     <div class="row">
         <div style="float:left">
@@ -68,8 +68,30 @@
                 font-size: 20px;
             ">Checklist
         </p>
-        ${checkList}
+        <li><em>Windows Subsystem Linux</em> version 4.3 detected.</li>
+<li><em>Python 3.5.2
+</em> detected.</li>
+<li><em>eosfactory</em> package detected.</li>
+<li><em>eoside</em> package detected.</li>
+<li><em>EOSFactory</em> configuration file detected</li>
+<li>Configuration file is C:\Workspaces\EOS\eosfactory\config.json</li>
+<li><em>WSL</em> root directory detected.<br></li>
+
+<p 
+    style="
+    color: unset;
+    font-size: 20px;
+    ">Smart Contract Workspace
+</p>
+<p>
+    <button 
+        class="btn"; 
+        id="changeWorkspace"; 
+        title="changeWorkspace">change</button>
+    C:WorkspacesEOScontracts
+</p>
+
     </div> 
 </body>
 
-</html>
+</html>"
