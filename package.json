@@ -30,8 +30,7 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/node": "^10.5.2",
-    "typescript": "^2.9.2"
+    "@types/node": "^10.5.2"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "bugs": {
@@ -51,30 +50,29 @@
     "ms-vscode.cpptools"
   ],
   "homepage": "https://github.com/tokenika/eoside/master/README.md",
-
   "contributes": {
     "configuration": {
       "type": "object",
       "title": "EOSIde configuration",
       "properties": {
-          "eoside.startWithEosIde": {
-              "type": "boolean",
-              "default": true,
-              "description": "If Explorer is empty, start with the EOSIde 'Get Started Page' view."
-          },
-          "eoside.menu": {
-              "type": "boolean",
-              "default": true,
-              "description": "Show EOSIde editor-title menu items."
-          }            
+        "eoside.startWithEosIde": {
+          "type": "boolean",
+          "default": true,
+          "description": "If Explorer is empty, start with the EOSIde 'Get Started Page' view."
+        },
+        "eoside.menu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show EOSIde editor-title menu items."
+        }
       }
-  },
+    },
     "commands": [
       {
         "command": "eoside.Install",
         "title": "Install",
         "category": "EOSIde"
-      },      
+      },
       {
         "command": "eoside.EOSIde",
         "title": "| EOS IDE |",
@@ -84,8 +82,7 @@
         "command": "eoside.Setup",
         "title": "| Setup |",
         "category": "EOSIde"
-      }
-      ,
+      },
       {
         "command": "eoside.Compile",
         "title": "compile",
@@ -125,7 +122,7 @@
           "command": "eoside.Setup",
           "group": "navigation",
           "when": "config.eoside.menu"
-        }        
+        }
       ]
     }
   }

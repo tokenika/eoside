@@ -1,6 +1,5 @@
 
 vscode_ext/node_modules
-package-lock.json
 vscode_ext/.vscode
 vscode_ext/out
 vscode_ext/media/*.png
@@ -10,10 +9,12 @@ vscode_ext/test1.html
 webview-sample/node_modules/
 vscode_ext/recent.json
 .build
+
 node_modules
-out/src/extension.js.map
+package-lock.json
 *.vsix
 out
+
 docs/build/doctrees
 !docs/build/html
 recent.json

@@ -6,11 +6,20 @@ import * as def from './definitions'
 
 export var config: any = undefined
 export const PYTHON: string = "python3"
-const ERROR_COLOR = "indianred"
+
 const WSL_VERSION_MIN = "4.3"
+const ERROR_COLOR = "indianred"
+const HEADER_SIZE = "20px"
+
+const FIND_WSL = "findWsl"
+const CHANGE_WORKSPACE = "changeWorkspace"
+const EOS_REPOSITORY = "eosRepository"
+const CONFIGURATION = "configuration"
+const START_WITH_EOSIDE = "startWithEosIde"
+const MENU = "menu"
 
 export var isError = false
-var checkList = ""
+var htmlBody = checklistHeader()
 
 function errorConditions(){
     const spawn = require("child_process").spawnSync;
@@ -129,22 +138,33 @@ EOSIde cannot do without it.`)
             conditionMsg(`<em>EOS</em> repository detected.<br>`)
         } 
     }
-    passed(def.wslMapLinuxWindows(config["EOSIO_CONTRACT_WORKSPACE"]))
+    passed()
+}
+
+
+function checklistHeader(){
+    return `    
+<p 
+    style="
+        color: unset;
+        font-size: ${HEADER_SIZE};
+    ">Checklist
+</p>`
 }
 
 
 function conditionMsg(msg:string){
-    checkList += `<li>${msg}</li>\n`
+    htmlBody += `<li>${msg}</li>\n`
 }
 
 
 function errorMsg(msg:string){
-    checkList += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
+    htmlBody += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
 }
 
 
 function setWslRoot(){
-    checkList += 
+    htmlBody += 
 `
 <p>
 You can indicate the WSL root in your system. Click the button below to open
@@ -153,8 +173,8 @@ file dialog. Then navigate to a directory containing the Ubuntu file system.
 <p>
     <button 
         class="btn"; 
-        id="findWsl"; 
-        title="findWsl">find WSL root
+        id="${FIND_WSL}"; 
+        title="${FIND_WSL}">find WSL root
     </button>
 </p>
 `
@@ -162,7 +182,7 @@ file dialog. Then navigate to a directory containing the Ubuntu file system.
 
 
 function setEosRepository(){
-    checkList += 
+    htmlBody += 
 `
 <p>
 You can indicate the EOS repository in your system. Click the button below to 
@@ -171,29 +191,57 @@ open file dialog. Then navigate to the repository's folder.
 <p>
     <button 
         class="btn"; 
-        id="eosRepository"; 
-        title="eosRepository">find WSL root
+        id="${EOS_REPOSITORY}"; 
+        title="${EOS_REPOSITORY}">find WSL root
     </button>
 </p>
 `
 }
 
 
-function passed(workspace:string){
-    checkList += 
+function passed(){
+    htmlBody += 
 `
 <p 
-    style="
-    color: unset;
-    font-size: 20px;
-    ">Smart Contract Workspace
+        style="
+        color: unset;
+        font-size: ${HEADER_SIZE};">
+    Smart Contract Workspace
 </p>
 <p>
     <button 
-        class="btn"; 
-        id="changeWorkspace"; 
-        title="changeWorkspace">change</button>
-    ${workspace}
+            class="btn"; 
+            id="${CHANGE_WORKSPACE}"; 
+            title="${CHANGE_WORKSPACE}">
+        change
+    </button>
+    ${def.wslMapLinuxWindows(config["EOSIO_CONTRACT_WORKSPACE"])}
+</p>
+
+<p 
+        style="
+        color: unset;
+        font-size: ${HEADER_SIZE};">
+    Configuration
+</p>
+<p>
+    <button 
+            class="btn"; 
+            id="${START_WITH_EOSIDE}"; 
+            title="${CONFIGURATION}">
+        toggle
+    </button>
+    startWithEosIde = ${vscode.workspace.getConfiguration()
+                                                    .eoside.startWithEosIde}
+</p>
+<p>
+    <button 
+            class="btn"; 
+            id="${MENU}"; 
+            title="${CONFIGURATION}">
+        toggle
+    </button>
+    menu = ${vscode.workspace.getConfiguration().eoside.menu}
 </p>
 `
 }
@@ -249,66 +297,41 @@ export default class InstallPanel extends def.Panel {
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
-                case "findWsl":
-                    {
-                        let defaultUri = process.env.appdata
-                        defaultUri = defaultUri ? defaultUri: ""
+                case FIND_WSL: {
+                    let defaultUri = process.env.appdata
+                    defaultUri = defaultUri ? defaultUri: ""
 
-                        vscode.window.showOpenDialog({
-                            canSelectMany: false,
-                            canSelectFiles: false,
-                            canSelectFolders: true,
-                            defaultUri: vscode.Uri.file(defaultUri),
-                            openLabel: 'Open'
-                        }).then(fileUri => {
-                            let root = ""
-                            if (fileUri && fileUri[0]) {
-                                root = fileUri[0].fsPath
-                                if(fs.existsSync(path.join(root, "home"))){
-                                    config["WSL_ROOT"] = root
-                                    if(def.writeJson(
-                                            config["CONFIG_FILE"], config)){
-                                        this.update()
-                                    }
-                                } else {
-                                    vscode.window.showErrorMessage(
+                    vscode.window.showOpenDialog({
+                        canSelectMany: false,
+                        canSelectFiles: false,
+                        canSelectFolders: true,
+                        defaultUri: vscode.Uri.file(defaultUri),
+                        openLabel: 'Open'
+                    }).then(fileUri => {
+                        let root = ""
+                        if (fileUri && fileUri[0]) {
+                            root = fileUri[0].fsPath
+                            if(fs.existsSync(path.join(root, "home"))){
+                                config["WSL_ROOT"] = root
+                                if(def.writeJson(
+                                        config["CONFIG_FILE"], config)){
+                                    this.update()
+                                }
+                            } else {
+                                vscode.window.showErrorMessage(
 `The selected directory 
 ${root}
 is not like the root of an Ubuntu file system as it
 misses the 'home' directory.
 `)
-                                }
                             }
-                        })
-                    }   
+                        }
+                    })
                     break
-                case "changeWorkspace":
-                    {
-                        let defaultUri = def.wslMapLinuxWindows(
-                                            config["EOSIO_CONTRACT_WORKSPACE"])
-
-                        vscode.window.showOpenDialog({
-                            canSelectMany: false,
-                            canSelectFiles: false,
-                            canSelectFolders: true,
-                            defaultUri: vscode.Uri.file(defaultUri),
-                            openLabel: 'Open'
-                        }).then(fileUri => {
-                            if (fileUri && fileUri[0]) {
-                                config["EOSIO_CONTRACT_WORKSPACE"] 
-                                    = def.wslMapWindowsLinux(fileUri[0].fsPath)
-                                if(!def.writeJson(
-                                            config["CONFIG_FILE"], config)){
-                                        this.update()
-                                } 
-                            }
-                        })
-                    }
-                    break
-                case "eosRepository":
-                {
-                    let defaultUri = def.IS_WINDOWS 
-                        ? "": "/home"
+                }   
+                case CHANGE_WORKSPACE:{
+                    let defaultUri = def.wslMapLinuxWindows(
+                                        config["EOSIO_CONTRACT_WORKSPACE"])
 
                     vscode.window.showOpenDialog({
                         canSelectMany: false,
@@ -318,7 +341,7 @@ misses the 'home' directory.
                         openLabel: 'Open'
                     }).then(fileUri => {
                         if (fileUri && fileUri[0]) {
-                            config["EOSIO_SOURCE_DIR"] 
+                            config["EOSIO_CONTRACT_WORKSPACE"] 
                                 = def.wslMapWindowsLinux(fileUri[0].fsPath)
                             if(!def.writeJson(
                                         config["CONFIG_FILE"], config)){
@@ -326,8 +349,49 @@ misses the 'home' directory.
                             } 
                         }
                     })
+                    break
                 }
-                break                                    
+                case EOS_REPOSITORY: {
+                        let defaultUri = def.IS_WINDOWS 
+                            ? "": "/home"
+
+                        vscode.window.showOpenDialog({
+                            canSelectMany: false,
+                            canSelectFiles: false,
+                            canSelectFolders: true,
+                            defaultUri: vscode.Uri.file(defaultUri),
+                            openLabel: 'Open'
+                        }).then(fileUri => {
+                            if (fileUri && fileUri[0]) {
+                                config["EOSIO_SOURCE_DIR"] 
+                                    = def.wslMapWindowsLinux(fileUri[0].fsPath)
+                                if(!def.writeJson(
+                                            config["CONFIG_FILE"], config)){
+                                        this.update()
+                                } 
+                            }
+                        })
+                    break    
+                }
+                case CONFIGURATION: {
+                    switch (message.id) {
+                        case START_WITH_EOSIDE: {
+                            vscode.workspace.getConfiguration()
+                                .update("eoside.startWithEosIde",!vscode.workspace.getConfiguration()
+                                    .eoside.startWithEosIde)
+                                    .then(() => {this.update()})
+                            break
+                        }
+                        case MENU: {
+                            vscode.workspace.getConfiguration()
+                                .update("eoside.menu", !vscode.workspace
+                                .getConfiguration().eoside.menu)
+                                .then(() => {this.update()})
+                            break
+                        }
+                    }
+                    break
+                }
             }
         }, null, this._disposables)
     }
@@ -338,7 +402,7 @@ misses the 'home' directory.
     }
 
     public update(){
-        checkList = ""
+        htmlBody = checklistHeader()
         errorConditions()
         this._panel.webview.html = this._getHtmlForWebview();
     }
@@ -367,7 +431,7 @@ misses the 'home' directory.
                             .replace(/\$\{nonce\}/gi, def.getNonce())
                             .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
                             .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
-                            .replace(/\$\{checkList\}/gi, checkList)                      
+                            .replace(/\$\{htmlBody\}/gi, htmlBody)                      
         return html
     }
 }

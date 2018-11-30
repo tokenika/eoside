@@ -1,4 +1,7 @@
 {
     "typescript.tsc.autoDetect": "off",
-    "editor.wordWrap": "on"
+    "editor.wordWrap": "on",
+    "files.associations": {
+        "iosfwd": "cpp"
+    }
 }
