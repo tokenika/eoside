@@ -166,15 +166,20 @@ class Templates {
         }
         vscode.window.showOpenDialog(options).then(fileUri => {
             if (fileUri && fileUri[0]) {
+
                 let templateDir = vscode.Uri.file(path.join(
                     this._extensionPath, 
                     TEMPLATE_DIR, templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
+
                 let cl = 'python3 -m eosfactory.core.create_project '                  
                     + `\\"${fileUri[0].fsPath}\\" \\"${templateDir}\\" ` 
                     + `--c_cpp_prop \\"${path.join(
                         this._extensionPath, ".vscode", 
-                        "c_cpp_properties.json")}\\" --silent`
+                        "c_cpp_properties.json")}\\" ` 
+                    + `--include \\"${eosideInclude()}\\" `
+                    + `--libs \\"${eosideLibs()}\\" `
+                    + `--silent `
 
                 def.callEosfactory(cl, (stdout:string) =>{
                     Recent.createOrGet(
@@ -299,4 +304,33 @@ class Recent {
         this.list.push(projectPath)
         def.writeJson(this._file, this.list)
     }
+}
+
+
+export function eosideInclude(){
+    if(!GetStartedPanel.currentPanel)
+        return ""
+    return def.javaPath(
+            path.join(GetStartedPanel.currentPanel._extensionPath, "include"))
+}
+
+
+export function eosideLibs(){
+    if(!GetStartedPanel.currentPanel)
+        return
+
+    const walkSync = (dir:string, filelist:string[] = []) => {
+        fs.readdirSync(dir).forEach(file => {
+        
+            filelist = fs.statSync(path.join(dir, file)).isDirectory()
+                ? walkSync(path.join(dir, file), filelist)
+                : filelist.concat(
+                                def.javaPath(path.join(dir, file)));
+        
+        });
+        return filelist;
+        }
+
+    return walkSync(path.join(
+                    GetStartedPanel.currentPanel._extensionPath, "libs")).join(", ")
 }

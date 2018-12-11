@@ -134,6 +134,7 @@ export function callEosfactory(cl:string, result:Function){
         )
 }
 
+
 export function wslMapLinuxWindows(path:string){
     if(!IS_WINDOWS){
         return path
@@ -145,6 +146,7 @@ export function wslMapLinuxWindows(path:string){
     return path.replace(/\//gi, "\\")
 }
 
+
 export function wslMapWindowsLinux(path:string){
     if(!IS_WINDOWS){
         return path
@@ -155,6 +157,12 @@ export function wslMapWindowsLinux(path:string){
     path = path.replace(/\\/gi, "/")
     let drive = path[0]
     return path.replace(`${drive}:/`, `/mnt/${drive.toLowerCase()}/`)
+}
+
+
+export function javaPath(path:string){
+    path = path.replace(/\\/gi, "/")
+    return path.replace(path[0], path[0].toUpperCase())
 }
 
 

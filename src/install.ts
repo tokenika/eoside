@@ -6,6 +6,7 @@ import * as def from './definitions'
 
 export var config: any = undefined
 export const PYTHON: string = "python3"
+export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
 const ERROR_COLOR = "indianred"
@@ -23,6 +24,7 @@ var htmlBody = checklistHeader()
 
 function errorConditions(){
     const spawn = require("child_process").spawnSync;
+
     if(def.IS_WINDOWS){
         const process = spawn("bash.exe", ["--version"])
         let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
@@ -46,6 +48,7 @@ EOSIde cannot do without proper WSL.`)
             return
         }        
     }
+
     {
         const process = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${PYTHON} -V`])
@@ -70,6 +73,32 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             return
         }
     }
+
+    {
+        const process = def.IS_WINDOWS 
+            ? spawn("bash.exe", ["-c", `${PIP} -V`])
+            : spawn(`${PIP}`, ["-V"])
+        if(!process.status){
+            conditionMsg(
+`<em>${process.stdout}</em> detected.`)
+        } else{
+            let msg = 
+`It seams that <em>${PIP}</em> is not in the System, as the 
+<em>python3</em> executable is not in the System path.<br>
+EOSIde cannot do without <em>${PIP}</em>.`
+
+            if(def.IS_WINDOWS){
+                msg +=
+`
+<br>
+Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
+            }
+            errorMsg(msg)
+            isError = true
+            return
+        }
+    }
+
     {
         let cl = `${PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
@@ -125,18 +154,6 @@ EOSIde cannot do without it.`)
                 conditionMsg(`<em>WSL</em> root directory detected.<br>`)
             } 
         }        
-    }
-    {
-        if(!config["EOSIO_SOURCE_DIR"]){
-            errorMsg(
-`Cannot determine the repository of <em>EOS</em>.<br>
-EOSIde cannot do without it.`)
-            setEosRepository()
-            isError = true
-            return
-        } else {
-            conditionMsg(`<em>EOS</em> repository detected.<br>`)
-        } 
     }
     passed()
 }

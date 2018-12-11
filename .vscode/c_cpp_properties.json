@@ -3,25 +3,21 @@
     "configurations": [
         {
             "includePath": [
+                "${ROOT}/usr/local/eosio.cdt/include",
                 "${ROOT}/usr/local/eosio.cdt/include/eosiolib",
-                "${ROOT}/usr/local/eosio.cdt/include/boost",
                 "${ROOT}/usr/local/eosio.cdt/include/libc",
                 "${ROOT}/usr/local/eosio.cdt/include/libcxx",
                 "${workspaceFolder}"
             ],
-            "libs": [
-                "${ROOT}/usr/local/eosio.cdt/lib/libc.bc",
-                "${ROOT}/usr/local/eosio.cdt/lib/libc.bc++",
-                "${ROOT}/usr/local/eosio.cdt/lib/libeosio"
-            ],
+            "libs": [],
             "compilerOptions": [
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
+                    "${ROOT}/usr/local/eosio.cdt/include",
                     "${ROOT}/usr/local/eosio.cdt/include/eosiolib",
-                    "${ROOT}/usr/local/eosio.cdt/include/boost",
                     "${ROOT}/usr/local/eosio.cdt/include/libc",
                     "${ROOT}/usr/local/eosio.cdt/include/libcxx",
                     "${workspaceFolder}"

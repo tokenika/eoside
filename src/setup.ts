@@ -237,9 +237,7 @@ abstract class Dependencies {
                 return
             }
                 console.log('Selected file: ' + fileUri[0].fsPath)
-                path = fileUri[0].fsPath
-                path = path.replace(/\\/gi, "/")
-                path = path.replace(path[0], path[0].toUpperCase())
+                path = def.javaPath(fileUri[0].fsPath)
                 let list: string[] = []
                 let entries = this.getEntries()
                 index = index == -1 ? entries.length : index + 1
