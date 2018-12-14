@@ -158,8 +158,12 @@ export function build(){
     let terminalName = "build"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
-        let cl = `python3 -m eosfactory.core.build '${
-            vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+        let cl = 
+            'python3 -m eosfactory.core.build ' 
+            + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
+            + `'${path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath,
+                    ".vscode/c_cpp_properties.json")}' `
         terminal.sendText(cl)
     }      
 }

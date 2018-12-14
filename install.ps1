@@ -10,7 +10,7 @@ contracts by Tokenika.
 
 Write-Host "Checking the current directory ..."
 $workingDirectory = Convert-Path (Resolve-Path -path ".")
-If(![System.IO.File]::Exists("$workingDirectory\eoside\package.json")){
+If(![System.IO.File]::Exists("$workingDirectory\package.json")){
     Write-Host "
 # It needs to be executed from within  the 'eoside' folder. This condition 
 # seems unfulfilled as the command 'dir eoside\package.json' fails.
@@ -95,8 +95,6 @@ $root
         }
     }
 }
-
-cd .\eoside\
 
 $vsceVersion=$vsceVersion=npm list -g vsce
 If ($vsceVersion -contains "(empty)"){
