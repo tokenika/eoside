@@ -127,7 +127,7 @@ export function callEosfactory(cl:string, result:Function){
     ''))
             console.log('stderr is:' + stderr)            
         }
-        result(stdout)
+        result(stdout, stderr)
     }).on(
         'exit', 
         (errorCode:number) => {}

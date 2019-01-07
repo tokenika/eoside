@@ -172,7 +172,7 @@ class Templates {
                     TEMPLATE_DIR, templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
 
-                let cl = 'python3 -m eosfactory.core.create_project '                  
+                let cl = 'python3 -m eosfactory.utils.create_project '                  
                     + `\\"${fileUri[0].fsPath}\\" \\"${templateDir}\\" ` 
                     + `--c_cpp_prop \\"${path.join(
                         this._extensionPath, ".vscode", 
@@ -181,16 +181,18 @@ class Templates {
                     + `--libs \\"${eosideLibs()}\\" `
                     + `--silent `
 
-                def.callEosfactory(cl, (stdout:string) =>{
-                    Recent.createOrGet(
-                        this._extensionPath).add(fileUri[0].fsPath)
+                def.callEosfactory(cl, (stdout:string, stderr:string) =>{
+                    if(!stderr){
+                        Recent.createOrGet(
+                            this._extensionPath).add(fileUri[0].fsPath)
 
-                    var openFolder = async function(){
-                        return await vscode.commands.executeCommand(
-                            'vscode.openFolder', fileUri[0])
+                        var openFolder = async function(){
+                            return await vscode.commands.executeCommand(
+                                'vscode.openFolder', fileUri[0])
+                        }
+    // vscode.workspace.updateWorkspaceFolders(0, 0, {uri: fileUri[0]})
+                        openFolder()                        
                     }
-// vscode.workspace.updateWorkspaceFolders(0, 0, {uri: fileUri[0]})
-                    openFolder()
                 })                          
             }
         })
@@ -271,7 +273,9 @@ class Recent {
         
         this.list = []
         for(var i = 0; i < list.length; i++){
-            if(fs.existsSync(list[i]) && fs.lstatSync(list[i]).isDirectory()){
+            if(fs.existsSync(list[i]) 
+                    && fs.lstatSync(list[i]).isDirectory() 
+                    && this.list.indexOf(list[i]) == -1){
                 this.list.push(list[i])
             }
         }
@@ -301,8 +305,10 @@ class Recent {
     }
 
     public add(projectPath:string){
-        this.list.push(projectPath)
-        def.writeJson(this._file, this.list)
+        if(this.list.indexOf(projectPath) == -1){
+            this.list.push(projectPath)
+            def.writeJson(this._file, this.list)            
+        }
     }
 }
 

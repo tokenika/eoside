@@ -1,6 +1,6 @@
 # *EOSIde* -- Integrated Development Environment for EOSIO smart contracts
 
- With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+*EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization and bookkeeping,
 * referencing documentation and tutorials,
@@ -10,7 +10,26 @@
 * debugging and testing,
 * deployment.
 
-*EOSIde* bases on [Visual Studio Code](https://code.visualstudio.com/), extending specifically functionalities of the *VSCode*.
+*EOSIde* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
+
+## Project standardization and bookkeeping
+
+Any EOSIO smart contract resides in its folder. 
+EOSIde supports a specific layout of the contract folder:
+* **root** -- project folder,
+    * **.vscode** -- system folder
+    * **build** -- folder where contract WASM and ABI files go,
+    * **resources** -- folder containing Ricardian contract files and whatever else,
+    * **src** -- folder with CPP/C source files
+    * **tests** - folder with Python scripts, especially EOSFactory scripts
+    * **CMakeLists.txt*  - the CMake lists file of the project
+
+In the picture below, it is shown an exemplary project layout.
+
+![Get Started view](images/contract_folder.png)
+
+EOSIde can produce a new project. 
+
 
 ## Preview of the application
 
@@ -27,7 +46,7 @@ User interface of EOSIde is composed of two views: one is displayed -- with the 
 
 Another view is about the setup of the current EOSIO smart contract project. It is shown in the picture below.
 
-![Setup view](images/readme_images/setup.png)
+![Setup view](images/setup.png)
 
 * *Include* lists directories contain headers involved in the project. This list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from *ms-vscode.cpptools*. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
 * *Libs* lists libraries resolving outer dependencies of the project.
@@ -38,3 +57,4 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu, even if the system is Windows with WSL Ubuntu).
 
+![Setup view](images/install.png)

@@ -1,7 +1,5 @@
 [
-    ["Introduction to EOSFactory", 
-    "https://htmlpreview.github.io/?https://github.com/tokenika/eosfactory/blob/issue-91/Better-docs-formatting/docs/build/html/tutorials/00.IntroductionToEOSFactory.html"],
-    ["Building and Deploying EOS Contracts","https://htmlpreview.github.io/?https://github.com/tokenika/eosfactory/blob/issue-91/Better-docs-formatting/docs/build/html/tutorials/03.BuildingAndDeployingEOSContractsInEOSFactory.html"],
-    ["Interacting with Public Testnet","https://htmlpreview.github.io/?https://github.com/tokenika/eosfactory/blob/issue-91/Better-docs-formatting/docs/build/html/tutorials/05.InteractingWithPublicTestnet.html"],
-    ["EOSIde README", "https://htmlpreview.github.io/?https://raw.githubusercontent.com/tokenika/eoside/master/docs/build/html/README.html"]
+    ["Build first EOSIO smart contract in 5 minutes", "file:///C:/Workspaces/EOS/eoside/docs/_build/html/first_contract.html"],
+    ["Introduction to EOSIde", "file:///C:/Workspaces/EOS/eoside/docs/_build/html/intro.html"],
+    ["EOSFactory", "http://eosfactory.io/build/html/index.html"]
 ]

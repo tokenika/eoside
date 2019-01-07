@@ -10,7 +10,6 @@ Welcome to EOSIde documentation!
 `Tokenika <https://tokenika.io>`_, is an integrated development environment 
 for EOSIO smart-contracts.
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -18,7 +17,8 @@ for EOSIO smart-contracts.
 .. toctree::
     :maxdepth: 1
 
-    README
+    intro
+    first_contract
 
 Indices and tables
 ==================
