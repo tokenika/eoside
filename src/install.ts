@@ -124,7 +124,7 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
         }
     }
     {
-        let cl = `${PYTHON} -m eosfactory.core.config`
+        let cl = `${PYTHON} -m eosfactory.core.config --json`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`

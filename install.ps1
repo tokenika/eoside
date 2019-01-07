@@ -110,8 +110,6 @@ $vsixFiles=Get-ChildItem .\*.vsix
 #       Use `--force` argument to avoid prompts.
 code --install-extension $vsixFiles[0]
 
-cd ..
-
 Write-Host "
          ______   ____    _____  _  _____   ______  
         |  ____| / __ \  / ____|| ||  __ \ |  ____| 

@@ -16,7 +16,7 @@
 
 User interface of EOSIde is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
 
-![Get Started view](https://github.com/tokenika/eoside/raw/master/docs/readme_images/get_started.png)
+![Get Started view](docs/images/get_started.png)
 
 * *Get Started* entries link to tutorials and other documentation.
 * *New project* entries trigger creation of template projects.
@@ -27,7 +27,7 @@ User interface of EOSIde is composed of two views: one is displayed -- with the 
 
 Another view is about the setup of the current EOSIO smart contract project. It is shown in the picture below.
 
-![Setup view](https://github.com/tokenika/eoside/raw/master/docs/readme_images/setup.png)
+![Setup view](docs/images/setup.png)
 
 * *Include* lists directories contain headers involved in the project. This list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from *ms-vscode.cpptools*. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
 * *Libs* lists libraries resolving outer dependencies of the project.
@@ -36,5 +36,7 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 ## Installation
 
-EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the System. Also, it needs *python3* (Ubuntu, even if System is Windows with WSL Ubuntu).
+EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu Python, even if the system is Windows with WSL Ubuntu).
+
+![Setup view](docs/images/install.png)
 
