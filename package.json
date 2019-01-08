@@ -101,6 +101,11 @@
     ],
     "keybindings": [
       {
+        "command": "eoside.bash",
+        "key": "ctrl+shift+t",
+        "mac": "cmd++shift+t"
+      },
+      {
         "command": "eoside.Compile",
         "key": "ctrl+shift+c",
         "mac": "cmd++shift+c"

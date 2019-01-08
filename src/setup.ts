@@ -147,8 +147,14 @@ export function compile(){
     let terminalName = "compile"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
-        let cl = `python3 -m eosfactory.core.build '${
-    vscode.workspace.workspaceFolders[0].uri.fsPath}' --compile`
+        let cl = 
+            'python3 -m eosfactory.utils.build ' 
+            + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
+            + `--c_cpp_prop `
+            + `'${path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath,
+                    ".vscode/c_cpp_properties.json")}' `
+            + ' --compile'
         terminal.sendText(cl)
     }    
 }
@@ -159,8 +165,9 @@ export function build(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.core.build ' 
+            'python3 -m eosfactory.utils.build ' 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
+            + `--c_cpp_prop `
             + `'${path.join(
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}' `

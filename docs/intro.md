@@ -2,11 +2,12 @@
 
 *EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
-* project standardization and bookkeeping,
+* project standardization,
+* easy access to a project store,
 * referencing documentation and tutorials,
 * automatic availability of standard libraries,
 * dependency management,
-* compilation and build,
+* compilation and building,
 * debugging and testing,
 * deployment.
 
@@ -20,13 +21,13 @@ If the EOSIde extension is installed -- with the default configuration -- on the
 
 Let us list the functions of this view, 
 
-* *Get Started* entries link to tutorials and other documentation.
-* *New project* entries trigger creation of template projects.
-* *Recent* entries switch to projects started with the *New project* triggers.
-* *Open* entries trigger specific actions.
+* **Get Started** entries link to tutorials and other documentation.
+* **New project** entries trigger creation of a project based on a template.
+* **Recent** entries switch to projects started with the *New project* triggers.
+* **Open** entries trigger specific actions.
 * Two menu buttons in the editor title bar, namely `|EOS IDE|` and `|Setup|` display corresponding views.
 
-## Project standardization and bookkeeping
+## Project standardization
 
 Any EOSIO smart contract resides in its folder. 
 EOSIde supports a specific layout of the contract folder:
@@ -50,7 +51,45 @@ A native folder chooser opens. Create a folder named as the new project. Select 
 
 ![Recent list](images/recent_list.png)
 
-## Referencing documentation and tutorials
+## Compile and build
+
+### Compile and build using VSCode tasks
+
+With the VSCode main menu: 
+* **To build (shortcut: ctrl+shift+b):** Terminal => Run Build Task...
+* **To compile only (shortcut: ctrl+shift+c):** Terminal => Run Task... => Compile
+
+In the picture below, it is shown the task selection dialog:
+
+![Build task](images/build_task.png)
+
+### Compile and build using CMake
+
+In the Ubuntu bash terminal, do ...
+
+```bash
+cd build
+cmake ..
+make
+```
+
+... you can expect a response like the following:
+```bash
+cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token$ cd buildcartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$ cmake ..
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/c/Workspaces/EOS/contracts/token/build
+cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$ make
+Scanning dependencies of target abi
+ABI file writen to file:
+    /mnt/c/Workspaces/EOS/contracts/token/build/token.abi
+Built target abi
+Scanning dependencies of target wast
+WASM file writen to file:
+    /mnt/c/Workspaces/EOS/contracts/token/build/token.wasm
+Built target wast
+cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$
+```
 
 ## Preview of the application
 
