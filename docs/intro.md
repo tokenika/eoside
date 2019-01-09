@@ -3,7 +3,7 @@
 *EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization,
-* easy access to a project store,
+* easy access to an project archive,
 * referencing documentation and tutorials,
 * automatic availability of standard libraries,
 * dependency management,
@@ -51,21 +51,46 @@ A native folder chooser opens. Create a folder named as the new project. Select 
 
 ![Recent list](images/recent_list.png)
 
+## Dependency management
+
+Dependency management is implemented with the view shown in the following picture.
+
+![Setup view](images/setup.png)
+
+* *Include* lists directories containg headers needed by the project. This list is linked to the file *.vscode/c_cpp_properties.json*. The entries are provided with buttons that manipulate them, especially, new items may be added with the system-native file dialog. With *Windows*, all file paths are expressed relative to the *WSL root* (Windows Subsystem Linux).
+* *Libs* lists libraries resolving outer dependencies of the project.
+* *Compiler Options* lists parameters of the wasm compiler.
+* The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal.
+
 ## Compile and build
 
-### Compile and build using VSCode tasks
+Compiling does not produce contract files, its purpose is to check whether the source code of the contract is compilable, and if not, to see the error log.
 
-With the VSCode main menu: 
-* **To build (shortcut: ctrl+shift+b):** Terminal => Run Build Task...
-* **To compile only (shortcut: ctrl+shift+c):** Terminal => Run Task... => Compile
+Building results in ABI and WASM files.
+
+Compilation depends on project dependencies like included headers and linked libraries. The dependencies registered to the project, as it is [explained](#Dependency-management), are automatically involved into the presented compilation methods.
+
+### VSCode style: compile and build with VSCode tasks and commands
+
+Compile:
+* **vscode task:** Terminal => Run Task... => Compile
+* **vscode command:** ctrl+shift+p => eosid compile
+* **keybord shortcut:** ctrl+shift+c
+
+Build:
+* **vscode task:** Terminal => Run Build Task...
+* **vscode command:** ctrl+shift+p => eosid build
+* **keybord shortcut:** ctrl+shift+b
 
 In the picture below, it is shown the task selection dialog:
 
 ![Build task](images/build_task.png)
 
-### Compile and build using CMake
+### Build using CMake
 
-In the Ubuntu bash terminal, do ...
+If your computer system is Windows, the default terminal of the VSCode is Powershell, while the CMake operations have to be executed with Ubuntu bash, therefore use ctrl+shift+t shortcut to a vscode command that opens a new Ubuntu bash terminal. Or issue the command `bash` in the Powershell terminal.
+
+In the Ubuntu bash terminal, do...
 
 ```bash
 cd build
@@ -73,7 +98,8 @@ cmake ..
 make
 ```
 
-... you can expect a response like the following:
+...you can expect a response like the following:
+
 ```bash
 cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token$ cd buildcartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$ cmake ..
 -- Configuring done
@@ -91,19 +117,34 @@ Built target wast
 cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$
 ```
 
-## Preview of the application
+## Build with EOSFactory
 
+If your computer system is Windows, see [note](#Compile-and-build-using-CMake).
 
+You can build a contract programmatically in a Python module. Here we present the idea with an interactive session. Start the session and, then, use EOSFactory:
 
+```bash
+python3
+```
 
-Another view is about the setup of the current EOSIO smart contract project. It is shown in the picture below.
+```python
+from eosfactory.eosf import ContractBuilder
+ContractBuilder().build()
+```
 
-![Setup view](images/setup.png)
+Here is an exemplary listing of the bash action:
 
-* *Include* lists directories contain headers involved in the project. This list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from *ms-vscode.cpptools*. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
-* *Libs* lists libraries resolving outer dependencies of the project.
-* *Compiler Options* lists parameters of the wasm compiler.
-* The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal. All this actions can be invoked with keyboard shortcuts or with extension commands.
+```bash
+Python 3.5.2 (default, Nov 23 2017, 16:37:01)
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from eosfactory.eosf import ContractBuilder
+>>> ContractBuilder().build()
+ABI file writen to file:
+    /mnt/c/Workspaces/EOS/contracts/token/build/token.abi
+WASM file writen to file:
+    /mnt/c/Workspaces/EOS/contracts/token/build/token.wasm
+```
 
 ## Installation
 
