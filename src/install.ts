@@ -5,12 +5,11 @@ import fs = require('fs')
 import * as def from './definitions'
 
 export var config: any = undefined
-export const PYTHON: string = "python3"
+export const PYTHON: string = "python"
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
 const ERROR_COLOR = "indianred"
-const HEADER_SIZE = "20px"
 
 const FIND_WSL = "findWsl"
 const CHANGE_WORKSPACE = "changeWorkspace"
@@ -20,10 +19,11 @@ const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
 
 export var isError = false
-var htmlBody = checklistHeader()
+var htmlBody: any = undefined
 
 function errorConditions(){
     const spawn = require("child_process").spawnSync;
+    htmlBody = ''
 
     if(def.IS_WINDOWS){
         const process = spawn("bash.exe", ["--version"])
@@ -51,16 +51,16 @@ EOSIde cannot do without proper WSL.`)
 
     {
         const process = def.IS_WINDOWS 
-            ? spawn("bash.exe", ["-c", `${PYTHON} -V`])
-            : spawn(`${PYTHON}`, ["-V"])
+            ? spawn("bash.exe", ['-c', `${exports.PYTHON}`, '-V'])
+            : spawn(`${exports.PYTHON}`, ["-V"])
         if(!process.status){
             conditionMsg(
 `<em>${process.stdout}</em> detected.`)
         } else{
             let msg = 
-`It seams that <em>${PYTHON}</em> is not in the System, as the 
+`It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
-EOSIde cannot do without <em>${PYTHON}</em>.`
+EOSIde cannot do without <em>${exports.PYTHON}</em>.`
 
             if(def.IS_WINDOWS){
                 msg +=
@@ -76,16 +76,16 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
 
     {
         const process = def.IS_WINDOWS 
-            ? spawn("bash.exe", ["-c", `${PIP} -V`])
-            : spawn(`${PIP}`, ["-V"])
+            ? spawn("bash.exe", ["-c", `${exports.PIP} -V`])
+            : spawn(`${exports.PIP}`, ["-V"])
         if(!process.status){
             conditionMsg(
 `<em>${process.stdout}</em> detected.`)
         } else{
             let msg = 
-`It seams that <em>${PIP}</em> is not in the System, as the 
+`It seams that <em>${exports.PIP}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
-EOSIde cannot do without <em>${PIP}</em>.`
+EOSIde cannot do without <em>${exports.PIP}</em>.`
 
             if(def.IS_WINDOWS){
                 msg +=
@@ -100,7 +100,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
     }
 
     {
-        let cl = `${PYTHON} -c 'import eosfactory'`
+        let cl = `${exports.PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
@@ -124,7 +124,7 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
         }
     }
     {
-        let cl = `${PYTHON} -m eosfactory.core.config --json`
+        let cl = `${exports.PYTHON} -m eosfactory.config --json`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
@@ -138,12 +138,12 @@ file cannot be found.`)
             isError = true
             return
         }
-        config = JSON.parse(process.stdout)
+        exports.config = JSON.parse(process.stdout)
         conditionMsg(
-`Configuration file is ${def.wslMapLinuxWindows(config["CONFIG_FILE"])}`)
+`Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
 
         if(def.IS_WINDOWS){
-            if(!config["WSL_ROOT"] && !writeRoot()){
+            if(!exports.config["WSL_ROOT"] && !writeRoot()){
                 errorMsg(
 `Cannot determine the root of the WSL.<br>
 EOSIde cannot do without it.`)
@@ -156,17 +156,6 @@ EOSIde cannot do without it.`)
         }        
     }
     passed()
-}
-
-
-function checklistHeader(){
-    return `    
-<p 
-    style="
-        color: unset;
-        font-size: ${HEADER_SIZE};
-    ">Checklist
-</p>`
 }
 
 
@@ -222,8 +211,8 @@ function passed(){
 <p 
         style="
         color: unset;
-        font-size: ${HEADER_SIZE};">
-    Smart Contract Workspace
+        font-size: ${def.HEADER_SIZE};">
+    Contract Workspace
 </p>
 <p>
     <button 
@@ -232,13 +221,13 @@ function passed(){
             title="${CHANGE_WORKSPACE}">
         change
     </button>
-    ${def.wslMapLinuxWindows(config["EOSIO_CONTRACT_WORKSPACE"])}
+    ${def.wslMapLinuxWindows(exports.config["EOSIO_CONTRACT_WORKSPACE"])}
 </p>
 
 <p 
         style="
         color: unset;
-        font-size: ${HEADER_SIZE};">
+        font-size: ${def.HEADER_SIZE};">
     Configuration
 </p>
 <p>
@@ -272,7 +261,7 @@ export default class InstallPanel extends def.Panel {
     public static readonly viewType = "Install"
 
     public static createOrShow(extensionPath: string) {
-        if(def.IS_WINDOWS && (!config || !root())){
+        if(def.IS_WINDOWS && (!exports.config || !root())){
             // In Windows and Linux Subsystem is not installed
         }
 
@@ -329,9 +318,10 @@ export default class InstallPanel extends def.Panel {
                         if (fileUri && fileUri[0]) {
                             root = fileUri[0].fsPath
                             if(fs.existsSync(path.join(root, "home"))){
-                                config["WSL_ROOT"] = root
+                                exports.config["WSL_ROOT"] = root
                                 if(def.writeJson(
-                                        config["CONFIG_FILE"], config)){
+                                                exports.config["CONFIG_FILE"], 
+                                                exports.config)){
                                     this.update()
                                 }
                             } else {
@@ -348,7 +338,7 @@ misses the 'home' directory.
                 }   
                 case CHANGE_WORKSPACE:{
                     let defaultUri = def.wslMapLinuxWindows(
-                                        config["EOSIO_CONTRACT_WORKSPACE"])
+                                   exports.config["EOSIO_CONTRACT_WORKSPACE"])
 
                     vscode.window.showOpenDialog({
                         canSelectMany: false,
@@ -358,10 +348,10 @@ misses the 'home' directory.
                         openLabel: 'Open'
                     }).then(fileUri => {
                         if (fileUri && fileUri[0]) {
-                            config["EOSIO_CONTRACT_WORKSPACE"] 
+                            exports.config["EOSIO_CONTRACT_WORKSPACE"] 
                                 = def.wslMapWindowsLinux(fileUri[0].fsPath)
                             if(!def.writeJson(
-                                        config["CONFIG_FILE"], config)){
+                                exports.config["CONFIG_FILE"], exports.config)){
                                     this.update()
                             } 
                         }
@@ -380,10 +370,11 @@ misses the 'home' directory.
                             openLabel: 'Open'
                         }).then(fileUri => {
                             if (fileUri && fileUri[0]) {
-                                config["EOSIO_SOURCE_DIR"] 
+                                exports.config["EOSIO_SOURCE_DIR"] 
                                     = def.wslMapWindowsLinux(fileUri[0].fsPath)
                                 if(!def.writeJson(
-                                            config["CONFIG_FILE"], config)){
+                                    exports.config["CONFIG_FILE"], 
+                                                            exports.config)){
                                         this.update()
                                 } 
                             }
@@ -419,7 +410,7 @@ misses the 'home' directory.
     }
 
     public update(){
-        htmlBody = checklistHeader()
+        htmlBody = ''
         errorConditions()
         this._panel.webview.html = this._getHtmlForWebview();
     }
@@ -454,8 +445,8 @@ misses the 'home' directory.
 }
 
 export function root(){
-    if(config){
-        return config["WSL_ROOT"]
+    if(exports.config){
+        return exports.config["WSL_ROOT"]
     }
     return ""
 }
@@ -485,8 +476,8 @@ export function writeRoot(){
             return -1
         }
     }
-    config["WSL_ROOT"] = `${basePath}`//\\home\\${user}`
-    return def.writeJson(config["CONFIG_FILE"], config)
+    exports.config["WSL_ROOT"] = `${basePath}`//\\home\\${user}`
+    return def.writeJson(exports.config["CONFIG_FILE"], exports.config)
 }
 
 errorConditions()

@@ -14,12 +14,12 @@ window.addEventListener(
         
         clickables =  document.getElementsByClassName("btn");
         for(var i = 0; i < clickables.length; i++){
-            clickables[i].onclick = clickableOnclick
+            clickables[i].onmouseup = clickableOnclick
         }
 
         clickables =  document.getElementsByClassName("ctr");
         for(var i = 0; i < clickables.length; i++){
-            clickables[i].onclick = clickableOnclick
+            clickables[i].onmouseup = clickableOnclick
         }        
     }
 );   

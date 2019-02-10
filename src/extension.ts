@@ -48,11 +48,17 @@ export function activate(context: vscode.ExtensionContext) {
     ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.Deploy', () => {
+            setup.deploy()
+        }
+    )) 
+
+    context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.bash', () => {
             setup.bash()
         }
-    ))    
-
+    ))
+       
     GetStartedPanel.createOrShow(context.extensionPath)
 
 }

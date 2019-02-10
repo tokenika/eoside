@@ -5,6 +5,7 @@ import fs = require('fs')
 export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
 export const SHELL_PATH = "bash.exe"
+export const HEADER_SIZE = "20px"
 
 export abstract class Panel{
     public readonly _extensionPath: string
@@ -47,7 +48,7 @@ export function writeJson(file:string, json:Object){
         fs.writeFileSync(file, JSON.stringify(json, undefined, 4))
     } catch(err){
         vscode.window.showErrorMessage(
-`Cannot write to the config file of EOSFactory. The path tried is
+`Cannot write. The path tried is
 ${file}.
 Error message is
 ${err}`)
@@ -57,8 +58,7 @@ ${err}`)
 }
 
 
-export function getTerminal(
-        name: string, showTerminal=false, reset=false){
+export function getTerminal(name: string, showTerminal=false, reset=false){
     if(reset){
         for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
             let terminal = (<any>vscode.window).terminals[i]
@@ -79,7 +79,7 @@ export function getTerminal(
         }
     }
 
-    var terminal = vscode.window.createTerminal(name, SHELL_PATH)
+    var terminal = vscode.window.createTerminal(name, exports.SHELL_PATH)
     if(showTerminal){
         terminal.show()
     } else{
@@ -112,7 +112,7 @@ export function callEosfactory(cl:string, result:Function){
     const child_process = require("child_process");
 
     let clExe: string   
-    if(IS_WINDOWS){
+    if(exports.IS_WINDOWS){
         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
     } else{
         clExe = `\"${cl}\"`
@@ -136,7 +136,7 @@ export function callEosfactory(cl:string, result:Function){
 
 
 export function wslMapLinuxWindows(path:string){
-    if(!IS_WINDOWS){
+    if(!exports.IS_WINDOWS){
         return path
     }
     if(!path.includes("/mnt/")){
@@ -148,7 +148,7 @@ export function wslMapLinuxWindows(path:string){
 
 
 export function wslMapWindowsLinux(path:string){
-    if(!IS_WINDOWS){
+    if(!exports.IS_WINDOWS){
         return path
     }    
     if(!path.includes(":\\")){

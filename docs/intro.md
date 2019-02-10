@@ -7,8 +7,9 @@
 * referencing documentation and tutorials,
 * automatic availability of standard libraries,
 * dependency management,
+* intellisense,
 * compilation and building,
-* debugging and testing,
+* testing,
 * deployment.
 
 *EOSIde* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
@@ -60,7 +61,19 @@ Dependency management is implemented with the view shown in the following pictur
 * *Include* lists directories containg headers needed by the project. This list is linked to the file *.vscode/c_cpp_properties.json*. The entries are provided with buttons that manipulate them, especially, new items may be added with the system-native file dialog. With *Windows*, all file paths are expressed relative to the *WSL root* (Windows Subsystem Linux).
 * *Libs* lists libraries resolving outer dependencies of the project.
 * *Compiler Options* lists parameters of the wasm compiler.
+* *Contract Account* defines the contract that holds the contract. Its name has to be chosen from a list given with the bash command:
+    ```bash
+    python3 -m eosfactory.testnets
+    ```
 * The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal.
+
+All the dependencies are stored in the file *.vscode/c_cpp_properties.json*. This file feeds both compile/build procedures and the intellisense features of VSCode.
+
+## Intellisense
+
+It is a property of VSCode that it implements intellisense functions, if proper data is provided. EOSIde ensures that data automatically. The following picture shows the result of *Pick Definition* command applied to the function *eosio_assert*.
+
+![Intellisense](images/intellisense.png)
 
 ## Compile and build
 
@@ -117,11 +130,11 @@ Built target wast
 cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$
 ```
 
-## Build with EOSFactory
+### Build with EOSFactory
 
 If your computer system is Windows, see [note](#Compile-and-build-using-CMake).
 
-You can build a contract programmatically in a Python module. Here we present the idea with an interactive session. Start the session and, then, use EOSFactory:
+You can build a contract programmatically in a Python module. Here we present the idea of an interactive session. Start the session then use EOSFactory:
 
 ```bash
 python3
@@ -146,8 +159,151 @@ WASM file writen to file:
     /mnt/c/Workspaces/EOS/contracts/token/build/token.wasm
 ```
 
-## Installation
+## Deploy contract
 
-EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu, even if the system is Windows with WSL Ubuntu).
+Deployment means attaching a contract to an account. A default account be defined with the [*Setup*](#Dependency-management) view, see *Contract Account* button there.
+
+The following three subsections show how to deploy the contract of the current project to the default account.
+
+### Deploy with VSCode command
+
+* **vscode command:** ctrl+shift+p => eosid deploy
+* **keybord shortcut:** ctrl+shift+y
+
+### Deploy with Ubuntu bash
+
+```bash
+python3 -m eosfactory.deploy
+```
+
+### Deploy with EOSFactory
+
+```python
+import eosfactory.core.logger as logger
+from eosfactory.shell.contract import Contract
+from eosfactory.core.teos import get_c_cpp_properties
+
+c_cpp_properties = teos.get_c_cpp_properties()
+if not c_cpp_properties:
+    logger.ERROR('''
+    The testnet account is not set and it can not be found any 
+    c_cpp_properties json file.
+        ''')
+
+if not "contractAccount" in c_cpp_properties:
+    logger.ERROR('''
+    The testnet account is not set, and it can not be found in a 
+    c_cpp_properties json file.
+        ''')
+
+testnet_account = eosfactory.core.testnet.get_testnet(testnet_account_name)
+
+if not testnet_account:
+    logger.ERROR('''
+    There is not any testnet account named '{}' in the list. 
+    Use the bash command 
+    `python3 -m eosfactory.utils.register_testnet -h`
+    to get instructions how to register a testnet account.
+    '''.format(testnet_account_name))
+
+testnet_account.configure()
+testnet_account.verify_production()
+contract_account = account.restore_account(
+                                        testnet_account_name, testnet_account)
+Contract(contract_account).deploy()
+```
+
+## Testing
+
+Tests are Python scripts located in the directory *tests*. Any script can be executed in a bash terminal, for example:
+
+```bash
+python3 tests/test1.py
+```
+
+### VSCode style: testing with VSCode tasks
+
+### Testing with CMake
+
+In order to use CMake testing feature, test scripts have to be registered in the *CMakeLists* file, for example, two scripts named *test1* and *unittest1*:
+
+```cmake
+add_test( NAME tests COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test1.py )
+add_test( NAME unittest COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/unittest1.py )
+```
+
+However, it is possible to select a single test, typically all the tests are automatically executed one-by-one, as an overall test.
+
+Tests are invoked in a bash terminal:
+
+```bash
+cd build
+ctest
+```
+
+An exemplary listing of the ctest bash action:
+
+```bash
+Test project /mnt/c/Workspaces/EOS/contracts/token/build
+    Start 1: tests
+1/2 Test #1: tests ............................   Passed   15.98 sec    Start 2: unittest
+2/2 Test #2: unittest .........................   Passed   16.08 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =  32.07 sec
+
+```
+
+```python
+from eosfactory.eosf import *
+from eosfactory.shell.account import restore_account
+import eosfactory.core.testnet as testnet
+
+
+testnet = Testnet(
+    None,
+    "dgxo1uyhoytn",
+    "5JE9XSurh4Bmdw8Ynz72Eh6ZCKrxf63SmQWKrYJSXf1dEnoiKFY",
+    "5JgLo7jZhmY4huDNXwExmaWQJqyS1hGZrnSjECcpWwGU25Ym8tA",
+    "contract_account"
+)
+testnet.configure()
+testnet.verify_production()
+restore_account("contract_account", testnet)
+
+testnet = testnet.KYLIN
+testnet.configure()
+testnet.verify_production()
+restore_account("contract_account", testnet)
+Contract(host).deploy()
+```
+
+## Install view
+
+With the VSCode command *ctrl+shift+p => eoside install*, you can display the status of the installation. The following picture shows the view. 
 
 ![Setup view](images/install.png)
+
+With the view, you may change settings.
+
+### Contract Workspace
+
+If you create a new [project](#Project-standardization) from a template, the system-native directory choosing dialog opens in the named directory. You can change it, starting with clicking the *change* button.
+
+### Configuration
+
+#### Start with eoside
+
+If launched with the EOSIde extension installed, an instance of VSCode starts with the *Get Started* view (if the *Explorer* panel is empty). If you consider this behavior annoying, click the button *toggle*.
+
+You can call the view either with |EOS IDE|** menu item in the VSCode editor title bar, or ctrl+shift+p => eoside |EOS IDE|
+
+#### menu
+
+There is a menu in the right side of the VSCode editor title bar: it may be used to display an EOSIde view. You can remove it, clicking the *change* button.
+
+Without this menu, still you can call the views:
+* **Get Started View:** ctrl+shift+p => eoside |EOS IDE|
+* **Setup View:** ctrl+shift+p => eoside |Setup|
+* **Install View:** ctrl+shift+p => eoside install

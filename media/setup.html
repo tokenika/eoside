@@ -62,63 +62,7 @@
 <body class="body">
     <script nonce="${nonce}" src="${scriptUri}"></script>
 
-    <div class="row">
-            <button
-                class="ctr"; 
-                id="compile"; 
-                title="ctr">Compile</button>
-            <button 
-                class="ctr"; 
-                id="build"; 
-                title="ctr">Build</button>    
-            <button 
-                class="ctr"; 
-                id="EOSIde"; 
-                title="ctr">EOS IDE</button>
-                
-            ${bash}
-    </div>
-
-    <div class="row">
-        <button 
-            class="btn"; 
-            id="include"; 
-            title="includePath">&#8627</button>
-        <label 
-            style="
-                color: unset;
-                font-size: 20px;">Include</label>
-        <p>${wslRoot}</p>
-
-        ${includeList}
-    </div>
-
-    <div class="row">
-        <button 
-            class="btn"; 
-            id="include"; 
-            title="libs">&#8627</button>
-        <label 
-            style="
-                color: unset;
-                font-size: 20px;">Libs</label>
-        <p>${wslRoot}</p>
-
-        ${libList}
-    </div>
-
-    <div class="row">
-        <button 
-            class="btn"; 
-            id="include"; 
-            title="compilerOptions">&#8627</button>
-        <label 
-            style="
-                color: unset;
-                font-size: 20px;">Compiler Options</label>
-        <br><br>
-        ${optionList}
-        </div>    
+    ${htmlBody}
 </body>
 
 </html>

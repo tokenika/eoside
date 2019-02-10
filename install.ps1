@@ -26,7 +26,7 @@ Try{
 }
 Catch{
     Write-Host "
-# One prerequisite is that the Visual Studio Code is installed in the System
+# Prerequisite is that the Visual Studio Code is installed in the System
 # with its 'code' binary on the system path.
 #
 # The condition seems unfulfilled as the command 'code -v' fails. See
@@ -43,7 +43,7 @@ Try{
 }
 Catch{
     Write-Host "
-# One prerequisite is that the WLS (Windows Linux Subsystem) is installed in 
+# Prerequisite is that the WLS (Windows Linux Subsystem) is installed in 
 # the System.
 #
 # The condition seems unfulfilled as the command 
@@ -59,7 +59,7 @@ Write-Host "Checking whether the EOSFactory Python package is available ..."
 $eosfactory=ubuntu run "pip list | grep -F  eosfactory"
 if(-Not $eosfactory){
     Write-Host "
-# One prerequisite is that the EOSFactory Python package is installed in 
+# Prerequisite is that the EOSFactory Python package is installed in 
 # the System.
 #
 # The condition seems unfulfilled as the command 

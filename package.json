@@ -94,6 +94,11 @@
         "category": "EOSIde"
       },
       {
+        "command": "eoside.Deploy",
+        "title": "deploy",
+        "category": "EOSIde"
+      },      
+      {
         "command": "eoside.bash",
         "title": "bash terminal",
         "category": "EOSIde"
@@ -103,19 +108,23 @@
       {
         "command": "eoside.bash",
         "key": "ctrl+shift+t",
-        "mac": "cmd++shift+t"
+        "mac": "cmd+shift+t"
       },
       {
         "command": "eoside.Compile",
         "key": "ctrl+shift+c",
-        "mac": "cmd++shift+c"
+        "mac": "cmd+shift+c"
       },
       {
         "command": "eoside.Build",
         "key": "ctrl+shift+b",
-        "mac": "cmd++shift+b"
-      }
-    ],
+        "mac": "cmd+shift+b"
+      },
+      {
+        "command": "eoside.Deploy",
+        "key": "ctrl+shift+y",
+        "mac": "cmd+shift+y"
+      }    ],
     "menus": {
       "editor/title": [
         {

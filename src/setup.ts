@@ -8,12 +8,14 @@ import * as inst from './install'
 const INCLUDE: string = "includePath"
 const LIBS: string = "libs"
 const OPTIONS: string = "compilerOptions"
+const CONTRACT_ACCOUNT: string = "contractAccount"
 const UP: string = "up"
 const ADD: string = "include"
 const DOWN: string = "down"
 const DELETE:string = "del"
 const INSERT:string = "insert"
 const CONTROL:string = "ctr"
+
 
 export default class SetupPanel extends def.Panel{
     /**
@@ -27,10 +29,14 @@ export default class SetupPanel extends def.Panel{
             return
         }
 
-        let c_cpp_properties = path.join(
+        let c_cpp_prop_path = path.join(
                             vscode.workspace.workspaceFolders[0].uri.fsPath, 
                             ".vscode", "c_cpp_properties.json")
-        if(!fs.existsSync(c_cpp_properties)){
+        if(!fs.existsSync(c_cpp_prop_path)){
+            vscode.window.showErrorMessage(`
+            There is no C/CPP configuration file expected to be
+            "${c_cpp_prop_path}"
+            `)
             return
         }
 
@@ -69,8 +75,8 @@ export default class SetupPanel extends def.Panel{
 
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
-
         // Handle messages from the webview
+        var prevMsg: any = undefined
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case INCLUDE:
@@ -87,7 +93,11 @@ export default class SetupPanel extends def.Panel{
                         action(message, SetupPanel.currentPanel)
                     }
                     break
-            }
+                case CONTRACT_ACCOUNT:
+                    ContractAccount.createOrGet(this._extensionPath)
+                                                            .action(message)
+                    break
+            }                
         }, null, this._disposables)
     }
 
@@ -114,32 +124,77 @@ export default class SetupPanel extends def.Panel{
             this._extensionPath, def.RESOURCE_DIR, '/'))
                             .with({ scheme: 'vscode-resource' })
         
-        
         let html = fs.readFileSync(htmlUri.fsPath).toString()
-            .replace(/\$\{nonce\}/gi, def.getNonce())
-            .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
-            .replace(
-                /\$\{includeList\}/gi, 
-                Includes.createOrGet(this._extensionPath).items())
-            .replace(
-                /\$\{libList\}/gi, 
-                Libs.createOrGet(this._extensionPath).items())
-            .replace(
-                /\$\{optionList\}/gi, 
-                Options.createOrGet(this._extensionPath).items())
-            .replace(/\$\{wslRoot\}/gi, `WSL root is ${inst.root()}`)
-
-        if(def.IS_WINDOWS){
-            html = html.replace(/\$\{bash\}/gi, 
-            `
-            <button 
-            class="ctr"; 
-            id="bash"; 
-            title="ctr">bash</button>`)
-        }
+        html = html.replace(/\$\{nonce\}/gi, def.getNonce())
+        html = html.replace(/\$\{scriptUri\}/gi, scriptUri.toString())
+        html = html.replace(/\$\{htmlBody\}/gi, body(this._extensionPath))
         
         return html
     }
+}
+
+
+function body(extensionPath:string){
+    return `
+<div class="row">
+    <button
+        class="ctr"; 
+        id="compile"; 
+        title="ctr">Compile</button>
+    <button 
+        class="ctr"; 
+        id="build"; 
+        title="ctr">Build</button>    
+    <button 
+        class="ctr"; 
+        id="EOSIde"; 
+        title="ctr">EOS IDE</button>
+        
+    ${def.IS_WINDOWS ?`
+        <button class="ctr"; id="bash"; title="ctr">bash</button>
+    `: ""}
+</div>
+
+<div class="row">
+    <button class="btn"; id="include"; title="${INCLUDE}">&#8627</button>
+    <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
+        Include
+    </label>
+    <p>WSL root is ${inst.root()}</p>
+
+    ${Includes.createOrGet(extensionPath).items()}
+</div>
+
+<div class="row">
+    <button class="btn"; id="include"; title="${LIBS}">&#8627</button>
+    <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
+        Libs
+    </label>
+    <p>WSL root is ${inst.root()}</p>
+
+    ${Libs.createOrGet(extensionPath).items()}
+</div>
+
+<div class="row">
+    <button  class="btn"; id="include"; title="${OPTIONS}">&#8627</button>
+    <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+        Compiler Options
+    </label>
+    <br><br>
+    ${Options.createOrGet(extensionPath).items()}
+</div>
+
+<div class="row">
+    <button class="btn"; id="change"; 
+        title="${CONTRACT_ACCOUNT}">&#8627</button>
+    <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+        Contract Account
+    </label>
+    <br><br>
+    ${ContractAccount.createOrGet(extensionPath).items()}
+</div>
+
+`
 }
 
 
@@ -148,7 +203,7 @@ export function compile(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.utils.build ' 
+            'python3 -m eosfactory.build ' 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
             + `--c_cpp_prop `
             + `'${path.join(
@@ -165,7 +220,24 @@ export function build(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.utils.build ' 
+            'python3 -m eosfactory.build ' 
+            + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
+            + `--c_cpp_prop `
+            + `'${path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath,
+                    ".vscode/c_cpp_properties.json")}' `
+        terminal.sendText(cl)
+    }      
+}
+
+
+export function deploy(){
+    let terminalName = "deploy"
+    if(vscode.workspace.workspaceFolders){
+        let terminal = def.getTerminal(terminalName, true, true)
+        let cl = 
+            'python3 -m eosfactory.deploy '
+            + `--dir ` 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
             + `--c_cpp_prop `
             + `'${path.join(
@@ -203,8 +275,7 @@ function action(message: any, panel: def.Panel){
     }
 }
 
-abstract class Dependencies {
-
+abstract class Base{
     protected readonly _extensionPath: string
     protected readonly _c_cpp_properties: string | undefined
     protected json: any = undefined
@@ -231,6 +302,18 @@ abstract class Dependencies {
             }
         }
     }
+
+    protected update(){
+        if(this._c_cpp_properties) {
+            def.writeJson(this._c_cpp_properties, this.json)
+            if(SetupPanel.currentPanel){
+                SetupPanel.currentPanel.update()
+            }            
+        } 
+    }    
+}
+
+abstract class Dependencies extends Base{
 
     protected abstract getEntries(): string[]
     protected abstract setEntries(entries: string[]): void
@@ -262,15 +345,6 @@ abstract class Dependencies {
                 this.setEntries(list)
                 this.update()                 
         })
-    }
-
-    protected update(){
-        if(this._c_cpp_properties) {
-            def.writeJson(this._c_cpp_properties, this.json)
-            if(SetupPanel.currentPanel){
-                SetupPanel.currentPanel.update()
-            }            
-        } 
     }
 
     public action(message: any){        
@@ -325,14 +399,17 @@ abstract class Dependencies {
     }
 
     public items(title=""){
-        let entries: string[] = ["${workspaceFolder}"]
+        let entries: string[] = []
         this.read()
         if(this.getEntries()){
             entries = this.getEntries()
         }
+        
         let root = inst.root()
-        for(let i = 0; i < entries.length; i++){
-            entries[i] = entries[i].replace(root, "${root)");
+        if(root){
+            for(let i = 0; i < entries.length; i++){
+                entries[i] = entries[i].replace(root, "${root)");
+            }            
         }
 
         let items = ""
@@ -347,7 +424,7 @@ class Includes extends Dependencies{
     public static instance: Includes | undefined
 
     public static createOrGet(extensionPath:string) {
-        if(! Includes.instance){
+        if(!Includes.instance){
             Includes.instance = new Includes(extensionPath)
         }
         return Includes.instance
@@ -370,6 +447,64 @@ class Includes extends Dependencies{
         return super.items(INCLUDE)
     }
 }
+
+
+class ContractAccount extends Base{
+    public static instance: ContractAccount | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! ContractAccount.instance){
+            ContractAccount.instance = new ContractAccount(extensionPath)
+        }
+        
+        return ContractAccount.instance
+    }
+
+    public items(){
+        this.read()
+        if(this.json.hasOwnProperty(CONTRACT_ACCOUNT)){
+            let ca = this.json[CONTRACT_ACCOUNT]
+            return ca["template"] + ": " + ca["accountName"] 
+                        + " @ " + ca["url"]
+        }
+        return "Not set"
+    }
+
+    public action(message: any){
+        let terminalName = "bash"
+        if(vscode.workspace.workspaceFolders){
+            let terminal = def.getTerminal(terminalName, true, true)            
+            terminal.sendText('python3 -m eosfactory.testnets')
+        }
+
+        vscode.window.showInputBox({
+                    placeHolder: "",
+                    ignoreFocusOut: true,
+                }).then((name) => {
+            if(name){
+                def.callEosfactory(
+                    `python3 -m eosfactory.testnets --name ${name}`, 
+                    (stdout:string, stderr:string) =>{
+                        if(stdout){
+                            let args = stdout.split(" ")                    
+                            this.read()
+                            this.json[CONTRACT_ACCOUNT] = 
+                                {
+                                    "template": args[0], 
+                                    "accountName": args[1],             
+                                    "url": args[2]
+                                }
+                            this.update()     
+                        } else {
+
+                        }
+                    }
+                )
+            }
+        })
+    }
+}
+
 
 class Options extends Dependencies{
     public static instance: Options | undefined
@@ -440,7 +575,6 @@ class Libs extends Dependencies{
         return super.items(LIBS)
     }
 }
-
 
 
 function setupEntry(index:number, title:string, text:string){

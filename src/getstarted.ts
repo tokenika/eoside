@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import fs = require('fs')
 
 import * as def from './definitions'
+import * as inst from './install'
 
 const TEMPLATE: string = "template"
 const TEMPLATE_DIR: string = "templates"
@@ -18,15 +19,32 @@ export default class GetStartedPanel extends def.Panel {
      */
     public static currentPanel: GetStartedPanel | undefined
     public static readonly viewType = "EOS IDE"
+    private static c_cpp_prop_updated = false
 
     public static createOrShow(
                         extensionPath: string, checkFolders:boolean=true) {
-            
+
+        if(vscode.workspace.workspaceFolders 
+                && !GetStartedPanel.c_cpp_prop_updated){
+
+            GetStartedPanel.c_cpp_prop_updated = true
+            let c_cpp_prop_path = path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath, 
+                    ".vscode", "c_cpp_properties.json")
+
+            if(fs.existsSync(c_cpp_prop_path)){
+                let cl = 'python3 -m eosfactory.core.vscode '
+                + `--c_cpp_prop_path \\"${c_cpp_prop_path}\\" `
+                + `--root \\"${inst.root()}\\" `
+                def.callEosfactory(cl, (stdout:string, stderr:string) =>{})
+            }
+        }
+
         if(checkFolders){
             if(
                 vscode.workspace.workspaceFolders 
                     || !vscode.workspace.getConfiguration()
-                        .eoside.startWithEosIde){
+                                                    .eoside.startWithEosIde){
                 return
             }
         }
@@ -166,17 +184,13 @@ class Templates {
         }
         vscode.window.showOpenDialog(options).then(fileUri => {
             if (fileUri && fileUri[0]) {
-
                 let templateDir = vscode.Uri.file(path.join(
                     this._extensionPath, 
                     TEMPLATE_DIR, templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
-
-                let cl = 'python3 -m eosfactory.utils.create_project '                  
+                
+                let cl = 'python3 -m eosfactory.create_project '          
                     + `\\"${fileUri[0].fsPath}\\" \\"${templateDir}\\" ` 
-                    + `--c_cpp_prop \\"${path.join(
-                        this._extensionPath, ".vscode", 
-                        "c_cpp_properties.json")}\\" ` 
                     + `--include \\"${eosideInclude()}\\" `
                     + `--libs \\"${eosideLibs()}\\" `
                     + `--silent `
@@ -190,7 +204,6 @@ class Templates {
                             return await vscode.commands.executeCommand(
                                 'vscode.openFolder', fileUri[0])
                         }
-    // vscode.workspace.updateWorkspaceFolders(0, 0, {uri: fileUri[0]})
                         openFolder()                        
                     }
                 })                          

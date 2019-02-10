@@ -14,7 +14,7 @@ window.addEventListener(
     function(event) {
         var clickables =  document.getElementsByClassName("clickable");
         for(var i = 0; i < clickables.length; i++){
-            clickables[i].onclick = clickableOnclick
+            clickables[i].onmouseup = clickableOnclick
         }        
     }
 );   
