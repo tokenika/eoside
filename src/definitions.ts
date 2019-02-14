@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode'
-import fs = require('fs')
+import * as fs from 'fs'
 
 export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
@@ -20,7 +20,7 @@ export abstract class Panel{
         this._extensionPath = extensionPath
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel 
-        // is closed programmatically
+        // is closed programmatically C:\Users\cartman\AppData\Roaming\npm\node_modules\vscode
         this._panel.onDidDispose(
             () => this.dispose(), null, this._disposables)
         // Update the content based on view changes
@@ -56,7 +56,6 @@ ${err}`)
     }
     return 0
 }
-
 
 export function getTerminal(name: string, showTerminal=false, reset=false){
     if(reset){

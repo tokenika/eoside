@@ -10,7 +10,6 @@
 // "terminal.integrated.shell.windows": "bash.exe"
 
 import * as vscode from 'vscode'
-
 import * as setup from './setup'
 import InstallPanel from "./install"
 import GetStartedPanel from "./getstarted"

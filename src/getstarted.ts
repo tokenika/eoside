@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
-import fs = require('fs')
+import * as fs from 'fs'
 
 import * as def from './definitions'
 import * as inst from './install'

@@ -42,9 +42,11 @@
     "url": "https://github.com/tokenika/eoside"
   },
   "dependencies": {
+    "fs": "^0.0.1-security",
+    "child_process": "^1.0.2",
     "file-system": "^2.2.2",
     "openurl": "^1.1.1",
-    "vscode": "^1.1.18"
+    "vscode": "^1.1.29"
   },
   "extensionDependencies": [
     "ms-vscode.cpptools"
@@ -97,7 +99,7 @@
         "command": "eoside.Deploy",
         "title": "deploy",
         "category": "EOSIde"
-      },      
+      },
       {
         "command": "eoside.bash",
         "title": "bash terminal",
@@ -124,7 +126,8 @@
         "command": "eoside.Deploy",
         "key": "ctrl+shift+y",
         "mac": "cmd+shift+y"
-      }    ],
+      }
+    ],
     "menus": {
       "editor/title": [
         {
