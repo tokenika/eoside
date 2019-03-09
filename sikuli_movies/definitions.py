@@ -6,6 +6,7 @@ import org.sikuli.script as sikuli
 VSCODE = "eosfactory - Visual Studio Code"
 NARRATION_FILE = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\narration.md"
 CONTRACT_DIR = "C:\\Workspaces\\EOS\\contracts"
+RIGHT_COLUMN_WIDTH = 320
 # IMAGE_DIR = os.path.join(__file__, "..", "images.sikuli")
 IMAGE_DIR = os.path.join("C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\definitions.py", "..", "images.sikuli")
 WAIT = True
@@ -40,15 +41,19 @@ print(region_vscode)
 focus_vscode = sikuli.Region(X+W-100, Y+50, 100, 100)
 status_bar = sikuli.Region(X, Y+H-20, W, 20)
 region_side_bar = sikuli.Region(X, Y+30, 240, H-50)
-region_menu_bar = sikuli.Region(X, Y, W, Y+30)
+region_menu_bar = sikuli.Region(X, Y, W, 30)
+region_file_selection = sikuli.Region(X, Y+30, W, 25)
+region_column_border = sikuli.Region(X+W-RIGHT_COLUMN_WIDTH, X+50, 0, 0)
+region_right_column = sikuli.Region(
+    X+W-RIGHT_COLUMN_WIDTH, X+50, RIGHT_COLUMN_WIDTH, H-50)
 
 def open_folder(folder_name):
-    region_vscode.find(get_image("btn_new_folder")).click()
+    region_vscode.find(get_image("open_folder\\new_folder")).click()
     region_vscode.wait(get_image("new_folder_change_name"))
     wait(1)
     region_vscode.type(sikuli.Key.BACKSPACE )
     region_vscode.type(folder_name + "\n")
-    region_vscode.wait(get_image("btn_open"))
+    region_vscode.wait(get_image(""open_folder\\open"))
     region_vscode.click(region_vscode.getLastMatch())
 
 def open_file(path):
@@ -57,13 +62,18 @@ def open_file(path):
     region_vscode.type(focus_vscode, "o", sikuli.Key.CTRL)
     region_vscode.wait(get_image("file_name"))
     region_vscode.type(get_image("file_name"), path)
-    region_vscode.click(get_image("btn_open"))
+    region_vscode.click(get_image(""open_folder\\open"))
 
-region_vscode.exists(get_image("file_name"))
 
-def go_to_file(go_to_file_image):
+def send_sortcut(letter, key_modifiers=sikuli.Key.CTRL):
+    region_vscode.type(focus_vscode, letter, key_modifiers)
+
+
+def go_to_file(go_to_file_image_name):
+    go_to_file_image = get_image(go_to_file_image_name)
     region_vscode.type(focus_vscode, "p", sikuli.Key.CTRL) 
     region_vscode.click(go_to_file_image)
+
 
 def set_side_bar(on=True):
     if not region_vscode.exists(get_image("side_bar_is_on")) == on:
@@ -88,3 +98,25 @@ def narration(narration_text, action="a"):
     print(narration_file)
     narration_file.write(narration_text)
     narration_file.close()
+
+def narration_type(narration_text, action="a"):
+    if action=="w":
+            region_vscode.type(
+                region_file_selection.find(get_image("file_selection\\narration"))
+                "a", sikuli.Key.CTRL)
+            region_vscode.type(
+                region_file_selection.find(get_image("file_selection\\narration"))
+                sikuli.Key.BACKSPACE)
+
+    region_vscode.type(
+        region_file_selection.find(get_image("file_selection\\narration"))
+        narration_text)
+    send_sortcut("s")
+
+
+def find(image, region=region_vscode):
+    return region.find(get_image(image))
+
+
+def exists(image, region=region_vscode):
+    return region.exists(get_image(image))
