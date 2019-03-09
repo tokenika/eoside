@@ -159,8 +159,10 @@ function body(extensionPath:string){
     <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
         Include
     </label>
-    <p>WSL root is ${inst.root()}</p>
-
+    ${def.IS_WINDOWS ?`
+        <p>WSL root is ${inst.root()}</p>
+    `: ""}
+    
     ${Includes.createOrGet(extensionPath).items()}
 </div>
 
@@ -169,7 +171,9 @@ function body(extensionPath:string){
     <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
         Libs
     </label>
-    <p>WSL root is ${inst.root()}</p>
+    ${def.IS_WINDOWS ?`
+        <p>WSL root is ${inst.root()}</p>
+    `: ""}
 
     ${Libs.createOrGet(extensionPath).items()}
 </div>

@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as def from './definitions'
 
 export var config: any = undefined
-export const PYTHON: string = "python"
+export const PYTHON: string = "python3"
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
@@ -50,11 +50,11 @@ EOSIde cannot do without proper WSL.`)
 
     {
         const process = def.IS_WINDOWS 
-            ? spawn("bash.exe", ['-c', `${exports.PYTHON}`, '-V'])
+            ? spawn("bash.exe", ["-c", `${exports.PYTHON} -V`])
             : spawn(`${exports.PYTHON}`, ["-V"])
         if(!process.status){
             conditionMsg(
-`<em>${process.stdout}</em> detected.`)
+`<em>${process.stdout.toString().trim()}</em> detected.`)
         } else{
             let msg = 
 `It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
@@ -79,7 +79,7 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             : spawn(`${exports.PIP}`, ["-V"])
         if(!process.status){
             conditionMsg(
-`<em>${process.stdout}</em> detected.`)
+`<em>${process.stdout.toString().trim()}</em> detected.`)
         } else{
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 

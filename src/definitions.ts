@@ -150,7 +150,7 @@ export function wslMapWindowsLinux(path:string){
     if(!exports.IS_WINDOWS){
         return path
     }    
-    if(!path.includes(":\\")){
+    if(!path.includes(":")){
         return path
     }
     path = path.replace(/\\/gi, "/")

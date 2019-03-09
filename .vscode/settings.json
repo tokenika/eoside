@@ -3,5 +3,15 @@
     "editor.wordWrap": "on",
     "files.associations": {
         "iosfwd": "cpp"
-    }
+    },
+    "python.pythonPath": "C:\\Users\\cartman\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": [
+        "--dummy-variables-rgx=(_+[a-zA-Z0-9]*?$)|dummy|xxx",
+        // "--disable=undefined-variable",
+    ],
+    "python.linting.banditEnabled": false,
+    "python.linting.flake8Enabled": false,
+    "python.linting.pylamaEnabled": true,
 }

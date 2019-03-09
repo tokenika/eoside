@@ -190,10 +190,21 @@ class Templates {
                 console.log('Selected file: ' + fileUri[0].fsPath)
                 
                 let cl = 'python3 -m eosfactory.create_project '          
-                    + `\\"${fileUri[0].fsPath}\\" \\"${templateDir}\\" ` 
-                    + `--include \\"${eosideInclude()}\\" `
-                    + `--libs \\"${eosideLibs()}\\" `
-                    + `--silent `
+                + `'${def.wslMapWindowsLinux(fileUri[0].fsPath)}' `
+                + `'${def.wslMapWindowsLinux(templateDir)}' `
+                
+                let include = def.wslMapWindowsLinux(eosideInclude())
+                if(include) {
+                    cl += `--include '${def.wslMapWindowsLinux(
+                                                            eosideInclude())}' `
+                }
+
+                let libs = eosideLibs()
+                if(libs){
+                    cl += `--libs '${def.wslMapWindowsLinux(libs)}' `
+                }
+
+                cl += '--silent '
 
                 def.callEosfactory(cl, (stdout:string, stderr:string) =>{
                     if(!stderr){
@@ -329,8 +340,12 @@ class Recent {
 export function eosideInclude(){
     if(!GetStartedPanel.currentPanel)
         return ""
-    return def.javaPath(
+    try {
+        return def.javaPath(
             path.join(GetStartedPanel.currentPanel._extensionPath, "include"))
+    } catch(err) {
+        return ""
+    }
 }
 
 
@@ -338,18 +353,23 @@ export function eosideLibs(){
     if(!GetStartedPanel.currentPanel)
         return
 
-    const walkSync = (dir:string, filelist:string[] = []) => {
-        fs.readdirSync(dir).forEach(file => {
-        
-            filelist = fs.statSync(path.join(dir, file)).isDirectory()
-                ? walkSync(path.join(dir, file), filelist)
-                : filelist.concat(
-                                def.javaPath(path.join(dir, file)));
-        
-        });
-        return filelist;
-        }
+    try {
+        const walkSync = (dir:string, filelist:string[] = []) => {
+            fs.readdirSync(dir).forEach(file => {
+            
+                filelist = fs.statSync(path.join(dir, file)).isDirectory()
+                    ? walkSync(path.join(dir, file), filelist)
+                    : filelist.concat(
+                                    def.javaPath(path.join(dir, file)));
+            
+            });
+            return filelist;
+            }
 
-    return walkSync(path.join(
-                    GetStartedPanel.currentPanel._extensionPath, "libs")).join(", ")
+        return walkSync(path.join(
+                GetStartedPanel.currentPanel._extensionPath, "libs")).join(", ")
+    } catch(err){
+        return ""
+    }
+
 }

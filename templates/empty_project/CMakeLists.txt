@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.5)
-project(${CONTRACT_NAME}_example VERSION 1.0.0)
+cmake_minimum_required( VERSION 3.5 )
+project ( "Test-App" VERSION 1.0 LANGUAGES NONE
+) 
 
-find_package(eosio.cdt)
+include( CTest )
 
-### Generate the wasm and abi
-add_contract( ${CONTRACT_NAME} ${CONTRACT_NAME} src/${CONTRACT_NAME}.cpp )
+add_custom_target( wast ALL COMMAND python3 -c 'from eosfactory.shell.contract import ContractBuilder\; ContractBuilder(\"${CMAKE_SOURCE_DIR}\" ) .build() ' )
 
-### add the path to where the ricardian contracts/clauses are found
-target_compile_options( ${CONTRACT_NAME}.wasm PUBLIC -R${CMAKE_CURRENT_SOURCE_DIR}/resources )
+add_test( NAME tests COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test1.py )
+add_test( NAME unittest COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/unittest1.py )
+
+# ctest -V -R ^unittest$
+# ctest -V -R ^tests$

@@ -28,7 +28,12 @@
         }
         .body {
             background-color: rgb(30, 30, 30);
-            color: rgb(83, 157, 241);
+            background-image: url("tokenika_body1.png");
+            background-repeat: no-repeat;
+            background-position-x: center;
+            background-position-y: top;
+            color: DodgerBlue;
+            opacity: 0.8;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 13;
         }
@@ -53,15 +58,7 @@
 
 <body class="body">
     <script nonce="${nonce}" src="${scriptUri}"></script>
-
-    <div class="row">
-        <div style="float:left">
-            <img src="tokenika.png" 
-                alt="Tokenika" 
-                style="height:150px; padding: 10px">
-        </div>
-    </div>
-
+    <p style="color: unset; font-size: 35px;">Installing EOSIde</p>
     ${htmlBody}
 
 </body>

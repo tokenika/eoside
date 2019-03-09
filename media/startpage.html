@@ -28,7 +28,13 @@
         }
         .body {
             background-color: rgb(30, 30, 30);
-            color: rgb(83, 157, 241);
+            background-image: url("tokenika_body1.png");
+            background-repeat: no-repeat;
+            background-position-x: center;
+            background-position-y: top;
+            /* rgb(83, 157, 241) */
+            color: DodgerBlue; 
+            opacity: 0.8;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 13;
         }
@@ -64,55 +70,29 @@
 
 <body class="body">
     <script nonce="${nonce}" src="${scriptUri}"></script>
-
-    <div class="row">
-        <div style="float:left">
-            <img src="tokenika.png" 
-                alt="Tokenika" 
-                style="height:150px; padding: 10px">
-        </div>
-    </div>
   
     <div class="row">
         <div class="leftcolumn">
             <div>
-                <p style="
-                    color: unset;
-                    font-size: 40px;
-                ">Get Started</p>
-
+                <p style="color: unset; font-size: 35px;">Get Started</p>
                 ${getstartedList}
             </div>
             <div>
-                <p style="
-                    color: unset;
-                    font-size: 40px;
-                ">Recent</p>
-
+                <p style="color: unset; font-size: 35px;">Recent</p>
                 ${recentList}
             </div>
         </div>
 
         <div class="rightcolumn">
             <div>
-                <p style="
-                    color: white;
-                    font-size: 25px;
-                ">Open</p>
-
+                <p style="color: unset; font-size: 35px;">Open</p>
                 <label id="open_folder" title="open" class="clickable" >
                     Open folder
                 </label><br>
-
             </div>
             <div>
-                <p style="
-                    color: white;
-                    font-size: 25px;
-                ">New project</p>
-
+                <p style="color: unset; font-size: 35px;">New project</p>
                 ${templateList}
-
             </div>
         </div>
     </div>
