@@ -14,118 +14,142 @@ Start point:
 
 * contract folder named 'hello' deleted
 '''
-import definitions as de
+import definitions as mv
 
 CONTRACT_NAME = "hello"
 
-de.narration_type('''
+mv.narration('''
 
-With the VSCode extension *EOSIde* is enabled, this Visual Studio Code window has been invoked with the command `code -n`, and started with the single *Get Started* view, as seen in the left-side pannel.
+# Starting EOSIde
 
-The left-side de.narration panel is added for the purposes of this movie.
+With the VSCode extension *EOSIde* enabled, this Visual Studio Code window was launched with the command `code -n`. 
+
+It started with the single *Get Started* view -- seen in the left-side pannel.
+
+The left-side mv.narration panel is set to comment the action of the movie.
+
 ''', "w")
+mv.wait(5)
 
-de.wait(5)
-
-de.narration_type('''
+mv.narration_type('''
 
 # Let us develop an EOSIO smart-contract from scratch in five minutes.
 
-EOSIde can arrange a template empty new smart-contract project: there is the `empty project` button in the *Get Started* panel.
+EOSIde can arrange the structure of an empty smart-contract project: there is the `empty project` button in the *Get Started* panel.
 ''', "w")
-
-empty_project = de.region_vscode.exists(de.get_image("empty_project"))
+empty_project = mv.region_vscode.exists(mv.get_image("empty_project"))
 empty_project.highlight()
-de.wait(5)
+mv.wait(5)
 
-de.narration_type('''
-
+mv.narration_type('''
 Let us click it.
-''')
 
-de.wait(1)
+''')
+mv.wait(1)
+mv.send_k("s")
 empty_project.highlight()
 empty_project.click()
-de.open_folder(CONTRACT_NAME)
+mv.open_folder(CONTRACT_NAME)
 
-de.narration_type('''
+# mv.open_file(mv.NARRATION_FILE)
+
+# mv.region_vscode.type(mv.find("file_selection/narration", mv.region_file_selection), "a", sikuli.Key.CTRL)
+# mv.region_vscode.type(mv.find("file_selection/narration", mv.region_file_selection), sikuli.Key.BACKSPACE)
+
+mv.open_file(mv.NARRATION_FILE)
+mv.narration_type('''
 
 ## The layout of a contract project folder.
 ''', "w")
-open_file(de.narration_FILE)
 
-de.narration_type('''
+mv.narration_type('''
 * '.vscode' -- EOSIde configuration files.
 ''')
-explorer_vscode = de.find("explorer\\vscode", region_side_bar)
+explorer_vscode = mv.find("explorer/vscode", mv.region_side_bar)
 explorer_vscode.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_vscode.highlight()
 
-de.narration_type('''* 'build' -- where contract ABIs and WASMs go,
+mv.narration_type('''* 'build' -- where contract ABIs and WASMs go,
 ''')
-explorer_build = de.find("explorer\\build", de.region_side_bar)
+explorer_build = mv.find("explorer/build", mv.region_side_bar)
 explorer_build.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_build.highlight()
 
-de.narration_type('''* 'resources' -- where Ricardian Contract files reside,
+mv.narration_type('''* 'resources' -- where Ricardian Contract files reside,
 ''')
-explorer_resources = de.find("explorer\\resources", de.region_side_bar)
+explorer_resources = mv.find("explorer/resources", mv.region_side_bar)
 explorer_resources.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_resources.highlight()
 
-de.narration_type('''* 'src' -- where contract definition files reside,
+mv.narration_type('''* 'src' -- where contract definition files reside,
 ''')
-explorer_src = de.find("explorer\\src", region_side_bar)
+explorer_src = mv.find("explorer/src", mv.region_side_bar)
 explorer_src.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_src.highlight()
 
-de.narration_type('''* 'tests' -- where contract definition files reside,
+mv.narration_type('''* 'tests' -- where contract test scripts reside,
 ''')
-explorer_tests = de.find("explorer\\tests", region_side_bar)
+explorer_tests = mv.find("explorer/tests", mv.region_side_bar)
 explorer_tests.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_tests.highlight()
 
-de.narration_type('''* 'utils' -- where helper executables reside,
+mv.narration_type('''* 'utils' -- where helper executables reside,
 ''')
-explorer_utils = de.find("explorer\\utils", region_side_bar)
+explorer_utils = mv.find("explorer/utils", mv.region_side_bar)
 explorer_utils.highlight()
-de.wait(3)
+mv.wait(3)
 explorer_utils.highlight()
 
-de.narration_type('''
+mv.narration_type('''
 We insist on adhering to this layout: it enables automatization features of EOSIde.
 Also, it helps with standardization of the EOSIO smart-contract projects.
 ''')
+mv.wait(5)
 
-de.wait(5)
-
-de.narration_type('''
+mv.narration_type('''
 ## First step: declare and define the smart contract
 
-Typically, smart contract is declared in its CPP header file, and it is defined in its source file. Even if a simple contract can be declared and defined in a single source file, here we stick to the standard.
+Typically, smart contract is declared in its CPP header file, and it is defined in its source file. Even if a simple contract used to be declared and defined in a single source file, here we stick to the standard.
 
 Let us edit the header file.
 ''', "w")
-if not de.exists("file_selection\\hello.hpp", region_side_bar):
-    explorer_src.click()
-region_side_bar.de.wait(de.get_image("file_selection\\hello.hpp"))
-region_side_bar.click(region_side_bar.getLastMatch())
 
-go_to_file("de.narration_type")
-send_sortcut("b")
+if not mv.exists("file_selection/hello.hpp", mv.region_side_bar):
+    mv.find("explorer/src", mv.region_side_bar).click()
+mv.wait_image("file_selection/hello_hpp", mv.region_side_bar)
+mv.region_side_bar.click(mv.region_side_bar.getLastMatch())
 
-de.region_menu_bar.click(de.get_image("btn_view"))
-de.region_vscode.wait(de.get_image("editor_layout"))
-de.region_vscode.click(de.region_vscode.getLastMatch())
-de.region_vscode.wait(de.get_image("two_columns"))
-de.region_vscode.click(de.region_vscode.getLastMatch())
+mv.go_to_file("narration")
+mv.send_sortcut("b")
 
-column_border = de.find("column_border")
-column_border.dragDrop(column_border, de.region_column_border)
+mv.click("btn_view", mv.region_menu_bar)
+mv.wait_image("editor_layout", mv.region_vscode)
+mv.region_vscode.click(mv.region_vscode.getLastMatch())
+mv.wait_image("two_columns", mv.region_vscode)
+mv.region_vscode.click(mv.region_vscode.getLastMatch())
 
-de.region_menu_bar.dragDrop(de.find("file_selection\\narration"), de.region_right_column)
+mv.drag_drop(
+    "file_selection/narration", mv.region_right_column, 
+    mv.region_file_selection)
+mv.drag_drop("column_border", mv.region_column_border)
+
+mv.narration_type('''
+The header includes `eosiolib`, containing the smart-contract API.
+''')
+eosiolib = mv.find("eosiolib")
+eosiolib.highlight()
+mv.wait(3)
+mv.narration_type('''
+The green squiggle underneath an `#include` signal a deficiency. W can see what is missing: 
+''')
+eosiolib.highlight()
+eosiolib.hover()
+mv.narration_type('''it is `boost/limits.hpp`.
+
+We have localized the dependency. In our system it is `/home/cartman/opt/boost/include/boost/limits.hpp`.
+''')
