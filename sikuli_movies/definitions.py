@@ -42,19 +42,19 @@ focus_vscode = sikuli.Region(X+W-100, Y+50, 100, 100)
 status_bar = sikuli.Region(X, Y+H-20, W, 20)
 region_side_bar = sikuli.Region(X, Y+30, 240, H-50)
 region_menu_bar = sikuli.Region(X, Y, W, 30)
-region_file_selection = sikuli.Region(X, Y+30, W, 25)
+region_file_selection = sikuli.Region(X, Y+20, W, 35)
 region_column_border = sikuli.Region(X+W-RIGHT_COLUMN_WIDTH, Y+250, 0, 0)
 region_right_column = sikuli.Region(
     X+W-RIGHT_COLUMN_WIDTH, X+50, RIGHT_COLUMN_WIDTH, H-50)
 
 
 def open_folder(folder_name):
-    region_vscode.find(get_image("open_folder/new_folder")).click()
-    region_vscode.wait(get_image("new_folder_change_name"))
+    find("open_folder/new_folder").click()
+    wait_image("new_folder_change_name")
     wait(1)
     region_vscode.type(sikuli.Key.BACKSPACE )
     region_vscode.type(folder_name + "\n")
-    region_vscode.wait(get_image("open_folder/open"))
+    wait_image("open_folder/open")
     region_vscode.click(region_vscode.getLastMatch())
 
 

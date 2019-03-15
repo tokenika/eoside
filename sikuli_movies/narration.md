@@ -1,9 +1,8 @@
 
-## First step: declare and define the smart contract
-The header includes `eosiolib`, containing the smart-contract API.
 
-Typically, smart contract is declared in its CPP header file, and it is defined in its source file. Even if a simple contract used to be declared and defined in a single source file, here we stick to the standard.
+# Let us develop an EOSIO smart-contract from scratch in five minutes.
 
-Let us edit the header file.
+EOSIde can arrange the structure of an empty smart-contract project: there is the `empty project` button in the *Get Started* panel.
 
+Let us click it.
 

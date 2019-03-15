@@ -51,11 +51,6 @@ empty_project.highlight()
 empty_project.click()
 mv.open_folder(CONTRACT_NAME)
 
-# mv.open_file(mv.NARRATION_FILE)
-
-# mv.region_vscode.type(mv.find("file_selection/narration", mv.region_file_selection), "a", sikuli.Key.CTRL)
-# mv.region_vscode.type(mv.find("file_selection/narration", mv.region_file_selection), sikuli.Key.BACKSPACE)
-
 mv.open_file(mv.NARRATION_FILE)
 mv.narration_type('''
 
@@ -98,7 +93,7 @@ explorer_tests.highlight()
 mv.wait(3)
 explorer_tests.highlight()
 
-mv.narration_type('''* 'utils' -- where helper executables reside,
+mv.narration_type('''* 'utils' -- keeps helper executables.
 ''')
 explorer_utils = mv.find("explorer/utils", mv.region_side_bar)
 explorer_utils.highlight()
@@ -106,16 +101,14 @@ mv.wait(3)
 explorer_utils.highlight()
 
 mv.narration_type('''
-We insist on adhering to this layout: it enables automatization features of EOSIde.
-Also, it helps with standardization of the EOSIO smart-contract projects.
+Adhering to this layout enables automatization features of EOSIde
 ''')
 mv.wait(5)
-
+sys.exit()
 mv.narration_type('''
 ## First step: declare and define the smart contract
 
-Typically, smart contract is declared in its CPP header file, and it is defined in its source file. Even if a simple contract used to be declared and defined in a single source file, here we stick to the standard.
-
+A smart contract is declared in its CPP header file, and it is defined in its source file.
 Let us edit the header file.
 ''', "w")
 
