@@ -1,8 +1,14 @@
 
+## First step: declare and define the smart contract
 
-# Let us develop an EOSIO smart-contract from scratch in five minutes.
+A smart contract is declared in its CPP header file, and it is defined in its source file.
+Let us edit the header file.
 
-EOSIde can arrange the structure of an empty smart-contract project: there is the `empty project` button in the *Get Started* panel.
+The header includes 'eosiolib', containing the smart-contract API.
 
-Let us click it.
+The green squiggle underneath an '#include' signal a deficiency. W can see what is missing:
+it is 'boost/limits.hpp'.
 
+We have localized the dependency. In our system it is '/home/cartman/opt/boost/include/boost/limits.hpp'.
+
+The '#include' directive is clean now.

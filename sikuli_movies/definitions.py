@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 import time
 import org.sikuli.script as sikuli
 
@@ -10,6 +11,7 @@ RIGHT_COLUMN_WIDTH = 350
 # IMAGE_DIR = os.path.join(__file__, "..", "images.sikuli")
 IMAGE_DIR = os.path.join("C:/Workspaces/EOS/eoside/sikuli_movies/definitions.py", "..", "images.sikuli")
 WAIT = True
+START_POINT = "start_point"
 
 X = 0
 Y = 0
@@ -70,6 +72,9 @@ def open_file(path):
 def send_sortcut(letter, key_modifiers=sikuli.Key.CTRL):
     region_vscode.type(focus_vscode, letter, key_modifiers)
 
+# mv.region_file_selection.type(mv.find("file_selection/narration"), sikuli.Key.END, sikuli.Key.CTRL)
+# mv.region_file_selection.type(mv.focus_vscode, sikuli.Key.END, sikuli.Key.CTRL)
+
 MODIFIERS = {
     "CTRL": sikuli.Key.CTRL,
     "ALT": sikuli.Key.ALT,
@@ -98,6 +103,7 @@ def set_side_bar(on=True):
     if not region_vscode.exists(get_image("side_bar_is_on")) == on:
         region_vscode.type(focus_vscode, "b", sikuli.Key.CTRL) 
 
+
 def toggle_panel():
     region_vscode.hover()
     region_vscode.type(focus_vscode, "j", sikuli.Key.CTRL)
@@ -112,29 +118,48 @@ def panel(on=True):
 # region_vscode.exists("C:/Workspaces/EOS/eoside/sikuli_movies/images.sikuli/side_bar_is_on").getScore() 0.98; 0.78; 0.82; 0.81; 0.94/
 
 
+def delete_contract(contract_dir):
+    try:
+        if os.path.exists(contract_dir):
+            shutil.rmtree(contract_dir)
+    except Exception as e:
+        print(e)
+
+
+def set_settings(contract_dir):
+    with open (os.path.join(
+            os.path.dirname(__file__), START_POINT, ".vscode\settings.json"),
+                "r") as file:
+        settings = file.read()
+    with open(os.path.join(contract_dir, ".vscode\settings.json"), "w") as file:
+        file.write(settings)
+
+
 def narration(narration_text, action="a"):
     region_vscode.type(
         find("file_selection/narration", region_file_selection), 
             "s", sikuli.Key.CTRL)
-    narration_file = file(NARRATION_FILE, action)
-    print(narration_file)
-    narration_file.write(narration_text)
-    narration_file.close()
+    with open(NARRATION_FILE, action) as file:
+        print(file)
+        file.write(narration_text)
+
+
+def edit(file_selector, text, action="a", end_of_file=True):
+    fs = wait_image(file_selector, region_file_selection)
+    if action=="w":
+            region_vscode.type(fs, "a", sikuli.Key.CTRL)
+            region_vscode.type(fs, sikuli.Key.BACKSPACE)
+
+    if end_of_file:
+        region_vscode.type(fs, sikuli.Key.END, sikuli.Key.CTRL)
+    else:
+        region_vscode.type(fs, "k", sikuli.Key.CTRL)
+        region_vscode.type(fs, "q", sikuli.Key.CTRL)
+
+    region_vscode.type(fs, text)
 
 def narration_type(narration_text, action="a"):
-    wait_image("file_selection/narration", region_file_selection)
-    if action=="w":
-            region_vscode.type(
-                find("file_selection/narration", region_file_selection),
-                "a", sikuli.Key.CTRL)
-            region_vscode.type(
-                find("file_selection/narration", region_file_selection),
-                sikuli.Key.BACKSPACE)
-
-    send_k("q", "CTRL")
-    region_vscode.type(
-        region_file_selection.find(get_image("file_selection/narration")),
-        narration_text)
+    edit("file_selection/narration", narration_text, action)
 
 
 def find(image, region=region_vscode):
@@ -156,6 +181,13 @@ def wait_image(image, region=region_vscode):
 def click(image, region=region_vscode):
     return region.click(get_image(image))
 
-def drag_drop(image, region, image_region=region_vscode):
-    column_border = find(image, image_region)
+def drag_drop(PSMRL, region, PSMRL_region=region_vscode):
+    column_border = find(PSMRL, PSMRL_region)
     return column_border.dragDrop(column_border, region)
+
+def type(PSMRL, text, region=region_vscode, modifiers=None):
+    if modifiers:
+        region.type(PSMRL, text, sikuli.Key.CTRL)
+    else:
+        region.type(PSMRL, text)
+
