@@ -162,30 +162,48 @@ def narration_type(narration_text, action="a"):
     edit("file_selection/narration", narration_text, action)
 
 
-def find(image, region=region_vscode):
-    return region.find(get_image(image))
+def find(PSMRL, region=region_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+
+    return region.find(PSMRL)
 
 
-def hover(image, region=region_vscode):
-    return region.hover(get_image(image))
+def hover(PSMRL, region=region_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+
+    return region.hover(PSMRL)
 
 
-def exists(image, region=region_vscode):
-    return region.exists(get_image(image))
+def exists(PSMRL, region=region_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+
+    return region.exists(PSMRL)
 
 
-def wait_image(image, region=region_vscode):
-    return region.wait(get_image(image))
+def wait_image(PSMRL, region=region_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+
+    return region.wait(PSMRL)
 
 
-def click(image, region=region_vscode):
-    return region.click(get_image(image))
+def click(PSMRL, region=region_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+
+    return region.click(PSMRL)
+
 
 def drag_drop(PSMRL, region, PSMRL_region=region_vscode):
     column_border = find(PSMRL, PSMRL_region)
     return column_border.dragDrop(column_border, region)
 
+
 def type(PSMRL, text, region=region_vscode, modifiers=None):
+    PSMRL = find(get_image(PSMRL), PSMRL_region)
     if modifiers:
         region.type(PSMRL, text, sikuli.Key.CTRL)
     else:

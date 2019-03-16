@@ -33,10 +33,10 @@ import os, sys
 import shutil
 import definitions as mv
 
-import pdb; pdb.set_trace()
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts"
 CONTRACT_NAME = "hello"
 
+import pdb; pdb.set_trace()
 mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
 
 mv.narration('''
@@ -76,6 +76,7 @@ mv.wait_image("explorer/vscode", mv.region_side_bar)
 mv.set_settings(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
 
 mv.open_file(mv.NARRATION_FILE)
+mv.wait_image("file_selection/hello.hpp", mv.region_file_selection)
 mv.narration_type('''
 
 ## The layout of a contract project folder.
@@ -142,12 +143,10 @@ mv.region_side_bar.click(mv.region_side_bar.getLastMatch())
 
 mv.go_to_file("narration")
 mv.send_sortcut("b")
-
+import pdb; pdb.set_trace()
 mv.click("btn_view", mv.region_menu_bar)
-mv.wait_image("editor_layout", mv.region_vscode)
-mv.region_vscode.click(mv.region_vscode.getLastMatch())
-mv.wait_image("two_columns", mv.region_vscode)
-mv.region_vscode.click(mv.region_vscode.getLastMatch())
+mv.wait_image("editor_layout", mv.region_vscode).click()
+mv.wait_image("two_columns", mv.region_vscode).click()
 
 mv.drag_drop(
     "file_selection/narration", mv.region_right_column, 
@@ -183,24 +182,24 @@ The '#include' directive is clean now.
 mv.narration_type('''
 Let's write declarations of the contract.
 ''', "w")
-wait(5)
+mv.wait(5)
 mv.edit("file_selection/hello.hpp", '''
 // The attribute [[eosio::contract]] is required for the 
 // EOSIO.CDT ABI generator, eosio-cpp, to recognize that 
 // the following class defines the contract.
 ''')
-wait(5)
+mv.wait(5)
 mv.edit("file_selection/hello.hpp", '''
 class [[eosio::contract("hello")]] hello : public eosio::contract {
     public:
 ''')
-wait(5)
+mv.wait(5)
 mv.edit("file_selection/hello.hpp", '''
 // The attribute[[eosio::action]] will tell eosio-cpp 
 // that the function is to be exposed as an action 
 // for user of the smart contract.
 ''', end_of_file=False)
-wait(5)
+mv.wait(5)
 mv.edit("file_selection/hello.hpp", '''
 [[eosio::action]] void hi(eosio::name user);
 ''', end_of_file=False)
