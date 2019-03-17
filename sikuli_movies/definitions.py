@@ -146,6 +146,7 @@ def narration(narration_text, action="a"):
 
 def edit(file_selector, text, action="a", end_of_file=True):
     fs = wait_image(file_selector, region_file_selection)
+
     if action=="w":
             region_vscode.type(fs, "a", sikuli.Key.CTRL)
             region_vscode.type(fs, sikuli.Key.BACKSPACE)
@@ -198,8 +199,10 @@ def click(PSMRL, region=region_vscode):
 
 
 def drag_drop(PSMRL, region, PSMRL_region=region_vscode):
-    column_border = find(PSMRL, PSMRL_region)
-    return column_border.dragDrop(column_border, region)
+    if isinstance(PSMRL, str):
+        PSMRL = find(PSMRL, PSMRL_region)
+
+    return PSMRL_region.dragDrop(PSMRL, region)
 
 
 def type(PSMRL, text, region=region_vscode, modifiers=None):
@@ -208,4 +211,8 @@ def type(PSMRL, text, region=region_vscode, modifiers=None):
         region.type(PSMRL, text, sikuli.Key.CTRL)
     else:
         region.type(PSMRL, text)
+
+
+def save_all():
+    send_k("s")
 
