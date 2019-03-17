@@ -56,8 +56,7 @@ def open_folder(folder_name):
     wait(1)
     region_vscode.type(sikuli.Key.BACKSPACE )
     region_vscode.type(folder_name + "\n")
-    wait_image("open_folder/open")
-    region_vscode.click(region_vscode.getLastMatch())
+    wait_image("open_folder/open").click()
 
 
 def open_file(path):

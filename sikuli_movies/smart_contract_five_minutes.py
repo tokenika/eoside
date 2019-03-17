@@ -29,22 +29,29 @@ import definitions as mv
 
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts"
 CONTRACT_NAME = "hello"
+HIGHLIGHT_COLOR = "pink"
+
+
+################################################################################
+# Starting EOSIde
+################################################################################
+mv.narration_type('''
 
 # Starting EOSIde
-mv.narration('''
 
-# Starting EOSIde
+With the VSCode extension 'EOSIde' enabled, this Visual Studio Code window has been launched with the command 'code -n' ('-n' option for empty 'EXPLORER').
 
-With the VSCode extension *EOSIde* enabled, this Visual Studio Code window was launched with the command 'code -n'. 
+EOSIde starts with  'Get Started' view -- seen in the left-side pannel, if 'EXPLORER' is empty.
 
-It started with  'Get Started' view -- seen in the left-side pannel.
-
-The left-side mv.narration panel is set to comment the action of the movie.
+The left-side narration.md panel is here to comment the action of the movie.
 
 ''', "w")
 mv.wait(5)
 
+
+################################################################################
 # Get Started view
+################################################################################
 mv.narration_type('''
 
 # EOS IDE view
@@ -53,49 +60,50 @@ This view can be desplayed with '|EOS IDE|' button in the 'editor title` menu.
 ''', "w")
 mv.find(
     "file_selection\eos_ide", 
-    mv.region_file_selection).highlight(4, "pink") # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
+    mv.region_file_selection).highlight(4, HIGHLIGHT_COLOR) # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 
 mv.narration_type('''
-## Get Started
+## EOS IDE view => Get Started
 
-Lists active references to tutorials and documentation. For example, this movie can be invoked from its refference.
+Lists active references to tutorials and documentation. For example, this movie can be invoked from one of the current entries.
 ''')
-mv.find("build_first_five").highlight(4, "pink")
+mv.find("eos_ide/build_first_five").highlight(4, HIGHLIGHT_COLOR)
 
 mv.narration_type('''
-## Recent
+## EOS IDE view => Recent
 
-Lists active references to EOSIO smart-contract projects opened with EOSIde.
+Lists active references to EOSIO smart-contract projects created with EOSIde.
 ''')
-mv.find("recent_hello").highlight(4, "pink")
+mv.find("eos_ide/recent_hello").highlight(4, HIGHLIGHT_COLOR)
 
 mv.narration_type('''
-## Open
+## EOS IDE view => Open
 
-The 'Open folder' button is the same as 'Open folder...' option in the VSCode Welcome view.
+The 'Open folder...' button is the same as 'Open folder...' option in the VSCode Welcome view.
 ''')
-mv.find("open_folder").highlight(4, "pink")
+mv.find("eos_ide/open_folder").highlight(4, HIGHLIGHT_COLOR)
 
+empty_project = mv.find("empty_project")
 mv.narration_type('''
-# EOS IDE view
 
-## New Project
+## EOS IDE view => New Project
 
-Creates new projects from templates. For example, EOSIde can arrange the structure of an empty smart-contract project.
+Creates new projects from templates. For example, the structure of an empty smart-contract project.
 ''', "w")
-mv.find("empty_project").highlight(4, "pink")
+empty_project.highlight(4, HIGHLIGHT_COLOR)
 
 mv.narration_type('''
 Let's click the 'empty project' button.
-
 ''')
-
+# Not to block folder change, delate old contract project and 
+# save the current folder.
 mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
+mv.save_all() 
+empty_project.click()
 
 mv.wait(1)
-mv.save_all()
-empty_project.highlight()
-empty_project.click()
+
+import pdb; pdb.set_trace()
 mv.open_folder(CONTRACT_NAME)
 mv.wait(1)
 mv.wait_image("explorer/vscode", mv.region_side_bar)
@@ -113,48 +121,30 @@ import pdb; pdb.set_trace()
 mv.narration_type('''
 * '.vscode' -- EOSIde configuration files.
 ''')
-explorer_vscode = mv.find("explorer/vscode", mv.region_side_bar)
-explorer_vscode.highlight()
-mv.wait(3)
-explorer_vscode.highlight()
+mv.find("explorer/vscode", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''* 'build' -- where contract ABIs and WASMs go,
 ''')
-explorer_build = mv.find("explorer/build", mv.region_side_bar)
-explorer_build.highlight()
-mv.wait(3)
-explorer_build.highlight()
+mv.find("explorer/build", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''* 'resources' -- where Ricardian Contract files reside,
 ''')
-explorer_resources = mv.find("explorer/resources", mv.region_side_bar)
-explorer_resources.highlight()
-mv.wait(3)
-explorer_resources.highlight()
+mv.find("explorer/resources", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''* 'src' -- where contract definition files reside,
 ''')
-explorer_src = mv.find("explorer/src", mv.region_side_bar)
-explorer_src.highlight()
-mv.wait(3)
-explorer_src.highlight()
+mv.find("explorer/src", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''* 'tests' -- where contract test scripts reside,
 ''')
-explorer_tests = mv.find("explorer/tests", mv.region_side_bar)
-explorer_tests.highlight()
-mv.wait(3)
-explorer_tests.highlight()
+mv.find("explorer/tests", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''* 'utils' -- keeps helper executables.
 ''')
-explorer_utils = mv.find("explorer/utils", mv.region_side_bar)
-explorer_utils.highlight()
-mv.wait(3)
-explorer_utils.highlight()
+mv.find("explorer/utils", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
 mv.narration_type('''
-Adhering to this layout enables automatization features of EOSIde.
+Adhering to this standard layout enables automatization features of EOSIde.
 ''')
 mv.wait(5)
 
@@ -193,20 +183,52 @@ mv.narration_type('''
 The header includes 'eosiolib', containing the smart-contract API.
 ''')
 eosiolib = mv.find("eosiolib")
-eosiolib.highlight()
-mv.wait(3)
+eosiolib.highlight(3, HIGHLIGHT_COLOR)
+
 mv.narration_type('''
 The green squiggle underneath an '#include' signals a deficiency. W can see what is missing: 
 ''')
-eosiolib.highlight()
 eosiolib.hover()
+mv.wait(5)
 mv.narration_type('''it is 'boost/limits.hpp'.
 
 We have localized the dependency. In our system, it is 'home\\cartman\\opt\\boost\\include'.
 ''')
 mv.click("file_selection/hello.hpp", mv.region_file_selection)
-mv.wait("file_selection/setup", mv.region_file_selection).click()
-mv.wait("setup_include").click()
+mv.wait_image(
+    "file_selection/setup", mv.region_file_selection).click()
+
+
+################################################################################
+# Setup view
+################################################################################
+mv.narration_type('''
+
+# Setup view
+
+This view can be desplayed with '|Setup|' button in the 'editor title` menu.
+''', "w")
+mv.find(
+    "file_selection\setup", 
+    mv.region_file_selection).highlight(4, HIGHLIGHT_COLOR)
+
+mv.narration_type('''
+
+## Setup view => Include
+
+Lists include folders. The entries in the list can be moved down and up, or deleted. New entries can be inserted after any of the current entries. The insert button with the header is for adding any new entry tu the end of the list.
+''')
+mv.find(
+    "setup\include", 
+    mv.region_file_selection).highlight(4, HIGHLIGHT_COLOR)
+
+
+
+
+
+
+
+mv.wait_image("setup/setup_include").click()
 
 mv.wait_image("folder_path")
 mv.type(mv.region_vscode.getLastMatch(), "home\\cartman\\opt\\boost\\include")
