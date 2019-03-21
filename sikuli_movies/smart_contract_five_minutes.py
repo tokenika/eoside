@@ -183,16 +183,10 @@ Let's edit the header file.
 if not mv.exists("explorer/hello_hpp", mv.region_side_bar):
     mv.find("explorer/src", mv.region_side_bar).click()
 mv.wait_image("explorer/hello_hpp", mv.region_side_bar).click()
+mv.toggle_side_bar()
 
-ma.view_explorer()
-ma.view_two_columns()
+narration.focus_editor(2)
 
-ma.select_file_to_edit("narration")
-mv.drag_drop(
-    "file_selection/narration", mv.region_right_column, 
-    mv.region_file_selection)
-
-#import pdb; pdb.set_trace()
 ## Move column border
 mv.drag_drop(
     mv.find("column_border").offset(5, 0), mv.region_column_border)
