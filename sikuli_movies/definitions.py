@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import subprocess
 import time
 import org.sikuli.script as sikuli
 
@@ -8,8 +9,15 @@ VSCODE = "eosfactory - Visual Studio Code"
 NARRATION_FILE = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\narration.md"
 CONTRACT_DIR = "C:\\Workspaces\\EOS\\contracts"
 RIGHT_COLUMN_WIDTH = 350
-# IMAGE_DIR = os.path.join(__file__, "..", "images.sikuli")
-IMAGE_DIR = os.path.join("C:/Workspaces/EOS/eoside/sikuli_movies/definitions.py", "..", "images.sikuli")
+IMAGE_DIR = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "images.sikuli")
+
+FF_MPEG = "ffmpeg.exe"
+MOVIES_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "movies")
+MOVIES_FORMAT = "mp4" #"wmv"
+MOVIES_FRAM_RATE = 8
+
 WAIT = True
 START_POINT = "start_point"
 
@@ -68,21 +76,9 @@ def open_file(path):
     region_vscode.click(get_image("open_folder/open"))
 
 
-def send_sortcut(letter, key_modifiers=sikuli.Key.CTRL):
+def send_shortcut(letter, key_modifiers=sikuli.Key.CTRL):
     region_vscode.type(focus_vscode, letter, key_modifiers)
 
-# mv.region_file_selection.type(mv.find("file_selection/narration"), sikuli.Key.END, sikuli.Key.CTRL)
-# mv.region_file_selection.type(mv.focus_vscode, sikuli.Key.END, sikuli.Key.CTRL)
-
-MODIFIERS = {
-    "CTRL": sikuli.Key.CTRL,
-    "ALT": sikuli.Key.ALT,
-    "CND": sikuli.Key.CMD,
-    "META": sikuli.Key.META,
-    "SHIFT": sikuli.Key.SHIFT,
-    "WIN": sikuli.Key.WIN,
-    "ALTGR": sikuli.Key.ALTGR
-    }
 
 def send_k(letter, modifier=None):
     region_vscode.type(focus_vscode, "k", sikuli.Key.CTRL)
@@ -134,84 +130,146 @@ def set_settings(contract_dir):
         file.write(settings)
 
 
-def narration(narration_text, action="a"):
-    region_vscode.type(
-        find("file_selection/narration", region_file_selection), 
-            "s", sikuli.Key.CTRL)
-    with open(NARRATION_FILE, action) as file:
-        print(file)
-        file.write(narration_text)
+def focus_editor_title(name, group=1):
+    region = region_menu_bar
+    region.type(region, str(group), sikuli.Key.CTRL)
+    region.type(region, "p", sikuli.Key.CTRL)
+    region.type(region, name + "\n")
 
 
-def edit(file_selector, text, action="a", end_of_file=True):
-    fs = wait_image(file_selector, region_file_selection)
+def focus_group(group):
+    region = region_menu_bar
+    region.type(region, str(group), sikuli.Key.CTRL)
 
-    if action=="w":
-            region_vscode.type(fs, "a", sikuli.Key.CTRL)
-            region_vscode.type(fs, sikuli.Key.BACKSPACE)
 
-    if end_of_file:
-        region_vscode.type(fs, sikuli.Key.END, sikuli.Key.CTRL)
-    else:
-        region_vscode.type(fs, "k", sikuli.Key.CTRL)
-        region_vscode.type(fs, "q", sikuli.Key.CTRL)
+class Edit():
+    def __init__(self, name, group=1):
+        self.name = name
+        self.group = group
 
-    region_vscode.type(fs, text)
+    def focus_group(self, group=None):
+        if not group:
+            group = self.group
+        
+        self.group = group
+        region = region_menu_bar
+        region.type(region, str(group), sikuli.Key.CTRL)
 
-def narration_type(narration_text, action="a"):
-    edit("file_selection/narration", narration_text, action)
+    def focus_editor(self, group=None):
+        self.focus_group(group)
+        region = region_menu_bar
+        region.type(region, "p", sikuli.Key.CTRL)
+        region.type(region, self.name + "\n")
+
+    def type(self, text, action="a", end_of_file=True):
+        self.focus_group()
+
+        if action == "w":
+            region_vscode.type("a", sikuli.Key.CTRL)
+            region_vscode.type(sikuli.Key.BACKSPACE)
+
+        if end_of_file:
+            region_vscode.type(sikuli.Key.END, sikuli.Key.CTRL)
+        else:
+            region_vscode.type("k", sikuli.Key.CTRL)
+            region_vscode.type("q", sikuli.Key.CTRL)
+
+        region_vscode.type(text)
+
+
+def toggle_side_bar():
+    region_menu_bar.type(region_menu_bar, "b", sikuli.Key.CTRL)
 
 
 def find(PSMRL, region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
-
     return region.find(PSMRL)
 
 
 def hover(PSMRL, region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
-
     return region.hover(PSMRL)
 
 
 def exists(PSMRL, region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
-
     return region.exists(PSMRL)
 
 
 def wait_image(PSMRL, region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
-
     return region.wait(PSMRL)
 
 
 def click(PSMRL, region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
-
-    return region.click(PSMRL)
+    return region.click(PSMRL)      
 
 
 def drag_drop(PSMRL, region, PSMRL_region=region_vscode):
     if isinstance(PSMRL, str):
         PSMRL = find(PSMRL, PSMRL_region)
-
-    return PSMRL_region.dragDrop(PSMRL, region)
+    return PSMRL_region.dragDrop(PSMRL, region)     
 
 
 def type(PSMRL, text, region=region_vscode, modifiers=None):
-    PSMRL = find(get_image(PSMRL), PSMRL_region)
+    if isinstance(PSMRL, str):
+        PSMRL = find(get_image(PSMRL), PSMRL_region)
     if modifiers:
         region.type(PSMRL, text, sikuli.Key.CTRL)
     else:
-        region.type(PSMRL, text)
+        region.type(PSMRL, text)     
 
 
 def save_all():
     send_k("s")
+
+
+def escape(PSMRL=focus_vscode):
+    if isinstance(PSMRL, str):
+        PSMRL = get_image(PSMRL)
+        
+    type(PSMRL, sikuli.Key.ESC)
+
+
+def kill_ffmpeg():
+    subprocess.Popen(
+        ['taskkill', "/IM", FF_MPEG],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    time.sleep(2)
+    subprocess.Popen(
+        ['taskkill', "/IM", FF_MPEG],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+
+# start "Ffmpeg from sikuli" ffmpeg -f gdigrab -framerate 10 -offset_x 0 -offset_y 0 -video_size 854x480 -show_region 1 -i desktop C:\Workspaces\EOS\eoside\sikuli_movies\movies\test.wmv
+def start_ffmpeg(output_file, 
+        format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
+
+    if not os.path.isabs(output_file):
+        output_file = os.path.join(MOVIES_DIR, output_file)
+
+    output_file = output_file + "." + format
+
+    try:
+        if os.path.exists(output_file):
+            os.remove(output_file)
+    except:
+        print("Cannot remove the file ()".format(output_file))
+
+    video_size = "{}x{}".format(W, H)
+    arg = [
+        "cmd", "/c", "start", "/MIN",
+        FF_MPEG, "-f", "gdigrab", "-framerate", str(frame_rate), "-offset_x", str(X), "-offset_y", str(Y), "-video_size", video_size, "-show_region", str(1), "-i", "desktop", output_file]
+
+    print(" ".join(arg))
+    subprocess.Popen(arg)
+
+        
 
