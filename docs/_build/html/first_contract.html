@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>EOSIde – Integrated Development Environment for EOSIO smart contracts &#8212; EOSIde 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="EOSIde – Integrated Development Environment for EOSIO smart contracts" href="intro.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="EOSIde – Integrated Development Environment for EOSIO smart contracts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EOSIde 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="eoside-integrated-development-environment-for-eosio-smart-contracts">
+<h1><em>EOSIde</em> – Integrated Development Environment for EOSIO smart contracts<a class="headerlink" href="#eoside-integrated-development-environment-for-eosio-smart-contracts" title="Permalink to this headline">¶</a></h1>
+<p><em>EOSIde</em> organizes the workflow of development process for EOSIO smart contracts – if such a process can be seen as composed of the following elements:</p>
+<ul class="simple">
+<li>project standardization and bookkeeping,</li>
+<li>referencing documentation and tutorials,</li>
+<li>automatic availability of standard libraries,</li>
+<li>dependency management,</li>
+<li>compilation and build,</li>
+<li>debugging and testing,</li>
+<li>deployment.</li>
+</ul>
+<p><em>EOSIde</em> is an extension to the <a class="reference external" href="https://code.visualstudio.com/">Visual Studio Code</a>.</p>
+<div class="section" id="project-standardization-and-bookkeeping">
+<h2>Project standardization and bookkeeping<a class="headerlink" href="#project-standardization-and-bookkeeping" title="Permalink to this headline">¶</a></h2>
+<p>Any EOSIO smart contract resides in its folder.
+EOSIde supports a specific layout of the contract folder:</p>
+<ul class="simple">
+<li><strong>root</strong> – project folder,<ul>
+<li><strong>.vscode</strong> – system folder</li>
+<li><strong>build</strong> – folder where contract WASM and ABI files go,</li>
+<li><strong>resources</strong> – folder containing Ricardian contract files and whatever else,</li>
+<li><strong>src</strong> – folder with CPP/C source files</li>
+<li><strong>tests</strong> - folder with Python scripts, especially EOSFactory scripts</li>
+<li>*<em>CMakeLists.txt</em>  - the CMake lists file of the project</li>
+</ul>
+</li>
+</ul>
+<p>In the picture below, it is shown an exemplary project layout.</p>
+<p><img alt="_images/contract_folder.png" src="_images/contract_folder.png" />Get Started view</p>
+<p>EOSIde can produce a new project.</p>
+</div>
+<div class="section" id="preview-of-the-application">
+<h2>Preview of the application<a class="headerlink" href="#preview-of-the-application" title="Permalink to this headline">¶</a></h2>
+<p>User interface of EOSIde is composed of two views: one is displayed – with the default configuration – if VSCode is started empty: <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">-n</span> <span class="pre">&quot;&quot;</span></code>. Let us list the functions of this view, shown in the picture below.</p>
+<p><img alt="_images/get_started.png" src="_images/get_started.png" />Get Started view</p>
+<ul class="simple">
+<li><em>Get Started</em> entries link to tutorials and other documentation.</li>
+<li><em>New project</em> entries trigger creation of template projects.</li>
+<li><em>Recent</em> entries switch to projects started with the <em>New project</em> triggers.</li>
+<li><em>Open</em> entries trigger specific actions.</li>
+<li>Two menu buttons in the editor title bar, namely <code class="docutils literal notranslate"><span class="pre">|EOS</span> <span class="pre">IDE|</span></code> and <code class="docutils literal notranslate"><span class="pre">|Setup|</span></code> display corresponding views.</li>
+</ul>
+<p>Another view is about the setup of the current EOSIO smart contract project. It is shown in the picture below.</p>
+<p><img alt="_images/setup.png" src="_images/setup.png" />Setup view</p>
+<ul class="simple">
+<li><em>Include</em> lists directories contain headers involved in the project. This list copies the corresponding one in the <code class="docutils literal notranslate"><span class="pre">.vscode/c_cpp_properties.json</span></code> file that comes from <em>ms-vscode.cpptools</em>. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With <em>Windows</em> and WSL Ubuntu, all file paths are expressed relative to the <code class="docutils literal notranslate"><span class="pre">WSL</span> <span class="pre">root</span></code>.</li>
+<li><em>Libs</em> lists libraries resolving outer dependencies of the project.</li>
+<li><em>Compiler Options</em> lists parameters of the wasm compiler.</li>
+<li>The buttons in the top, labelled <em>Compile</em>, <em>Build</em>, <em>EOS IDE</em> and <em>bash</em>, trigger corresponding actions. Especially, the <em>bash</em> button – present if <em>Windows</em> – starts a new <em>bash</em> terminal. All this actions can be invoked with keyboard shortcuts or with extension commands.</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>EOSIde needs <a class="reference external" href="https://github.com/eosio"><em>EOSIO</em></a> to be installed in the system. Also, it needs <em>python3</em> (Ubuntu, even if the system is Windows with WSL Ubuntu).</p>
+<p><img alt="_images/install.png" src="_images/install.png" />Setup view</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><em>EOSIde</em> – Integrated Development Environment for EOSIO smart contracts</a><ul>
+<li><a class="reference internal" href="#project-standardization-and-bookkeeping">Project standardization and bookkeeping</a></li>
+<li><a class="reference internal" href="#preview-of-the-application">Preview of the application</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter"><em>EOSIde</em> – Integrated Development Environment for EOSIO smart contracts</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/first_contract.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="EOSIde – Integrated Development Environment for EOSIO smart contracts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EOSIde 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Tokenika.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+    </div>
+  </body>
+</html>

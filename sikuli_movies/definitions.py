@@ -9,6 +9,7 @@ VSCODE = "eosfactory - Visual Studio Code"
 NARRATION_FILE = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\narration.md"
 CONTRACT_DIR = "C:\\Workspaces\\EOS\\contracts"
 RIGHT_COLUMN_WIDTH = 350
+TERMINAL_HIGHT = 200
 IMAGE_DIR = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "images.sikuli")
 
@@ -46,16 +47,18 @@ Y = region_vscode.getY()
 W = region_vscode.getW()
 H = region_vscode.getH()
 
-region_vscode.highlight
 print(region_vscode)
-focus_vscode = sikuli.Region(X+W-100, Y+50, 100, 100)
+focus_vscode = sikuli.Region(X + W - 100, Y + 50, 100, 100)
 status_bar = sikuli.Region(X, Y+H-20, W, 20)
 region_side_bar = sikuli.Region(X, Y+30, 240, H-50)
 region_menu_bar = sikuli.Region(X, Y, W, 30)
 region_file_selection = sikuli.Region(X, Y+20, W, 35)
-region_column_border = sikuli.Region(X+W-RIGHT_COLUMN_WIDTH, Y+250, 0, 0)
+region_column_border = sikuli.Region(
+    X+W-RIGHT_COLUMN_WIDTH, Y + H - TERMINAL_HIGHT, 0, 0)
 region_right_column = sikuli.Region(
     X+W-RIGHT_COLUMN_WIDTH, X+50, RIGHT_COLUMN_WIDTH, H-50)
+region_terminal = sikuli.Region(
+    X, Y + H - TERMINAL_HIGHT, W, TERMINAL_HIGHT)
 
 
 def open_folder(folder_name):
@@ -74,6 +77,14 @@ def open_file(path):
     region_vscode.wait(get_image("file_name"))
     region_vscode.type(get_image("file_name"), path)
     region_vscode.click(get_image("open_folder/open"))
+
+
+def new_file(path):
+    region_menu_bar.type(region_menu_bar, "n", sikuli.Key.CTRL)
+    region_menu_bar.type(region_menu_bar, "s", sikuli.Key.CTRL)
+    region_menu_bar.type(
+        region_menu_bar, path)
+    region_vscode.find(get_image("open_folder/save")).click()
 
 
 def send_shortcut(letter, key_modifiers=sikuli.Key.CTRL):
@@ -122,6 +133,8 @@ def delete_contract(contract_dir):
 
 
 def set_settings(contract_dir):
+    '''Copies workspace settings to the folder 'contract_dir`.
+    '''
     with open (os.path.join(
             os.path.dirname(__file__), START_POINT, ".vscode\settings.json"),
                 "r") as file:
@@ -145,13 +158,19 @@ def focus_group(group):
 class Edit():
     def __init__(self, name, group=1):
         self.name = name
-        self.group = group
+        self.group = self.limits(group)
+
+    def limits(self, group):
+        if group <=1:
+            return 1
+        if group >= 2:
+            return 2
 
     def focus_group(self, group=None):
         if not group:
             group = self.group
         
-        self.group = group
+        self.group = self.limits(group)
         region = region_menu_bar
         region.type(region, str(group), sikuli.Key.CTRL)
 
@@ -175,6 +194,19 @@ class Edit():
             region_vscode.type("q", sikuli.Key.CTRL)
 
         region_vscode.type(text)
+
+    def move_right(self):
+        self.focus_editor()
+        region_menu_bar.type(
+            region_menu_bar, sikuli.Key.RIGHT, sikuli.Key.CTRL + sikuli.Key.ALT)
+        self.group = 2
+
+    def move_left(self):
+        self.focus_editor()
+        region_menu_bar.type(
+            region_menu_bar, sikuli.Key.LEFT, sikuli.Key.CTRL + sikuli.Key.ALT)
+        self.group = 1
+
 
 
 def toggle_side_bar():
@@ -271,5 +303,45 @@ def start_ffmpeg(output_file,
     print(" ".join(arg))
     subprocess.Popen(arg)
 
-        
 
+class Terminal():
+    def exists(self):
+        return exists("terminal/TERMINAL", region_vscode)
+
+    def adjust(self):
+        top_border = exists("terminal/top_border")
+        if top_border:
+            drag_drop(top_border, region_column_border)
+
+    def show(self):
+        if not self.exists():
+            region_menu_bar.type(
+                region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+            find("terminal/TERMINAL").click()
+            # region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
+
+    def hide(self):
+        if self.exists():
+            region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
+
+    def new(self):
+        region_menu_bar.type(
+            region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+        self.adjust()
+
+    def type(self, text, new_line=True):
+        self.show()
+        if new_line:
+            text = text + "\n"
+        region_vscode.type(
+            get_image("terminal/TERMINAL"), text)
+
+
+def go_top():
+    region_menu_bar.type(
+            region_menu_bar, sikuli.Key.HOME, sikuli.Key.CTRL)
+
+
+def go_bottom():
+    region_menu_bar.type(
+            region_menu_bar, sikuli.Key.END, sikuli.Key.CTRL)

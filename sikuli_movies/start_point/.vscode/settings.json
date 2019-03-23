@@ -10,4 +10,5 @@
  "editor.lineNumbers": "off",
  "languageTool.enabled": false,
  "cSpell.enabled": false,
+ "editor.tabSize": 4,
  }

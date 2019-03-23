@@ -1,7 +1,4 @@
 
+# Test contract
 
-## EOS IDE view => New Project
-
-Creates new projects from templates. For example, the structure of an empty smart-contract project.
-
-Let's click the 'empty project' button.
+Test scripts reside in the directory 'tests'. Let's write a test named 'test'.
