@@ -1,4 +1,4 @@
 
-# Test contract
+Deploy the contract:
 
-Test scripts reside in the directory 'tests'. Let's write a test named 'test'.
+The object 'Contract' links the contract, defined with the folder 'CONTRACT_WORKSPACE' with the account 'HOST'.

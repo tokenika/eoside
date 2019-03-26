@@ -15,9 +15,10 @@ IMAGE_DIR = os.path.join(
 
 FF_MPEG = "ffmpeg.exe"
 MOVIES_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "movies")
+                            os.path.dirname(os.path.realpath(__file__)), 
+                            "movies", "smart_contract_five_minutes")
 MOVIES_FORMAT = "mp4" #"wmv"
-MOVIES_FRAM_RATE = 8
+MOVIES_FRAM_RATE = 25
 
 WAIT = True
 START_POINT = "start_point"
@@ -59,6 +60,7 @@ region_right_column = sikuli.Region(
     X+W-RIGHT_COLUMN_WIDTH, X+50, RIGHT_COLUMN_WIDTH, H-50)
 region_terminal = sikuli.Region(
     X, Y + H - TERMINAL_HIGHT, W, TERMINAL_HIGHT)
+region_scroll = sikuli.Region(X + W - 20, Y + H - 27, 20, 27)
 
 
 def open_folder(folder_name):
@@ -172,7 +174,7 @@ class Edit():
         
         self.group = self.limits(group)
         region = region_menu_bar
-        region.type(region, str(group), sikuli.Key.CTRL)
+        region.type(region, str(self.group), sikuli.Key.CTRL)
 
     def focus_editor(self, group=None):
         self.focus_group(group)
@@ -182,7 +184,6 @@ class Edit():
 
     def type(self, text, action="a", end_of_file=True):
         self.focus_group()
-
         if action == "w":
             region_vscode.type("a", sikuli.Key.CTRL)
             region_vscode.type(sikuli.Key.BACKSPACE)
@@ -207,6 +208,10 @@ class Edit():
             region_menu_bar, sikuli.Key.LEFT, sikuli.Key.CTRL + sikuli.Key.ALT)
         self.group = 1
 
+    def set_width(self):
+        ## Move column border
+        drag_drop(
+            find("column_border").offset(5, 0), region_column_border)
 
 
 def toggle_side_bar():
@@ -305,7 +310,7 @@ def start_ffmpeg(output_file,
 
 
 class Terminal():
-    def exists(self):
+    def is_shown(self):
         return exists("terminal/TERMINAL", region_vscode)
 
     def adjust(self):
@@ -314,14 +319,14 @@ class Terminal():
             drag_drop(top_border, region_column_border)
 
     def show(self):
-        if not self.exists():
-            region_menu_bar.type(
-                region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
-            find("terminal/TERMINAL").click()
-            # region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
+        if not self.is_shown():
+            # region_menu_bar.type(
+            #     region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+            # find("terminal/TERMINAL").click()
+            region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
 
     def hide(self):
-        if self.exists():
+        if self.is_shown():
             region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
 
     def new(self):
@@ -336,6 +341,37 @@ class Terminal():
         region_vscode.type(
             get_image("terminal/TERMINAL"), text)
 
+    def maximize(self):
+        if not self.is_shown():
+            return
+        button = region_vscode.exists(get_image("terminal/maximize"))
+        if button:
+            button.click()
+            region_vscode.type(
+                    get_image("terminal/TERMINAL"), 
+                    sikuli.Key.HOME, sikuli.Key.CTRL)
+        
+    def minimize(self):
+        if not self.is_shown():
+            return
+        button = region_vscode.exists(get_image("terminal/minimize"))
+        if button:
+            button.click()
+            region_vscode.type(
+                                get_image("terminal/TERMINAL"), 
+                                sikuli.Key.HOME, sikuli.Key.CTRL)        
+
+    def scroll_down(self, step=2, max_count=20):
+        if not self.is_shown():
+            return
+        region_vscode.type(
+            get_image("terminal/TERMINAL"), sikuli.Key.HOME, sikuli.Key.CTRL)
+        
+        for i in range(0, max_count):
+            region_vscode.wheel(region_vscode, sikuli.Button.WHEEL_DOWN, step)
+            if region_scroll.exists(get_image("terminal\low_scroll")):
+                break
+          
 
 def go_top():
     region_menu_bar.type(
@@ -345,3 +381,7 @@ def go_top():
 def go_bottom():
     region_menu_bar.type(
             region_menu_bar, sikuli.Key.END, sikuli.Key.CTRL)
+
+
+def close_current_editor():
+    region_vscode.type(sikuli.Key.F4, sikuli.Key.CTRL)

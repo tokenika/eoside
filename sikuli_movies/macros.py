@@ -3,9 +3,7 @@ import org.sikuli.script as sikuli
 import definitions as mv
 
 def view_explorer():
-    mv.send_shortcut("v", sikuli.Key.ALT)
-    button = mv.wait_image("view/explorer")
-    button.click()
+    mv.send_shortcut("e", sikuli.Key.CTRL + sikuli.Key.SHIFT)
 
 
 def view_extensions():

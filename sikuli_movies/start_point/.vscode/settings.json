@@ -11,4 +11,5 @@
  "languageTool.enabled": false,
  "cSpell.enabled": false,
  "editor.tabSize": 4,
+ "editor.rulers": [120],
  }
