@@ -25,13 +25,26 @@ Start point:
  "editor.rulers": [120],
 }
 
-ffmpeg -i smart_contract_five_minutes.mp4 -vcodec copy -acodec copy smart_contract_five_minutes.avi
+ffmpeg -y -loop 1 -i title_white.png -t 4 -framerate 25 title.mp4
+ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title_faded.mp4
 
-ffmpeg -loop 1 -framerate 25 -t 3 -i title.png -t 3 -f lavfi -i aevalsrc=0 -i five_minutes.mp4 -filter_complex "[0:0]fade=out:50:25:alpha=1[title]; [title][1:0][2:0][2:1] concat=n=2:v=1:a=1" five_minutes1.mp4
+ffmpeg -y -loop 1 -i title2_white.png -t 4 -framerate 25 title2.mp4
+ffmpeg -y -i title2.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title2_faded.mp4
 
+ffmpeg -y -loop 1 -i the_end_white.png -t 4 -framerate 25 the_end.mp4
+ffmpeg -y -i the_end.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast the_end_faded.mp4
 
-ffmpeg -loop 1 -t 5 -i title.png -loop 1 -t 5 -i the_end.png -f lavfi -t 5 -i anullsrc -i five_minutes.mp4 five_minutes1.mp4
+ffmpeg -y -i five_minutes.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 22 -preset veryfast five_minutes_faded.mp4
 
+concat_list.txt:
+file 'title_faded.mp4'
+file 'title2_faded.mp4'
+file 'five_minutes.mp4'
+file 'the_end_faded.mp4'
+
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy five_minutes_titled.mp4
+
+ffmpeg -i five_minutes_titled.mp4 -vcodec copy -acodec copy five_minutes_titled.avi
 '''
 
 import os, sys, time
