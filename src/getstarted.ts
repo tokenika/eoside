@@ -6,7 +6,6 @@ import * as def from './definitions'
 import * as inst from './install'
 
 const TEMPLATE: string = "template"
-const TEMPLATE_DIR: string = "templates"
 const RECENT: string = "recent"
 const RECENT_JSON: string = RECENT + ".json"
 const GET_STARTED: string = "getstarted"
@@ -162,9 +161,16 @@ class Templates {
         this._extensionPath = extensionPath
     }
 
+    private getTemplateDir(){
+        let templateDir = inst.config["TEMPLATE_DIR"]
+        if(def.IS_WINDOWS){
+            templateDir = def.wslMapLinuxWindows(templateDir)
+        }
+        return templateDir
+    }
+
     public templateList(){
-        let templateDir = vscode.Uri.file(path.join(
-            this._extensionPath, TEMPLATE_DIR)).fsPath
+        let templateDir = vscode.Uri.file(this.getTemplateDir()).fsPath
         var list:string = ""
         fs.readdirSync(templateDir).forEach((template:string) => {
             list += def.clickable(
@@ -184,26 +190,13 @@ class Templates {
         }
         vscode.window.showOpenDialog(options).then(fileUri => {
             if (fileUri && fileUri[0]) {
-                let templateDir = vscode.Uri.file(path.join(
-                    this._extensionPath, 
-                    TEMPLATE_DIR, templateName)).fsPath
+                let templateDir = vscode.Uri.file(
+                    path.join(this.getTemplateDir(), templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
                 
                 let cl = 'python3 -m eosfactory.create_project '          
                 + `'${def.wslMapWindowsLinux(fileUri[0].fsPath)}' `
                 + `'${def.wslMapWindowsLinux(templateDir)}' `
-                
-                let include = def.wslMapWindowsLinux(eosideInclude())
-                if(include) {
-                    cl += `--include '${def.wslMapWindowsLinux(
-                                                            eosideInclude())}' `
-                }
-
-                let libs = eosideLibs()
-                if(libs){
-                    cl += `--libs '${def.wslMapWindowsLinux(libs)}' `
-                }
-
                 cl += '--silent '
 
                 def.callEosfactory(cl, (stdout:string, stderr:string) =>{
@@ -337,39 +330,3 @@ class Recent {
 }
 
 
-export function eosideInclude(){
-    if(!GetStartedPanel.currentPanel)
-        return ""
-    try {
-        return def.javaPath(
-            path.join(GetStartedPanel.currentPanel._extensionPath, "include"))
-    } catch(err) {
-        return ""
-    }
-}
-
-
-export function eosideLibs(){
-    if(!GetStartedPanel.currentPanel)
-        return
-
-    try {
-        const walkSync = (dir:string, filelist:string[] = []) => {
-            fs.readdirSync(dir).forEach(file => {
-            
-                filelist = fs.statSync(path.join(dir, file)).isDirectory()
-                    ? walkSync(path.join(dir, file), filelist)
-                    : filelist.concat(
-                                    def.javaPath(path.join(dir, file)));
-            
-            });
-            return filelist;
-            }
-
-        return walkSync(path.join(
-                GetStartedPanel.currentPanel._extensionPath, "libs")).join(", ")
-    } catch(err){
-        return ""
-    }
-
-}

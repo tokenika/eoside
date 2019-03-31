@@ -6,7 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = EOSIde
 SOURCEDIR     = ./
-BUILDDIR      = ./_build
+#BUILDDIR      = ./build
+BUILDDIR      = ../../eosfactory.io/eoside
 
 # Put it first so that "make" without argument is like "make help".
 help:

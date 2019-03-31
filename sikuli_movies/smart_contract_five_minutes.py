@@ -25,26 +25,33 @@ Start point:
  "editor.rulers": [120],
 }
 
-ffmpeg -y -loop 1 -i title_white.png -t 4 -framerate 25 title.mp4
+ffmpeg -y -loop 1 -i header.png -t 4 -framerate 25 header.mp4
+ffmpeg -y -i header.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast header_faded.mp4
+
+ffmpeg -y -loop 1 -i title.png -t 4 -framerate 25 title.mp4
 ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title_faded.mp4
 
-ffmpeg -y -loop 1 -i title2_white.png -t 4 -framerate 25 title2.mp4
-ffmpeg -y -i title2.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title2_faded.mp4
-
-ffmpeg -y -loop 1 -i the_end_white.png -t 4 -framerate 25 the_end.mp4
-ffmpeg -y -i the_end.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast the_end_faded.mp4
+ffmpeg -y -loop 1 -i final.png -t 4 -framerate 25 final.mp4
+ffmpeg -y -i final.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast final_faded.mp4
 
 ffmpeg -y -i five_minutes.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 22 -preset veryfast five_minutes_faded.mp4
 
 concat_list.txt:
+file 'header_faded.mp4'
 file 'title_faded.mp4'
-file 'title2_faded.mp4'
 file 'five_minutes.mp4'
-file 'the_end_faded.mp4'
+file 'final_faded.mp4'
 
-ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy five_minutes_titled.mp4
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/images/five_minutes_edited.mp4
 
-ffmpeg -i five_minutes_titled.mp4 -vcodec copy -acodec copy five_minutes_titled.avi
+ffmpeg -i ../../../docs/images/five_minutes_edited.mp4 -vcodec copy -acodec copy five_minutes_edited.avi
+
+Windows Media Player => library => File => OpenUrl... =>
+https://eosfactory.io/img/five_minutes_titled.avi
+
+Note: 'File' from right mouse library menu.
+
+Or, better, CTRL+U
 '''
 
 import os, sys, time
@@ -367,9 +374,9 @@ hello_cpp.focus_editor(1)
 
 hello_cpp.type( 
 '''
-void hello::hi( eosio::name user ) {
-eosio::require_auth( user );
-eosio::print( "Hello, ", user);
+void hello::hi(eosio::name user) {
+eosio::require_auth(user);
+eosio::print("Hello, ", user);
 ''')
 mv.wait(5)
 
@@ -377,7 +384,7 @@ hello_cpp.type(
 '''
 // The EOSIO_DISPATCH macro to handle the dispatching 
 // of actions the hello contract.
-EOSIO_DISPATCH( hello, (hi))
+EOSIO_DISPATCH(hello, (hi))
 ''')
 mv.wait(5)
 

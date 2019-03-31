@@ -18,7 +18,7 @@ for EOSIO smart-contracts.
     :maxdepth: 1
 
     intro
-    first_contract
+    five_minutes
 
 Indices and tables
 ==================
