@@ -4,6 +4,7 @@ import * as fs from 'fs'
 
 import * as def from './definitions'
 import * as inst from './install'
+import InstallPanel from "./install"
 
 const TEMPLATE: string = "template"
 const RECENT: string = "recent"
@@ -23,8 +24,13 @@ export default class GetStartedPanel extends def.Panel {
     public static createOrShow(
                         extensionPath: string, checkFolders:boolean=true) {
 
+        if(inst.isError){
+            vscode.window.showErrorMessage("Installation is not completed.")
+            return
+        }
+
         if(vscode.workspace.workspaceFolders 
-                && !GetStartedPanel.c_cpp_prop_updated){
+                                    && !GetStartedPanel.c_cpp_prop_updated){
 
             GetStartedPanel.c_cpp_prop_updated = true
             let c_cpp_prop_path = path.join(

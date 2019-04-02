@@ -17,45 +17,49 @@ const CONFIGURATION = "configuration"
 const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
 
-export var isError = false
+export var isError = true
 var htmlBody: any = undefined
 
-function errorConditions(){
+export function errorConditions(){
     const spawn = require("child_process").spawnSync;
     htmlBody = ''
+    exports.isError = true
+    var isOK = true
 
+    let forceError = 
+        vscode.workspace.getConfiguration().eoside.specialEffects ? 
+            vscode.workspace.getConfiguration().eoside.specialEffects[0] : false
+    
     if(def.IS_WINDOWS){
         const process = spawn("bash.exe", ["--version"])
         let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
-        if(process.status){
+        if(process.status || forceError){
             errorMsg(
-`It seems that Windows Subsystem Linux is not in the System, or the 
+`It seems that Windows Subsystem Linux is not in thse System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
 EOSIde cannot do without WSL.`)
-            isError = true
-            return            
-        }
-        if(version >= WSL_VERSION_MIN){
-            conditionMsg(
-            `<em>Windows Subsystem Linux</em> version ${version} detected.`)
+            isOK = false           
         } else {
-            errorMsg(
+            if(version >= WSL_VERSION_MIN){
+                conditionMsg(
+                `<em>Windows Subsystem Linux</em> version ${version} detected.`)
+            } else {
+                
+                errorMsg(
 `The version of the WSL installation is <em>${version}</em>, while the 
 minimum is <em>${WSL_VERSION_MIN}</em>.<br>
 EOSIde cannot do without proper WSL.`)
-            isError = true
-            return
-        }        
+            isOK = false
+            }            
+        }
     }
 
     {
         const process = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${exports.PYTHON} -V`])
             : spawn(`${exports.PYTHON}`, ["-V"])
-        if(!process.status){
-            conditionMsg(
-`<em>${process.stdout.toString().trim()}</em> detected.`)
-        } else{
+            
+        if(process.status || forceError){
             let msg = 
 `It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -68,19 +72,18 @@ EOSIde cannot do without <em>${exports.PYTHON}</em>.`
 Note that the Python has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
-            isError = true
-            return
-        }
+            isOK = false
+        } else {
+            conditionMsg(
+`<em>${process.stdout.toString().trim()}</em> detected.`)
+        } 
     }
 
     {
         const process = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${exports.PIP} -V`])
             : spawn(`${exports.PIP}`, ["-V"])
-        if(!process.status){
-            conditionMsg(
-`<em>${process.stdout.toString().trim()}</em> detected.`)
-        } else{
+        if(process.status || forceError){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -93,8 +96,10 @@ EOSIde cannot do without <em>${exports.PIP}</em>.`
 Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
-            isError = true
-            return
+            isOK = false
+        } else {
+            conditionMsg(
+`<em>${process.stdout.toString().trim()}</em> detected.`)
         }
     }
 
@@ -104,9 +109,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
         const process = spawn(clExe, [], {shell: true})
-        if(!process.status){
-            conditionMsg(`<em>eosfactory</em> package detected.`)
-        } else {
+        if(process.status || forceError){
             let msg =
 `It seems that <em>eosfactory</em> package is not installed in 
 the System.<br>
@@ -118,43 +121,58 @@ EOSIde cannot do without <em>eosfactory</em>.
 Note that the package has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
-            isError = true
-            return
+            isOK = false
+        } else {
+            conditionMsg(`<em>eosfactory</em> package detected.`)
         }
     }
     {
-        let cl = `${exports.PYTHON} -m eosfactory.config --json`
+        let cl = `${exports.PYTHON} ` + '-m eosfactory.config --json ' +                                                       '--dont_set_workspace'
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
         const process = spawn(clExe, [], {shell: true})
-        if(!process.status){
-            conditionMsg(`<em>EOSFactory</em> configuration file detected`)
-        } else {
+        if(process.status || forceError){
             errorMsg(
-`It seems that the eosfactory package is corrupted, as its configuration 
-file cannot be found.`)
-            isError = true
-            return
-        }
-        exports.config = JSON.parse(process.stdout)
-        conditionMsg(
+`It seems that the eosfactory package is not installed or corrupted, as its 
+configuration file cannot be found.`)
+            isOK = false
+        } else {
+            conditionMsg(`<em>EOSFactory</em> configuration file detected`)
+
+            exports.config = JSON.parse(process.stdout)
+            conditionMsg(
 `Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
 
-        if(def.IS_WINDOWS){
-            if(!exports.config["WSL_ROOT"] && !writeRoot()){
-                errorMsg(
+            if(def.IS_WINDOWS){
+                if(!exports.config["WSL_ROOT"] && !writeRoot()){
+                    errorMsg(
 `Cannot determine the root of the WSL.<br>
 EOSIde cannot do without it.`)
-                setWslRoot()
-                isError = true
-                return
-            } else {
-                conditionMsg(`<em>WSL</em> root directory detected.<br>`)
-            } 
-        }        
+                    setWslRoot()
+                    isOK = false
+                } else {
+                    conditionMsg(`<em>WSL</em> root directory detected.<br>`)
+                } 
+            }            
+        }
     }
-    passed()
+    {
+        if(exports.config && !exports.config["EOSIO_CONTRACT_WORKSPACE"]){
+            errorMsg(
+`
+Default workspace is not set. Setting it.
+            `)
+        }
+    }
+
+    if(isOK){
+        if(!exports.config["EOSIO_CONTRACT_WORKSPACE"]){
+            changeWorkspace(passed)
+        } else {
+            passed()
+        }
+    }
 }
 
 
@@ -203,8 +221,36 @@ open file dialog. Then navigate to the repository's folder.
 `
 }
 
+function changeWorkspace(on_workspace_changed: Function){
+    let contract_workspace = exports.config["EOSIO_CONTRACT_WORKSPACE"]
+    var defaultUri = ""
+    if(contract_workspace){
+        defaultUri = def.wslMapLinuxWindows(contract_workspace)
+    }
+    
+    vscode.window.showOpenDialog({
+        canSelectMany: false,
+        canSelectFiles: false,
+        canSelectFolders: true,
+        defaultUri: vscode.Uri.file(defaultUri),
+        openLabel: 'Open'
+    }).then(fileUri => {
+    if (fileUri && fileUri[0]) {
+        exports.config["EOSIO_CONTRACT_WORKSPACE"] 
+                            = def.wslMapWindowsLinux(fileUri[0].fsPath)
+        if(!def.writeJson( // OK, exit code is 0
+            exports.config["CONFIG_FILE"], 
+            {"EOSIO_CONTRACT_WORKSPACE": 
+                                def.wslMapWindowsLinux(fileUri[0].fsPath)})){
+            on_workspace_changed()
+        } 
+    }
+    })
+}
+
 
 function passed(){
+    exports.isError = false
     htmlBody += 
 `
 <p 
@@ -259,13 +305,18 @@ export default class InstallPanel extends def.Panel {
     public static currentPanel: InstallPanel | undefined
     public static readonly viewType = "Install"
 
-    public static createOrShow(extensionPath: string) {
+    public static createOrShow(extensionPath: string, show: boolean=true) {
         if(def.IS_WINDOWS && (!exports.config || !root())){
             // In Windows and Linux Subsystem is not installed
         }
 
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
+
+        errorConditions()
+        if(!show && !exports.isError){
+            return
+        }
 
         // If we already have a panel, show it.
         if (InstallPanel.currentPanel) {
@@ -335,26 +386,8 @@ misses the 'home' directory.
                     })
                     break
                 }   
-                case CHANGE_WORKSPACE:{
-                    let defaultUri = def.wslMapLinuxWindows(
-                                   exports.config["EOSIO_CONTRACT_WORKSPACE"])
-
-                    vscode.window.showOpenDialog({
-                        canSelectMany: false,
-                        canSelectFiles: false,
-                        canSelectFolders: true,
-                        defaultUri: vscode.Uri.file(defaultUri),
-                        openLabel: 'Open'
-                    }).then(fileUri => {
-                        if (fileUri && fileUri[0]) {
-                            exports.config["EOSIO_CONTRACT_WORKSPACE"] 
-                                = def.wslMapWindowsLinux(fileUri[0].fsPath)
-                            if(!def.writeJson(
-                                exports.config["CONFIG_FILE"], exports.config)){
-                                    this.update()
-                            } 
-                        }
-                    })
+                case CHANGE_WORKSPACE: {
+                    changeWorkspace(this.update)
                     break
                 }
                 case EOS_REPOSITORY: {
@@ -479,4 +512,3 @@ export function writeRoot(){
     return def.writeJson(exports.config["CONFIG_FILE"], exports.config)
 }
 
-errorConditions()

@@ -28,6 +28,11 @@ export default class SetupPanel extends def.Panel{
             return
         }
 
+        if(inst.isError){
+            vscode.window.showErrorMessage("Installation is not completed.")
+            return
+        }
+
         let c_cpp_prop_path = path.join(
                             vscode.workspace.workspaceFolders[0].uri.fsPath, 
                             ".vscode", "c_cpp_properties.json")

@@ -10,6 +10,7 @@
 // "terminal.integrated.shell.windows": "bash.exe"
 
 import * as vscode from 'vscode'
+import * as inst from './install'
 import * as setup from './setup'
 import InstallPanel from "./install"
 import GetStartedPanel from "./getstarted"
@@ -57,9 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
             setup.bash()
         }
     ))
-       
+    
+    InstallPanel.createOrShow(context.extensionPath, false)
     GetStartedPanel.createOrShow(context.extensionPath)
-
 }
 
 
