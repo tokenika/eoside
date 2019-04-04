@@ -10,28 +10,31 @@
 // "terminal.integrated.shell.windows": "bash.exe"
 
 import * as vscode from 'vscode'
-import * as inst from './install'
 import * as setup from './setup'
 import InstallPanel from "./install"
 import GetStartedPanel from "./getstarted"
 import SetupPanel from "./setup"
 
+export var extensionPath = ""
+
 export function activate(context: vscode.ExtensionContext) {
+    exports.extensionPath = context.extensionPath
+
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.Install', () => {
-            InstallPanel.createOrShow(context.extensionPath)
+            InstallPanel.createOrShow()
         }
     ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.EOSIde', () => {
-            GetStartedPanel.createOrShow(context.extensionPath, false)
+            GetStartedPanel.createOrShow(false)
         }
     ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.Setup', () => {
-            SetupPanel.createOrShow(context.extensionPath)
+            SetupPanel.createOrShow()
         }
     ))
 
@@ -59,8 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
     ))
     
-    InstallPanel.createOrShow(context.extensionPath, false)
-    GetStartedPanel.createOrShow(context.extensionPath)
+    InstallPanel.createOrShow(false)
+    GetStartedPanel.createOrShow()
 }
 
 

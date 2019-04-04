@@ -23,7 +23,7 @@ export default class SetupPanel extends def.Panel{
     public static currentPanel: SetupPanel | undefined
     public static readonly viewType = "Setup"
 
-    public static createOrShow(extensionPath: string) {
+    public static createOrShow() {
         if(!vscode.workspace.workspaceFolders){
             return
         }
@@ -63,19 +63,17 @@ export default class SetupPanel extends def.Panel{
             // And restrict the webview to only loading content from our 
             // extension's `media` directory.
             localResourceRoots: [
-                vscode.Uri.file(path.join(extensionPath, def.RESOURCE_DIR))
+                vscode.Uri.file(path.join(
+                    def.getExtensionPath(), def.RESOURCE_DIR))
             ]
             }
         )
 
-        SetupPanel.currentPanel = new SetupPanel(panel, extensionPath)        
+        SetupPanel.currentPanel = new SetupPanel(panel)        
     }
 
-    private constructor(
-        panel: vscode.WebviewPanel,
-        extensionPath: string
-    ) {
-        super(panel, extensionPath)
+    private constructor(panel: vscode.WebviewPanel) {
+        super(panel)
 
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()

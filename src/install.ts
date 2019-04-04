@@ -26,14 +26,20 @@ export function errorConditions(){
     exports.isError = true
     var isOK = true
 
-    let forceError = 
-        vscode.workspace.getConfiguration().eoside.specialEffects ? 
-            vscode.workspace.getConfiguration().eoside.specialEffects[0] : false
+    var forceError = false
+    var forceSetDirectory = false
+    try{
+        forceError = vscode.workspace.getConfiguration().eoside
+                                                            .specialEffects[0]
+        forceSetDirectory = vscode.workspace.getConfiguration()
+                                                    .eoside.specialEffects[1]
+    } catch(err){
+    }
     
     if(def.IS_WINDOWS){
         const process = spawn("bash.exe", ["--version"])
         let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
-        if(process.status || forceError){
+        if(process.status){
             errorMsg(
 `It seems that Windows Subsystem Linux is not in thse System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
@@ -59,7 +65,7 @@ EOSIde cannot do without proper WSL.`)
             ? spawn("bash.exe", ["-c", `${exports.PYTHON} -V`])
             : spawn(`${exports.PYTHON}`, ["-V"])
             
-        if(process.status || forceError){
+        if(process.status){
             let msg = 
 `It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -83,7 +89,7 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
         const process = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${exports.PIP} -V`])
             : spawn(`${exports.PIP}`, ["-V"])
-        if(process.status || forceError){
+        if(process.status){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -109,7 +115,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
         const process = spawn(clExe, [], {shell: true})
-        if(process.status || forceError){
+        if(process.status){
             let msg =
 `It seems that <em>eosfactory</em> package is not installed in 
 the System.<br>
@@ -132,7 +138,7 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
         const process = spawn(clExe, [], {shell: true})
-        if(process.status || forceError){
+        if(process.status){
             errorMsg(
 `It seems that the eosfactory package is not installed or corrupted, as its 
 configuration file cannot be found.`)
@@ -143,6 +149,22 @@ configuration file cannot be found.`)
             exports.config = JSON.parse(process.stdout)
             conditionMsg(
 `Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
+
+            if(exports.config["EOSIO_CLI_EXECUTABLE"] ){
+                conditionMsg(`eosio detected.`)
+            } else {
+                errorMsg(
+`Cannot determine that eosio is installed.
+`)
+            }
+
+            if(exports.config["EOSIO_CPP"]  && !forceError){
+                conditionMsg(`eosio.cdt detected.`)
+            } else {
+                errorMsg(
+`Cannot determine that eosio.cdt is installed.
+`)           
+            }
 
             if(def.IS_WINDOWS){
                 if(!exports.config["WSL_ROOT"] && !writeRoot()){
@@ -167,8 +189,8 @@ Default workspace is not set. Setting it.
     }
 
     if(isOK){
-        if(!exports.config["EOSIO_CONTRACT_WORKSPACE"]){
-            changeWorkspace(passed)
+        if(!exports.config["EOSIO_CONTRACT_WORKSPACE"] || forceSetDirectory){
+            changeWorkspace()
         } else {
             passed()
         }
@@ -221,7 +243,7 @@ open file dialog. Then navigate to the repository's folder.
 `
 }
 
-function changeWorkspace(on_workspace_changed: Function){
+function changeWorkspace(){
     let contract_workspace = exports.config["EOSIO_CONTRACT_WORKSPACE"]
     var defaultUri = ""
     if(contract_workspace){
@@ -242,7 +264,11 @@ function changeWorkspace(on_workspace_changed: Function){
             exports.config["CONFIG_FILE"], 
             {"EOSIO_CONTRACT_WORKSPACE": 
                                 def.wslMapWindowsLinux(fileUri[0].fsPath)})){
-            on_workspace_changed()
+            if(InstallPanel.currentPanel){
+                InstallPanel.currentPanel.update()
+            } else{
+                InstallPanel.createOrShow()
+            }
         } 
     }
     })
@@ -305,7 +331,7 @@ export default class InstallPanel extends def.Panel {
     public static currentPanel: InstallPanel | undefined
     public static readonly viewType = "Install"
 
-    public static createOrShow(extensionPath: string, show: boolean=true) {
+    public static createOrShow(show: boolean=true) {
         if(def.IS_WINDOWS && (!exports.config || !root())){
             // In Windows and Linux Subsystem is not installed
         }
@@ -321,6 +347,7 @@ export default class InstallPanel extends def.Panel {
         // If we already have a panel, show it.
         if (InstallPanel.currentPanel) {
             InstallPanel.currentPanel._panel.reveal(column)
+            InstallPanel.currentPanel.update()
             return
         }
 
@@ -334,19 +361,17 @@ export default class InstallPanel extends def.Panel {
             // And restrict the webview to only loading content from our 
             // extension's `media` directory.
             localResourceRoots: [
-                vscode.Uri.file(path.join(extensionPath, def.RESOURCE_DIR))
+                vscode.Uri.file(path.join(
+                                    def.getExtensionPath(), def.RESOURCE_DIR))
             ]
             }
         )
 
-        InstallPanel.currentPanel = new InstallPanel(panel, extensionPath)
+        InstallPanel.currentPanel = new InstallPanel(panel)
     }
 
-    protected constructor(
-        panel: vscode.WebviewPanel,
-        extensionPath: string
-    ) {
-        super(panel, extensionPath)
+    protected constructor(panel: vscode.WebviewPanel) {
+        super(panel)
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
 
@@ -387,7 +412,7 @@ misses the 'home' directory.
                     break
                 }   
                 case CHANGE_WORKSPACE: {
-                    changeWorkspace(this.update)
+                    changeWorkspace()
                     break
                 }
                 case EOS_REPOSITORY: {

@@ -1,11 +1,16 @@
 
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+import * as extension from './extension'
 
 export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
 export const SHELL_PATH = "bash.exe"
 export const HEADER_SIZE = "20px"
+
+export function getExtensionPath(){
+    return extension.extensionPath
+}
 
 export abstract class Panel{
     public readonly _extensionPath: string
@@ -13,11 +18,11 @@ export abstract class Panel{
     protected _disposables: vscode.Disposable[] = []
 
     protected constructor(
-        panel: vscode.WebviewPanel,
-        extensionPath: string
+        panel: vscode.WebviewPanel
     ){
         this._panel = panel
-        this._extensionPath = extensionPath
+        this._extensionPath = getExtensionPath()
+
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel 
         // is closed programmatically C:\Users\cartman\AppData\Roaming\npm\node_modules\vscode

@@ -37,14 +37,14 @@ ffmpeg -y -i final.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -p
 ffmpeg -y -i five_minutes.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 22 -preset veryfast five_minutes_faded.mp4
 
 concat_list.txt:
-file 'header_faded.mp4'
+file '../header_faded.mp4'
 file 'title_faded.mp4'
-file 'five_minutes.mp4'
-file 'final_faded.mp4'
+file 'five_minutes_faded.mp4'
+file '../final_faded.mp4'
 
-ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/images/five_minutes_edited.mp4
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/five_minutes_edited.mp4
 
-ffmpeg -i ../../../docs/images/five_minutes_edited.mp4 -vcodec copy -acodec copy five_minutes_edited.avi
+ffmpeg -i ../../../docs/_static/five_minutes_edited.mp4 -vcodec copy -acodec copy five_minutes_edited.avi
 
 Windows Media Player => library => File => OpenUrl... =>
 https://eosfactory.io/img/five_minutes_titled.avi
@@ -63,8 +63,11 @@ import macros as ma
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts\\"
 CONTRACT_NAME = "hello"
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
-HIGHLIGHT_COLOR = "pink" 
-NAME = "smart_contract_five_minutes"
+HIGHLIGHT_COLOR = "pink"
+NAME = os.path.join(
+                            mv.definition_dir(), 
+                            "movies", "smart_contract_five_minutes",
+                            "smart_contract_five_minutes")
 
 ma.view_explorer()
 mv.toggle_side_bar()
@@ -133,7 +136,7 @@ mv.find("eos_ide/open_folder").highlight(3, HIGHLIGHT_COLOR)
 ################################################################################
 # New project
 ################################################################################
-empty_project = mv.find("empty_project")
+empty_project = mv.find("templates/empty_project")
 narration.type('''
 
 ## EOS IDE view => New Project
@@ -207,9 +210,9 @@ The contract is declared in a header (.hpp) file. It is defined in a source (.cp
 Write the header file.
 ''', "w")
 
-if not mv.exists("explorer/hello_hpp", mv.region_side_bar):
+if not mv.exists("explorer/hello.hpp", mv.region_side_bar):
     mv.find("explorer/src", mv.region_side_bar).click()
-mv.wait_image("explorer/hello_hpp", mv.region_side_bar).click()
+mv.wait_image("explorer/hello.hpp", mv.region_side_bar).click()
 mv.toggle_side_bar()
 
 narration.move_right()
@@ -363,10 +366,10 @@ mv.wait(4)
 
 mv.focus_group(1)
 ma.view_explorer()
-if not mv.exists("explorer/hello_cpp", mv.region_side_bar):
+if not mv.exists("explorer/hello.cpp", mv.region_side_bar):
     mv.find("explorer/src", mv.region_side_bar).click()
 
-mv.wait_image("explorer/hello_cpp", mv.region_side_bar).click()
+mv.wait_image("explorer/hello.cpp", mv.region_side_bar).click()
 mv.toggle_side_bar()
 
 hello_cpp = mv.Edit("hello.cpp")
@@ -414,14 +417,14 @@ mv.escape(require_auth)
 
 
 ################################################################################
-# Buildind the contract
+# Build the contract
 ################################################################################
 narration.type('''
 # Build contract
 
 EOSIde has several methods of building: one is to use buttons in the 'Setup' view. 
 
-Here, we use the CMake style.
+Here, we use CMake style.
 ''', "w")
 build_term.new()
 build_term.type("cd build")
@@ -433,16 +436,18 @@ narration.type('''
 Code files go to the 'build' folder, as usual.
 ''')
 
-# for i in range(0, 5):
-#     if mv.exists("terminal/built_target", mv.region_terminal):
-#         print("make finished after {} period(s)".format(i))
-#         break
-#     time.sleep(3)
-
-mv.wait(6)
+for i in range(0, 5):
+    print(i)
+    if mv.exists("terminal/built_target", mv.region_terminal):
+        print("make finished after {} period(s)".format(i))
+        break
+    mv.wait(1)
+mv.wait(4)
 build_term.hide()
+
+
 ################################################################################
-# Tests
+# Test
 ################################################################################
 
 narration.type('''

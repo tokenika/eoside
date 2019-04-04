@@ -1,15 +1,18 @@
 {
+    "workbench.statusBar.visible": false, 
+    "C_Cpp.intelliSenseEngineFallback": "Enabled", 
+    "workbench.activityBar.visible": false, 
+    "languageTool.enabled": false, 
+    "cSpell.enabled": false, 
+    "editor.tabSize": 4, 
     "files.associations": {
-       "functional": "cpp",
-       "__config": "cpp",
-       "*.ipp": "cpp"
-    },
- "C_Cpp.intelliSenseEngineFallback": "Enabled",
- "workbench.activityBar.visible": false,
- "workbench.statusBar.visible": false,
- "editor.lineNumbers": "off",
- "languageTool.enabled": false,
- "cSpell.enabled": false,
- "editor.tabSize": 4,
- "editor.rulers": [120],
- }
+        "functional": "cpp", 
+        "*.ipp": "cpp", 
+        "__config": "cpp"
+    }, 
+    "editor.lineNumbers": "off", 
+    "editor.rulers": [
+        120
+    ], 
+    "eoside.specialEffects": []
+}

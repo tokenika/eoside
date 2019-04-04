@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import time
+import json
 import org.sikuli.script as sikuli
 
 VSCODE = "eosfactory - Visual Studio Code"
@@ -14,9 +15,6 @@ IMAGE_DIR = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "images.sikuli")
 
 FF_MPEG = "ffmpeg.exe"
-MOVIES_DIR = os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), 
-                            "movies", "smart_contract_five_minutes")
 MOVIES_FORMAT = "mp4" #"wmv"
 MOVIES_FRAM_RATE = 25
 
@@ -27,6 +25,9 @@ X = 0
 Y = 0
 W = 854
 H = 480
+
+def definition_dir():
+    return os.path.dirname(os.path.realpath(__file__))
 
 def wait(time_sec):
     if WAIT:
@@ -51,8 +52,8 @@ H = region_vscode.getH()
 print(region_vscode)
 focus_vscode = sikuli.Region(X + W - 100, Y + 50, 100, 100)
 status_bar = sikuli.Region(X, Y+H-20, W, 20)
-region_side_bar = sikuli.Region(X, Y+30, 240, H-50)
-region_menu_bar = sikuli.Region(X, Y, W, 30)
+region_side_bar = sikuli.Region(X, Y + 30, 240, H-50)
+region_menu_bar = sikuli.Region(X + 700, Y, 20, 25)
 region_file_selection = sikuli.Region(X, Y+20, W, 35)
 region_column_border = sikuli.Region(
     X+W-RIGHT_COLUMN_WIDTH, Y + H - TERMINAL_HIGHT, 0, 0)
@@ -62,6 +63,22 @@ region_terminal = sikuli.Region(
     X, Y + H - TERMINAL_HIGHT, W, TERMINAL_HIGHT)
 region_scroll = sikuli.Region(X + W - 20, Y + H - 27, 20, 27)
 
+def show_enabled_extensions():
+    region_menu_bar.type(region_menu_bar, "x", 
+                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
+    region_menu_bar.type(region_menu_bar, "e", 
+                                        sikuli.Key.CTRL)
+
+
+def set_special_effects(contract_dir, special_effects=[]):
+    with open (os.path.join(
+        contract_dir, ".vscode\settings.json"), "r") as infile:
+            settings = json.load(infile)
+            settings["eoside.specialEffects"] = special_effects
+            with open(os.path.join(
+                contract_dir, ".vscode\settings.json"), "w") as outfile:
+                json.dump(settings, outfile, indent=4)
+
 
 def open_folder(folder_name):
     find("open_folder/new_folder").click()
@@ -69,6 +86,12 @@ def open_folder(folder_name):
     wait(1)
     region_vscode.type(sikuli.Key.BACKSPACE )
     region_vscode.type(folder_name + "\n")
+    wait_image("open_folder/open").click()
+
+
+def set_folder(path):
+    folder = wait_image("open_folder/folder")
+    region_vscode.type(region_menu_bar, path + "\n")
     wait_image("open_folder/open").click()
 
 
@@ -168,6 +191,13 @@ class Edit():
         if group >= 2:
             return 2
 
+    def scroll_down(self, count):
+        self.focus_editor()
+        region_vscode.type(sikuli.Key.HOME, sikuli.Key.CTRL)
+        for i in range(0, count):
+            region_vscode.type(sikuli.Key.DOWN, sikuli.Key.CTRL)
+            time.sleep(0.5)
+
     def focus_group(self, group=None):
         if not group:
             group = self.group
@@ -236,10 +266,23 @@ def exists(PSMRL, region=region_vscode):
     return region.exists(PSMRL)
 
 
-def wait_image(PSMRL, region=region_vscode):
-    if isinstance(PSMRL, str):
-        PSMRL = get_image(PSMRL)
-    return region.wait(PSMRL)
+def wait_image(PS, region=region_vscode, seconds=3, wait=0, score=0):
+    if isinstance(PS, str):
+        PS = get_image(PS)
+    count = 2 * seconds
+    exists = None
+    while True:
+        exists = region.exists(PS)
+        if exists and exists.getScore() > score:
+            break
+        else:
+            time.sleep(0.5)
+        count = count - 1
+        if count < 0:
+            break
+    if wait:
+        time.sleep(wait)
+    return exists
 
 
 def click(PSMRL, region=region_vscode):
@@ -290,7 +333,7 @@ def start_ffmpeg(output_file,
         format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
 
     if not os.path.isabs(output_file):
-        output_file = os.path.join(MOVIES_DIR, output_file)
+        output_file = os.path.join(output_file)
 
     output_file = output_file + "." + format
 
@@ -313,10 +356,10 @@ class Terminal():
     def is_shown(self):
         return exists("terminal/TERMINAL", region_vscode)
 
-    def adjust(self):
-        top_border = exists("terminal/top_border")
+    def set_hight(self):
+        top_border = exists("terminal/TERMINAL")
         if top_border:
-            drag_drop(top_border, region_column_border)
+            drag_drop(top_border.offset(0, -15), region_column_border)
 
     def show(self):
         if not self.is_shown():
@@ -332,7 +375,7 @@ class Terminal():
     def new(self):
         region_menu_bar.type(
             region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
-        self.adjust()
+        self.set_hight()
 
     def type(self, text, new_line=True):
         self.show()
@@ -361,16 +404,11 @@ class Terminal():
                                 get_image("terminal/TERMINAL"), 
                                 sikuli.Key.HOME, sikuli.Key.CTRL)        
 
-    def scroll_down(self, step=2, max_count=20):
-        if not self.is_shown():
-            return
-        region_vscode.type(
-            get_image("terminal/TERMINAL"), sikuli.Key.HOME, sikuli.Key.CTRL)
-        
-        for i in range(0, max_count):
-            region_vscode.wheel(region_vscode, sikuli.Button.WHEEL_DOWN, step)
-            if region_scroll.exists(get_image("terminal\low_scroll")):
-                break
+    def scroll_down(self, count):
+        region_vscode.type(sikuli.Key.HOME, sikuli.Key.CTRL)
+        for i in range(0, count):
+            region_vscode.type(sikuli.Key.DOWN, sikuli.Key.CTRL)
+            time.sleep(0.5)
           
 
 def go_top():

@@ -69,7 +69,7 @@
                 },
                 "eoside.specialEffects": {
                     "type": "array",
-                    "default": [],
+                    "default": [false, false],
                     "description": "Configure special effects."
                 }
             }
@@ -112,6 +112,21 @@
             }
         ],
         "keybindings": [
+            {
+                "command": "eoside.Install",
+                "key": "ctrl+alt+i",
+                "mac": "cmd+alt+i"                
+            },
+            {
+                "command": "eoside.Setup",
+                "key": "ctrl+alt+s",
+                "mac": "cmd+alt+s"                
+            },
+            {
+                "command": "eoside.EOSIde",
+                "key": "ctrl+alt+e",
+                "mac": "cmd+alt+e"                
+            },                        
             {
                 "command": "eoside.bash",
                 "key": "ctrl+shift+t",

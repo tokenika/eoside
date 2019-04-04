@@ -19,6 +19,7 @@ for EOSIO smart-contracts.
 
     intro
     five_minutes
+    installing_movie
 
 Indices and tables
 ==================
