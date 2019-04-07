@@ -326,16 +326,24 @@ def kill_ffmpeg():
         ['taskkill', "/IM", FF_MPEG],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+'''
+https://superuser.com/questions/859010/what-ffmpeg-command-line-produces-video-more-compatible-across-all-devices
 
+ffmpeg \
+    -f gdigrab -framerate 25 -offset_x 0 -offset_y 0 -video_size 854x480 -show_region 1 \
+    -i desktop \
+    -c:v libx264 -crf 23 -pix_fmt yuv420p \
+    -movflags faststart \
+    output.mp4
+'''
 
-# start "Ffmpeg from sikuli" ffmpeg -f gdigrab -framerate 10 -offset_x 0 -offset_y 0 -video_size 854x480 -show_region 1 -i desktop C:\Workspaces\EOS\eoside\sikuli_movies\movies\test.wmv
 def start_ffmpeg(output_file, 
         format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
 
     if not os.path.isabs(output_file):
         output_file = os.path.join(output_file)
 
-    output_file = output_file + "." + format
+    output_file = output_file + "_raw." + format
 
     try:
         if os.path.exists(output_file):
@@ -346,7 +354,11 @@ def start_ffmpeg(output_file,
     video_size = "{}x{}".format(W, H)
     arg = [
         "cmd", "/c", "start", "/MIN",
-        FF_MPEG, "-f", "gdigrab", "-framerate", str(frame_rate), "-offset_x", str(X), "-offset_y", str(Y), "-video_size", video_size, "-show_region", str(1), "-i", "desktop", output_file]
+        FF_MPEG, "-f", "gdigrab", "-framerate", str(frame_rate), 
+        "-offset_x", str(X), "-offset_y", str(Y), "-video_size", video_size, "-show_region", str(1), 
+        "-i", "desktop", 
+        "-c:v", "libx264", "-crf", str(23), "-pix_fmt", "yuv420p", 
+        output_file]
 
     print(" ".join(arg))
     subprocess.Popen(arg)

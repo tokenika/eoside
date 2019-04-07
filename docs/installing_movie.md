@@ -4,6 +4,6 @@
 ![](../images/file_structure.png)
 where ../images is automatically converted to ../_images -->
 
-<video src="_static/installing_edited.mp4" width="854" height="480" controls preload></video>
+<video src="_static/installing.mp4" width="854" height="480" controls preload></video>
 
 >> Note: The side bar can be collapsed, or expanded, by clicking the left frame.

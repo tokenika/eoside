@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
-        'eoside.EOSIde', () => {
+        'eoside.EOSIDE', () => {
             GetStartedPanel.createOrShow(false)
         }
     ))

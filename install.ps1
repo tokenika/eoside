@@ -4,7 +4,7 @@
 
 Write-Host "
 # This script, downloaded from https://github.com/tokenika/eoside,
-# installs EOSIde, the Integrated Development Environment for EOSIO smart
+# installs EOSIDE, the Integrated Development Environment for EOSIO smart
 contracts by Tokenika.
 "
 

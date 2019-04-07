@@ -25,6 +25,9 @@ export default class SetupPanel extends def.Panel{
 
     public static createOrShow() {
         if(!vscode.workspace.workspaceFolders){
+            vscode.window.showInformationMessage(
+                            "Cannot open Setup View: Explorer is empty."
+            )
             return
         }
 
@@ -149,7 +152,7 @@ function body(extensionPath:string){
         title="ctr">Build</button>    
     <button 
         class="ctr"; 
-        id="EOSIde"; 
+        id="EOSIDE"; 
         title="ctr">EOS IDE</button>
         
     ${def.IS_WINDOWS ?`
@@ -272,8 +275,8 @@ function action(message: any, panel: def.Panel){
                 build()
             }
             break
-        case "EOSIde":
-            vscode.commands.executeCommand("eoside.EOSIde")
+        case "EOSIDE":
+            vscode.commands.executeCommand("eoside.EOSIDE")
             break
         case "bash":            
             bash()

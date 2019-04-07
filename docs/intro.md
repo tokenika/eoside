@@ -1,6 +1,6 @@
-# *EOSIde* -- Integrated Development Environment for EOSIO smart contracts
+# *EOSIDE* -- Integrated Development Environment for EOSIO smart contracts
 
-*EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+*EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization,
 * easy access to an project archive,
@@ -12,11 +12,11 @@
 * testing,
 * deployment.
 
-*EOSIde* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
+*EOSIDE* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
 
 ## Get Started view
 
-If the EOSIde extension is installed -- with the default configuration -- on the VSCode, and if VSCode is started empty with the command `code -n ""`, it opens the *Get Started*, view as shown in the picture below:
+If the EOSIDE extension is installed -- with the default configuration -- on the VSCode, and if VSCode is started empty with the command `code -n ""`, it opens the *Get Started*, view as shown in the picture below:
 
 ![Get Started view](images/get_started.png)
 
@@ -31,7 +31,7 @@ Let us list the functions of this view,
 ## Project standardization
 
 Any EOSIO smart contract resides in its folder. 
-EOSIde supports a specific layout of the contract folder:
+EOSIDE supports a specific layout of the contract folder:
 * **root** -- project folder,
     * **.vscode** -- system folder
     * **build** -- folder where contract WASM and ABI files go,
@@ -44,7 +44,7 @@ In the picture below, it is shown an exemplary project layout.
 
 ![Project layout](images/contract_folder.png)
 
-EOSIde can produce a new project. A project may be empty, or it can be based on a template. The following figure show the selection process. First, the *EOS IDE* screen has to be active. Next, click the chosen template.
+EOSIDE can produce a new project. A project may be empty, or it can be based on a template. The following figure show the selection process. First, the *EOS IDE* screen has to be active. Next, click the chosen template.
 
 ![New project](images/new_project.png)
 
@@ -71,7 +71,7 @@ All the dependencies are stored in the file *.vscode/c_cpp_properties.json*. Thi
 
 ## Intellisense
 
-It is a property of VSCode that it implements intellisense functions, if proper data is provided. EOSIde ensures that data automatically. The following picture shows the result of *Pick Definition* command applied to the function *eosio_assert*.
+It is a property of VSCode that it implements intellisense functions, if proper data is provided. EOSIDE ensures that data automatically. The following picture shows the result of *Pick Definition* command applied to the function *eosio_assert*.
 
 ![Intellisense](images/intellisense.png)
 
@@ -295,13 +295,13 @@ If you create a new [project](#Project-standardization) from a template, the sys
 
 #### Start with eoside
 
-If launched with the EOSIde extension installed, an instance of VSCode starts with the *Get Started* view (if the *Explorer* panel is empty). If you consider this behavior annoying, click the button *toggle*.
+If launched with the EOSIDE extension installed, an instance of VSCode starts with the *Get Started* view (if the *Explorer* panel is empty). If you consider this behavior annoying, click the button *toggle*.
 
 You can call the view either with |EOS IDE|** menu item in the VSCode editor title bar, or ctrl+shift+p => eoside |EOS IDE|
 
 #### menu
 
-There is a menu in the right side of the VSCode editor title bar: it may be used to display an EOSIde view. You can remove it, clicking the *change* button.
+There is a menu in the right side of the VSCode editor title bar: it may be used to display an EOSIDE view. You can remove it, clicking the *change* button.
 
 Without this menu, still you can call the views:
 * **Get Started View:** ctrl+shift+p => eoside |EOS IDE|

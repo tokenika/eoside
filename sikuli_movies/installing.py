@@ -1,9 +1,9 @@
 '''
-ffmpeg -y -loop 1 -i title.png -t 4 -framerate 25 title.mp4
+ffmpeg -y -loop 1 -i title.png -c:v libx264 -crf 23 -pix_fmt yuv420p -pix_fmt yuv420p -movflags faststart -t 4 -framerate 25 title.mp4
 
-ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title_faded.mp4
+ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart title_faded.mp4
 
-ffmpeg -y -i installing.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 22 -preset veryfast installing_faded.mp4
+ffmpeg -y -i installing_raw.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart installing_faded.mp4
 
 concat_list.txt:
 file '../header_faded.mp4'
@@ -11,12 +11,17 @@ file 'title_faded.mp4'
 file 'installing_faded.mp4'
 file '../final_faded.mp4'
 
-ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/installing_edited.mp4
-ffplay ../../../docs/_static/installing_edited.mp4
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/installing.mp4
 
-ffmpeg -i ../../../docs/_static/installing_edited.mp4 -vcodec copy -acodec copy installing_edited.avi
+ffplay ../../../docs/_static/installing.mp4
+
+################################################################################
+
+
+ffmpeg -i ../../../docs/_static/installing.mp4 -vcodec copy -acodec copy installing.avi
 ffmpeg -i installing.mp4 -vcodec copy -acodec copy installing.avi
 
+ffmpeg -i ../../../docs/_static/installing.mp4 -c:v libx264 -movflags +faststart ../../../docs/_static/installing1.mp4
 '''
 
 import os, sys, time
@@ -84,15 +89,14 @@ narration.type('''
 
 # Setting the default workspace directory
 
-If all the dependencies are satisfied, but with newly installed EOSFactory 'Select Directory' dialog opens.
+If all the dependencies are satisfied but with newly installed EOSFactory, 'Select Directory' dialog opens.
 ''', "w")
 
 mv.set_special_effects(START_POINT_DIR, [False, True])
 mv.focus_group(1)
 ma.install_view()
-mv.wait(0.5)
-mv.set_special_effects(START_POINT_DIR)                    
 mv.set_folder(mv.CONTRACT_DIR)
+mv.set_special_effects(START_POINT_DIR)
 
 mv.wait_image("installing/eosio.cdt_detected", seconds=20, wait=3)
 
@@ -125,7 +129,7 @@ narration.type('''
 
 # Test the installation
 
-If the 'Install' view is all blue, EOSIDE should be fully functional.
+With the 'Install' view all blue, EOSIDE should be fully functional.
 
 Try an EOSIO smart contract. Click '|EOS IDE|' or (ctrl+alt+e with US keyboard) to open 'Get Started' view.
 ''', "w")
@@ -172,10 +176,11 @@ test1.scroll_down(0)
 ################################################################################
 # Build the contract
 ################################################################################
+narration.set_width()
 narration.type('''
 # Build contract
 
-EOSIde has several methods, use CMake here.
+EOSIDE has several methods, use CMake here.
 ''', "w")
 
 ma.cmake()

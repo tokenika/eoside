@@ -1,6 +1,6 @@
-# *EOSIde* -- Integrated Development Environment for EOSIO smart contracts
+# *EOSIDE* -- Integrated Development Environment for EOSIO smart contracts
 
- With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+ With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization and bookkeeping,
 * referencing documentation and tutorials,
@@ -10,11 +10,11 @@
 * debugging and testing,
 * deployment.
 
-*EOSIde* bases on [Visual Studio Code](https://code.visualstudio.com/), extending specifically functionalities of the *VSCode*.
+*EOSIDE* bases on [Visual Studio Code](https://code.visualstudio.com/), extending specifically functionalities of the *VSCode*.
 
 ## Preview of the application
 
-User interface of EOSIde is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
+User interface of EOSIDE is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
 
 ![Get Started view](docs/images/get_started.png)
 
@@ -36,7 +36,7 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 ## Installation
 
-EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu Python, even if the system is Windows with WSL Ubuntu).
+EOSIDE needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu Python, even if the system is Windows with WSL Ubuntu).
 
 ![Setup view](docs/images/install.png)
 

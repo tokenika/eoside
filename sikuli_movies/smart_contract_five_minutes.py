@@ -25,16 +25,19 @@ Start point:
  "editor.rulers": [120],
 }
 
-ffmpeg -y -loop 1 -i header.png -t 4 -framerate 25 header.mp4
-ffmpeg -y -i header.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast header_faded.mp4
+ffmpeg -y -loop 1 -i ..\header.png -c:v libx264 -crf 23 -pix_fmt yuv420p -pix_fmt yuv420p -movflags faststart -t 4 -framerate 25 ..\header.mp4
 
-ffmpeg -y -loop 1 -i title.png -t 4 -framerate 25 title.mp4
-ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast title_faded.mp4
+ffmpeg -y -i ..\header.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart ..\header_faded.mp4
 
-ffmpeg -y -loop 1 -i final.png -t 4 -framerate 25 final.mp4
-ffmpeg -y -i final.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 22 -preset veryfast final_faded.mp4
+ffmpeg -y -loop 1 -i ..\final.png -c:v libx264 -crf 23 -pix_fmt yuv420p -pix_fmt yuv420p -movflags faststart -t 4 -framerate 25 ..\final.mp4
 
-ffmpeg -y -i five_minutes.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 22 -preset veryfast five_minutes_faded.mp4
+ffmpeg -y -i ..\final.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart ..\final_faded.mp4
+
+ffmpeg -y -loop 1 -i title.png -c:v libx264 -crf 23 -pix_fmt yuv420p -pix_fmt yuv420p -movflags faststart -t 4 -framerate 25 title.mp4
+
+ffmpeg -y -i title.mp4 -vf "fade=in:0:25,fade=out:75:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart title_faded.mp4
+
+ffmpeg -y -i five_minutes_raw.mp4 -vf "fade=in:0:25" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart five_minutes_faded.mp4
 
 concat_list.txt:
 file '../header_faded.mp4'
@@ -42,9 +45,16 @@ file 'title_faded.mp4'
 file 'five_minutes_faded.mp4'
 file '../final_faded.mp4'
 
-ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/five_minutes_edited.mp4
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/five_minutes.mp4
 
-ffmpeg -i ../../../docs/_static/five_minutes_edited.mp4 -vcodec copy -acodec copy five_minutes_edited.avi
+ffplay ../../../docs/_static/five_minutes.mp4
+
+################################################################################
+
+https://eosfactory.io/eoside/html/_static/installing.mp4
+https://eosfactory.io/eoside/html/_static/five_minutes.mp4
+
+ffmpeg -i ../../../docs/_static/five_minutes.mp4 -vcodec copy -acodec copy five_minutes.avi
 
 Windows Media Player => library => File => OpenUrl... =>
 https://eosfactory.io/img/five_minutes_titled.avi
@@ -67,7 +77,7 @@ HIGHLIGHT_COLOR = "pink"
 NAME = os.path.join(
                             mv.definition_dir(), 
                             "movies", "smart_contract_five_minutes",
-                            "smart_contract_five_minutes")
+                            "five_minutes")
 
 ma.view_explorer()
 mv.toggle_side_bar()
@@ -85,14 +95,14 @@ mv.start_ffmpeg(NAME)
 mv.wait(3)
 
 ################################################################################
-# Starting EOSIde
+# Starting EOSIDE
 ################################################################################
 
 narration.type('''
 
-# Starting EOSIde
+# Starting EOSIDE
 
-With the extension 'EOSIde' enabled, this Visual Studio Code window has been launched with the command 'code -n'.
+With the extension 'EOSIDE' enabled, this Visual Studio Code window has been launched with the command 'code -n'.
 ''', "w")
 mv.wait(4)
 
@@ -121,7 +131,7 @@ mv.find("eos_ide/build_first_five").highlight(4, HIGHLIGHT_COLOR)
 narration.type('''
 ## EOS IDE view => Recent
 
-Live references to projects created with EOSIde.
+Live references to projects created with EOSIDE.
 ''')
 mv.find("eos_ide/recent_hello").highlight(3, HIGHLIGHT_COLOR)
 
@@ -174,7 +184,7 @@ narration.type('''
 ''', "w")
 
 narration.type('''
-* '.vscode' -- EOSIde configuration files.
+* '.vscode' -- EOSIDE configuration files.
 ''')
 mv.find("explorer/vscode", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
@@ -297,10 +307,10 @@ mv.find("setup/buttons").highlight(4, HIGHLIGHT_COLOR)
 ################################################################################
 # Continue with editing hello_hpp
 ################################################################################
-
 narration.type('''
 Add the missing include folder.
 ''', "w")
+mv.wait(1)
 mv.find("setup/include").highlight(4, HIGHLIGHT_COLOR)
 mv.wait_image("setup/setup_include").click()
 
@@ -332,11 +342,12 @@ hello_hpp.type('''
 ''')
 mv.wait(3)
 
-hello_hpp.type('''
-class [[eosio::contract("hello")]] hello : public eosio::contract {
+hello_hpp.type(
+'''
+class [[eosio::contract("%s")]] hello : public eosio::contract {
 
 public:
-''')
+''' % CONTRACT_NAME)
 mv.wait(3)
 
 hello_hpp.type(
@@ -419,30 +430,20 @@ mv.escape(require_auth)
 ################################################################################
 # Build the contract
 ################################################################################
+narration.set_width()
 narration.type('''
 # Build contract
 
-EOSIde has several methods of building: one is to use buttons in the 'Setup' view. 
+EOSIDE has several methods of building: one is to use buttons in the 'Setup' view. 
 
 Here, we use CMake style.
 ''', "w")
-build_term.new()
-build_term.type("cd build")
-build_term.type("cmake ..")
-build_term.type("make")
+ma.cmake()
 
 narration.focus_editor()
 narration.type('''
-Code files go to the 'build' folder, as usual.
+Code files go to the 'build' folder.
 ''')
-
-for i in range(0, 5):
-    print(i)
-    if mv.exists("terminal/built_target", mv.region_terminal):
-        print("make finished after {} period(s)".format(i))
-        break
-    mv.wait(1)
-mv.wait(4)
 build_term.hide()
 
 
@@ -461,7 +462,7 @@ Write a test named 'test'.
 mv.focus_group(1)
 mv.new_file(CONTRACT_WORKSPACE + CONTRACT_NAME + "\\tests\\test.py")
 test = mv.Edit("test.py")
-
+mv.wait(1)
 test.type("""
 import sys
 
@@ -548,19 +549,7 @@ if __name__ == "__main__":
 """)
 mv.save_all()
 
-test_term = mv.Terminal()
-test_term.new()
-test_term.type("cd tests")
-test_term.type("python3 test.py")
+ma.run_test("test.py", 1)
 
-for i in range(0, 5):
-    if mv.exists("terminal/local_node_stopped", mv.region_terminal):
-        print("make finished after {} period(s)".format(i))
-        break
-    time.sleep(3)
-
-test_term.maximize()
-mv.wait(2)
-test_term.scroll_down(step=1)
-
+mv.wait(4)
 mv.kill_ffmpeg()

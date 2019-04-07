@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'EOSIde'
+project = 'EOSIDE'
 copyright = '2018, Tokenika'
 author = 'Tokenika'
 

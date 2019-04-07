@@ -23,7 +23,7 @@ RIGHT = 2
 
 
 def focus_eos_ide(group=LEFT):
-    mv.focus_editor_title(">EOSIde:|EOS IDE|", group)
+    mv.focus_editor_title(">EOSIDE:|EOS IDE|", group)
 
 
 def focus_setup(group=LEFT):
@@ -31,7 +31,7 @@ def focus_setup(group=LEFT):
 
 
 def focus_install(group=LEFT):
-    mv.focus_editor_title(">EOSIde:Install", group)
+    mv.focus_editor_title(">EOSIDE:Install", group)
 
 
 def cmake():
@@ -45,18 +45,7 @@ def cmake():
     mv.wait_image("terminal/built_target", seconds=20, wait=3, score=0.9)
 
 
-def show_and_run_test(test_name, scroll_script, scroll_result):
-    view_explorer()
-    mv.focus_group(1)
-    if not mv.exists("explorer/{}".format(test_name)), mv.region_side_bar):
-        mv.find("explorer/tests", mv.region_side_bar).click()
-        mv.hover(mv.region_menu_bar) # move cursor away
-
-    mv.wait_image("explorer/{}".format(test_name), mv.region_side_bar).click()
-    mv.toggle_side_bar()
-    test = mv.Edit(test_name, 1)
-    test.scroll_down(scroll_script)
-
+def run_test(test_name, scroll_result):
     terminal = mv.Terminal()
     terminal.new()
     terminal.type("cd tests")
@@ -65,7 +54,23 @@ def show_and_run_test(test_name, scroll_script, scroll_result):
 
     terminal.maximize()
     mv.wait(2)
-    terminal.scroll_down(scroll_result)
+    terminal.scroll_down(scroll_result)  
+
+
+def show_and_run_test(test_name, scroll_script, scroll_result):
+    view_explorer()
+    mv.focus_group(1)
+    if not mv.exists(
+            "explorer/{}".format(test_name), mv.region_side_bar):
+        mv.find("explorer/tests", mv.region_side_bar).click()
+        mv.hover(mv.region_menu_bar) # move cursor away
+
+    mv.wait_image("explorer/{}".format(test_name), mv.region_side_bar).click()
+    mv.toggle_side_bar()
+    test = mv.Edit(test_name, 1)
+    test.scroll_down(scroll_script)
+
+    run_test(test_name, scroll_result)
 
 
 def install_view():

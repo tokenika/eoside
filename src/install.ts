@@ -22,12 +22,10 @@ var htmlBody: any = undefined
 
 export function errorConditions(){
     const spawn = require("child_process").spawnSync;
-    htmlBody = ''
-    exports.isError = true
-    var isOK = true
 
     var forceError = false
     var forceSetDirectory = false
+    if(!exports.isError)
     try{
         forceError = vscode.workspace.getConfiguration().eoside
                                                             .specialEffects[0]
@@ -35,7 +33,11 @@ export function errorConditions(){
                                                     .eoside.specialEffects[1]
     } catch(err){
     }
-    
+
+    htmlBody = ''
+    exports.isError = true
+    var isOK = true
+
     if(def.IS_WINDOWS){
         const process = spawn("bash.exe", ["--version"])
         let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
@@ -43,7 +45,7 @@ export function errorConditions(){
             errorMsg(
 `It seems that Windows Subsystem Linux is not in thse System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
-EOSIde cannot do without WSL.`)
+EOSIDE cannot do without WSL.`)
             isOK = false           
         } else {
             if(version >= WSL_VERSION_MIN){
@@ -54,7 +56,7 @@ EOSIde cannot do without WSL.`)
                 errorMsg(
 `The version of the WSL installation is <em>${version}</em>, while the 
 minimum is <em>${WSL_VERSION_MIN}</em>.<br>
-EOSIde cannot do without proper WSL.`)
+EOSIDE cannot do without proper WSL.`)
             isOK = false
             }            
         }
@@ -69,7 +71,7 @@ EOSIde cannot do without proper WSL.`)
             let msg = 
 `It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
-EOSIde cannot do without <em>${exports.PYTHON}</em>.`
+EOSIDE cannot do without <em>${exports.PYTHON}</em>.`
 
             if(def.IS_WINDOWS){
                 msg +=
@@ -93,7 +95,7 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
-EOSIde cannot do without <em>${exports.PIP}</em>.`
+EOSIDE cannot do without <em>${exports.PIP}</em>.`
 
             if(def.IS_WINDOWS){
                 msg +=
@@ -119,7 +121,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             let msg =
 `It seems that <em>eosfactory</em> package is not installed in 
 the System.<br>
-EOSIde cannot do without <em>eosfactory</em>.
+EOSIDE cannot do without <em>eosfactory</em>.
 `
             if(def.IS_WINDOWS){
                 msg += 
@@ -141,7 +143,7 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
         if(process.status){
             errorMsg(
 `It seems that the eosfactory package is not installed or corrupted, as its 
-configuration file cannot be found.`)
+configuration file cannot be read.`)
             isOK = false
         } else {
             conditionMsg(`<em>EOSFactory</em> configuration file detected`)
@@ -170,7 +172,7 @@ configuration file cannot be found.`)
                 if(!exports.config["WSL_ROOT"] && !writeRoot()){
                     errorMsg(
 `Cannot determine the root of the WSL.<br>
-EOSIde cannot do without it.`)
+EOSIDE cannot do without it.`)
                     setWslRoot()
                     isOK = false
                 } else {
@@ -186,6 +188,11 @@ EOSIde cannot do without it.`)
 Default workspace is not set. Setting it.
             `)
         }
+    }
+
+    try{
+        vscode.workspace.getConfiguration().eoside.specialEffects = []
+    } catch(err){
     }
 
     if(isOK){
@@ -264,11 +271,7 @@ function changeWorkspace(){
             exports.config["CONFIG_FILE"], 
             {"EOSIO_CONTRACT_WORKSPACE": 
                                 def.wslMapWindowsLinux(fileUri[0].fsPath)})){
-            if(InstallPanel.currentPanel){
-                InstallPanel.currentPanel.update()
-            } else{
-                InstallPanel.createOrShow()
-            }
+            InstallPanel.createOrShow()
         } 
     }
     })
@@ -339,42 +342,43 @@ export default class InstallPanel extends def.Panel {
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 
-        errorConditions()
-        if(!show && !exports.isError){
-            return
+        
+        if(!show){
+            errorConditions()
+            if(!exports.isError){
+                return
+            }
         }
 
         // If we already have a panel, show it.
         if (InstallPanel.currentPanel) {
-            InstallPanel.currentPanel._panel.reveal(column)
             InstallPanel.currentPanel.update()
-            return
+            InstallPanel.currentPanel._panel.reveal(column)
+        } else {
+            // Otherwise, create a new panel.
+            const panel = vscode.window.createWebviewPanel(
+                    InstallPanel.viewType, "Install", 
+                    column || vscode.ViewColumn.One, {
+                // Enable javascript in the webview
+                enableScripts: true,
+
+                // And restrict the webview to only loading content from our 
+                // extension's `media` directory.
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(
+                                        def.getExtensionPath(), def.RESOURCE_DIR))
+                ]
+                }
+            )
+            InstallPanel.currentPanel = new InstallPanel(panel)
         }
-
-        // Otherwise, create a new panel.
-        const panel = vscode.window.createWebviewPanel(
-                InstallPanel.viewType, "Install", 
-                column || vscode.ViewColumn.One, {
-            // Enable javascript in the webview
-            enableScripts: true,
-
-            // And restrict the webview to only loading content from our 
-            // extension's `media` directory.
-            localResourceRoots: [
-                vscode.Uri.file(path.join(
-                                    def.getExtensionPath(), def.RESOURCE_DIR))
-            ]
-            }
-        )
-
-        InstallPanel.currentPanel = new InstallPanel(panel)
     }
 
     protected constructor(panel: vscode.WebviewPanel) {
         super(panel)
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
-
+        this.update()
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {

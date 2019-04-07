@@ -1,6 +1,6 @@
-# *EOSIde* -- Integrated Development Environment for EOSIO smart contracts
+# *EOSIDE* -- Integrated Development Environment for EOSIO smart contracts
 
-*EOSIde* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+*EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization and bookkeeping,
 * referencing documentation and tutorials,
@@ -10,12 +10,12 @@
 * debugging and testing,
 * deployment.
 
-*EOSIde* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
+*EOSIDE* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
 
 ## Project standardization and bookkeeping
 
 Any EOSIO smart contract resides in its folder. 
-EOSIde supports a specific layout of the contract folder:
+EOSIDE supports a specific layout of the contract folder:
 * **root** -- project folder,
     * **.vscode** -- system folder
     * **build** -- folder where contract WASM and ABI files go,
@@ -28,12 +28,12 @@ In the picture below, it is shown an exemplary project layout.
 
 ![Get Started view](images/contract_folder.png)
 
-EOSIde can produce a new project. 
+EOSIDE can produce a new project. 
 
 
 ## Preview of the application
 
-User interface of EOSIde is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
+User interface of EOSIDE is composed of two views: one is displayed -- with the default configuration -- if VSCode is started empty: `code -n ""`. Let us list the functions of this view, shown in the picture below.
 
 ![Get Started view](images/get_started.png)
 
@@ -55,6 +55,6 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 ## Installation
 
-EOSIde needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu, even if the system is Windows with WSL Ubuntu).
+EOSIDE needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu, even if the system is Windows with WSL Ubuntu).
 
 ![Setup view](images/install.png)

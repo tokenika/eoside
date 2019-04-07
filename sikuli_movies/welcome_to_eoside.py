@@ -3,7 +3,7 @@ from definitions import *
 narration('''
 # Welcome to EOSIO smart-contract Integrated Development Environment
 
-EOSIde organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+EOSIDE organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
 * project standardization and bookkeeping,
 * referencing documentation and tutorials,
