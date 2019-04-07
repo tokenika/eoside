@@ -17,8 +17,8 @@ for EOSIO smart-contracts.
 .. toctree::
     :maxdepth: 1
 
-    installingEOSIDE
-    intro
+    installing_EOSIDE
+    introduction_to_EOSIDE
     five_minutes_movie
     installing_movie
 

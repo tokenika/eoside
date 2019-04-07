@@ -276,7 +276,7 @@ function action(message: any, panel: def.Panel){
             }
             break
         case "EOSIDE":
-            vscode.commands.executeCommand("eoside.EOSIDE")
+            vscode.commands.executeCommand("eoside.GetStarted")
             break
         case "bash":            
             bash()

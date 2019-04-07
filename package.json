@@ -17,7 +17,7 @@
     },
     "activationEvents": [
         "*",
-        "onCommand:eoside.EOSIDE"
+        "onCommand:eoside.GetStarted"
     ],
     "engines": {
         "vscode": "^1.25.0"
@@ -81,7 +81,7 @@
                 "category": "EOSIDE"
             },
             {
-                "command": "eoside.EOSIDE",
+                "command": "eoside.GetStarted",
                 "title": "| EOS IDE |",
                 "category": "EOSIDE"
             },
@@ -123,7 +123,7 @@
                 "mac": "cmd+alt+s"                
             },
             {
-                "command": "eoside.EOSIDE",
+                "command": "eoside.GetStarted",
                 "key": "ctrl+alt+e",
                 "mac": "cmd+alt+e"                
             },                        
@@ -151,7 +151,7 @@
         "menus": {
             "editor/title": [
                 {
-                    "command": "eoside.EOSIDE",
+                    "command": "eoside.GetStarted",
                     "group": "navigation",
                     "when": "config.eoside.menu"
                 },

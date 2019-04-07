@@ -2,8 +2,8 @@
 
 *EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
-* project standardization,
-* easy access to an project archive,
+* Project standardization,
+* easy access to project archive,
 * referencing documentation and tutorials,
 * automatic availability of standard libraries,
 * dependency management,
@@ -58,7 +58,7 @@ Dependency management is implemented with the view shown in the following pictur
 
 ![Setup view](images/setup.png)
 
-* *Include* lists directories containg headers needed by the project. This list is linked to the file *.vscode/c_cpp_properties.json*. The entries are provided with buttons that manipulate them, especially, new items may be added with the system-native file dialog. With *Windows*, all file paths are expressed relative to the *WSL root* (Windows Subsystem Linux).
+* *Include* lists directories containing headers needed by the project. This list is linked to the file *.vscode/c_cpp_properties.json*. The entries are provided with buttons that manipulate them, especially, new items may be added with the system-native file dialog. With *Windows*, all file paths are expressed relative to the *WSL root* (Windows Subsystem Linux).
 * *Libs* lists libraries resolving outer dependencies of the project.
 * *Compiler Options* lists parameters of the wasm compiler.
 * *Contract Account* defines the contract that holds the contract. Its name has to be chosen from a list given with the bash command:
@@ -120,7 +120,7 @@ cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token$ cd buildcartman@cartma
 -- Build files have been written to: /mnt/c/Workspaces/EOS/contracts/token/build
 cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$ make
 Scanning dependencies of target abi
-ABI file writen to file:
+ABI file written to file:
     /mnt/c/Workspaces/EOS/contracts/token/build/token.abi
 Built target abi
 Scanning dependencies of target wast

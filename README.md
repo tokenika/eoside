@@ -2,15 +2,19 @@
 
  With [*EOSIO*](https://github.com/eosio) installed in the System, *EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
 
-* project standardization and bookkeeping,
+* Project standardization,
+* easy access to project archive,
 * referencing documentation and tutorials,
 * automatic availability of standard libraries,
 * dependency management,
-* compilation and build,
-* debugging and testing,
+* intellisense,
+* compilation and building,
+* testing,
 * deployment.
 
 *EOSIDE* bases on [Visual Studio Code](https://code.visualstudio.com/), extending specifically functionalities of the *VSCode*.
+
+[See a short video showing EOSIDE in action.]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4)
 
 ## Preview of the application
 
@@ -29,14 +33,14 @@ Another view is about the setup of the current EOSIO smart contract project. It 
 
 ![Setup view](docs/images/setup.png)
 
-* *Include* lists directories contain headers involved in the project. This list copies the corresponding one in the `.vscode/c_cpp_properties.json` file that comes from *ms-vscode.cpptools*. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
+* *Include* lists directories contain headers involved in the project. This list copies the corresponding one in the file `.vscode/c_cpp_properties.json` that comes from *ms-vscode.cpptools*. The entries are provided with buttons that can manipulate them, especially, new items can be added with a system-native file dialog. With *Windows* and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
 * *Libs* lists libraries resolving outer dependencies of the project.
-* *Compiler Options* lists parameters of the wasm compiler.
-* The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal. All this actions can be invoked with keyboard shortcuts or with extension commands.
+* *Compiler Options* lists parameters of the WASM compiler.
+* The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal. All these actions can be invoked with keyboard shortcuts or with extension commands.
 
 ## Installation
 
-EOSIDE needs [*EOSIO*](https://github.com/eosio) to be installed in the system. Also, it needs *python3* (Ubuntu Python, even if the system is Windows with WSL Ubuntu).
+EOSIDE needs [*EOSIO*](https://github.com/eosio) to be installed in the system.
 
 ![Setup view](docs/images/install.png)
 
