@@ -14,7 +14,8 @@
 
 *EOSIDE* bases on [Visual Studio Code](https://code.visualstudio.com/), extending specifically functionalities of the *VSCode*.
 
-[See a short video showing EOSIDE in action.]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4)
+See a short [video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action.
+Another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) shows installation and a first test of this extension.
 
 ## Preview of the application
 

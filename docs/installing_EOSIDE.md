@@ -8,7 +8,7 @@ We've tested *EOSIDE* on the following platforms:
 
 ## Prerequisites
 
-EOSIDE only needs [EOSFactory](https://github.com/tokenika/eosfactory) with its dependencies, see the [installing instructions](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html) for EOSFactory.
+EOSIDE only needs [EOSFactory](https://github.com/tokenika/eosfactory) v3.0.4 (or higher) with its dependencies, see the [installing instructions](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html) for EOSFactory.
 
 ## Extension to VSCode
 

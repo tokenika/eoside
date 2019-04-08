@@ -49,7 +49,8 @@
         "vscode": "^1.1.29"
     },
     "extensionDependencies": [
-        "ms-vscode.cpptools"
+        "ms-vscode.cpptools",
+        "ms-python.python"
     ],
     "homepage": "https://github.com/tokenika/eoside/master/README.md",
     "contributes": {
