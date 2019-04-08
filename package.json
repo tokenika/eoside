@@ -1,11 +1,11 @@
 {
     "name": "EOSIDE",
     "displayName": "EOS IDE",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
-        "name": "sz"
+        "name": "Tokenika"
     },
     "categories": [
         "Other"
