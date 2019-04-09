@@ -1,6 +1,6 @@
-# Installing *EOSIDE*
+# Installing EOSIDE
 
-We've tested *EOSIDE* on the following platforms:
+We've tested EOSIDE on the following platforms:
 
 - Ubuntu 18.04 (Bionic)
 - MacOS 10.13 (High Sierra)
@@ -8,18 +8,16 @@ We've tested *EOSIDE* on the following platforms:
 
 ## Prerequisites
 
-EOSIDE only needs [EOSFactory](https://github.com/tokenika/eosfactory) v3.0.4 (or higher) with its dependencies, see the [installing instructions](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html) for EOSFactory.
+The only thing EOSIDE requires is [EOSFactory v3.0.2](<https://github.com/tokenika/eosfactory/releases/tag/v3.0.2>) (or higher), with its dependencies. For further information please refer to the EOSFactory [installation guide](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html).
 
-## Extension to VSCode
+## Extension to VSC
 
-EOSIDE is available from VSCode Marketplace. There, it can be found by its name and installed to the local system.
-
-If EOSFactory is in the system and it is functional then EOSIDE should start fully functional.
+EOSIDE is also available from the [VSC Marketplace](https://marketplace.visualstudio.com/vscode). There, it can be found by its name and installed onto the local system, provided EOSFactory has already been installed on your machine.
 
 ## Uninstalling
 
-EOSIDE can be uninstalled as any other VSCode extension. In the *Extensions* view select *EOS IDE*, then click *Uninstall* button in the EOSIDE's front page.
+EOSIDE can be uninstalled as any other VSC extension. In the `Extensions` view select `EOSIDE`, and then click the `Uninstall` button in the EOSIDE's front page.
 
-## Short movie
+## Video guide
 
-There is [available](https://eosfactory.io/eoside/html/_static/installing.mp4) a short video, showing the process of installation.
+There is a short video [available](https://eosfactory.io/eoside/html/_static/installing.mp4), demonstrating the installation process.

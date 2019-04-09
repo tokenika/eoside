@@ -1,109 +1,123 @@
-# *EOSIDE* -- Integrated Development Environment for EOSIO smart contracts
+# EOSIDE - an Integrated Development Environment for EOSIO smart-contracts
 
-*EOSIDE* organizes the workflow of development process for EOSIO smart contracts -- if such a process can be seen as composed of the following elements:
+With [EOSIO](https://github.com/eosio) installed on your system, EOSIDE organizes the workflow of development process for EOSIO smart-contracts.
 
-* Project standardization,
-* easy access to project archive,
-* referencing documentation and tutorials,
-* automatic availability of standard libraries,
-* dependency management,
-* intellisense,
-* compilation and building,
-* testing,
-* deployment.
+This process is composed of the following elements:
 
-*EOSIDE* is an extension to the [Visual Studio Code](https://code.visualstudio.com/).
+- project standardization,
+- easy access to project archive,
+- referencing documentation and tutorials,
+- automatic availability of standard libraries,
+- dependency management,
+- [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense) code completion,
+- compilation and building,
+- testing,
+- deployment.
+
+EOSIDE is an extension of [Visual Studio Code](https://code.visualstudio.com/) (VSC).
+
+Watch a short [video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action.
+
+And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
 
 ## Get Started view
 
-If the EOSIDE extension is installed -- with the default configuration -- on the VSCode, and if VSCode is started empty with the command `code -n ""`, it opens the *Get Started*, view as shown in the picture below:
+The standard view, called `EOSIDE`, is displayed when VSC is started empty, i.e. with the `code -n ""` command.
 
 ![Get Started view](images/get_started.png)
 
-Let us list the functions of this view, 
+Let's go through its options:
 
-* **Get Started** entries link to tutorials and other documentation.
-* **New project** entries trigger creation of a project based on a template.
-* **Recent** entries switch to projects started with the *New project* triggers.
-* **Open** entries trigger specific actions.
-* Two menu buttons in the editor title bar, namely `|EOS IDE|` and `|Setup|` display corresponding views.
+- *Get Started* contains links to tutorials and other documentation.
+- *New project* lets you create a new project from a template.
+- *Recent* lists existing projects.
+- *Open* triggers specific actions.
+- And the two menu buttons located in the title bar, namely `EOSIDE` and `Setup`, display corresponding views.
 
 ## Project standardization
 
-Any EOSIO smart contract resides in its folder. 
 EOSIDE supports a specific layout of the contract folder:
 * **root** -- project folder,
     * **.vscode** -- system folder
     * **build** -- folder where contract WASM and ABI files go,
-    * **resources** -- folder containing Ricardian contract files and whatever else,
-    * **src** -- folder with CPP/C source files
-    * **tests** - folder with Python scripts, especially EOSFactory scripts
-    * **CMakeLists.txt*  - the CMake lists file of the project
+    * **resources** -- folder containing Ricardian contract files etc.,
+    * **src** -- folder containing CPP/C source files
+    * **tests** - folder containing Python scripts, especially EOSFactory scripts
+    * `CMakeLists.txt`  - the CMake lists file of the project
 
-In the picture below, it is shown an exemplary project layout.
+An exemplary project layout is demonstrated in the picture below:
 
 ![Project layout](images/contract_folder.png)
 
-EOSIDE can produce a new project. A project may be empty, or it can be based on a template. The following figure show the selection process. First, the *EOS IDE* screen has to be active. Next, click the chosen template.
+EOSIDE offers the option o create a new project. A project may be empty, or it can be based on a template. The following figure show the selection process. First, the `EOSIDE` screen has to be active. Next, select the template by clicking it.
 
 ![New project](images/new_project.png)
 
-A native folder chooser opens. Create a folder named as the new project. Select the new folder, click the *Open* button. The project folder is in the *EXPLORER* panel, now. The path to the project is in the *Recent* list, which is active one: you can open any of the listed projects just clicking its entry.
+A folder chooser opens. Create a folder named after the new project. Select the new folder, click the `Open` button. The project folder is in the `EXPLORER` panel, now. The path to the project is added to the *Recent* list, which becomes active and allows you to open any of the listed projects by clicking their paths.
 
 ![Recent list](images/recent_list.png)
 
 ## Dependency management
 
-Dependency management is implemented with the view shown in the following picture.
+Dependency management is implemented with the `Setup` view shown in the following picture.
 
 ![Setup view](images/setup.png)
 
-* *Include* lists directories containing headers needed by the project. This list is linked to the file *.vscode/c_cpp_properties.json*. The entries are provided with buttons that manipulate them, especially, new items may be added with the system-native file dialog. With *Windows*, all file paths are expressed relative to the *WSL root* (Windows Subsystem Linux).
-* *Libs* lists libraries resolving outer dependencies of the project.
-* *Compiler Options* lists parameters of the wasm compiler.
-* *Contract Account* defines the contract that holds the contract. Its name has to be chosen from a list given with the bash command:
-    ```bash
-    python3 -m eosfactory.testnets
-    ```
-* The buttons in the top, labelled *Compile*, *Build*, *EOS IDE* and *bash*, trigger corresponding actions. Especially, the *bash* button -- present if *Windows* -- starts a new *bash* terminal.
+Let's go through its options:
 
-All the dependencies are stored in the file *.vscode/c_cpp_properties.json*. This file feeds both compile/build procedures and the intellisense features of VSCode.
+- *Include* lists directories containing headers involved in the project. This list is extracted from the content of the `.vscode/c_cpp_properties.json` file generated by `ms-vscode.cpptools`. The entries are provided with buttons for editing the list. Also, new items can be added. Note: on Windows and WSL Ubuntu, all file paths are expressed relative to the `WSL root`.
 
-## Intellisense
+- *Libs* lists libraries resolving outer dependencies of the project.
 
-It is a property of VSCode that it implements intellisense functions, if proper data is provided. EOSIDE ensures that data automatically. The following picture shows the result of *Pick Definition* command applied to the function *eosio_assert*.
+- *Compiler Options* lists parameters of the WASM compiler.
+
+- *Contract Account* defines the account that holds the contract. Its name has to be chosen from a list given with the bash command:
+
+  ```bash
+  python3 -m eosfactory.testnets
+  ```
+
+- The buttons in the top, labelled `Compile`, `Build`, `EOSIDE` and `Bash`, trigger corresponding actions. Especially, the `Bash` button, available on Windows only, starts a new bash terminal. All these actions can be invoked with keyboard shortcuts or with extension commands.
+
+All the dependencies are stored in the `.vscode/c_cpp_properties.json` file. This file feeds both the compile procedures, build procedures and the *IntelliSense* features of VSC.
+
+## IntelliSense
+
+VSC has the *IntelliSense* code completion functionality built-in, but it only works if proper metadata is provided. EOSIDE supplies this metadata for EOS smart-contracts automatically.
+
+As an example, the following picture shows the result of the `Pick Definition` command applied to the `eosio_assert` function.
 
 ![Intellisense](images/intellisense.png)
 
 ## Compile and build
 
-Compiling does not produce contract files, its purpose is to check whether the source code of the contract is compilable, and if not, to see the error log.
+The compilation process does not generate any output files. Its purpose is to verify that the source code of the contract can be built, and if not, to produce an error log.
 
-Building results in ABI and WASM files.
+Whereas, the building process results in generating ABI and WASM files.
 
-Compilation depends on project dependencies like included headers and linked libraries. The dependencies registered to the project, as it is [explained](#Dependency-management), are automatically involved into the presented compilation methods.
+The compilation process requires that project dependencies are satisfied, such as included headers and linked libraries. The dependencies registered for the project, as explained [here](#Dependency-management), are automatically applied.
 
-### VSCode style: compile and build with VSCode tasks and commands
+### VSC style: compile and build with VSC tasks and commands
 
-Compile:
-* **vscode task:** Terminal => Run Task... => Compile
-* **vscode command:** ctrl+shift+p => eosid compile
-* **keybord shortcut:** ctrl+shift+c
+To compile:
+* **vsc task:** `Terminal` > `Run Task...` > `Compile`
+* **vsc command:** `ctrl+shift+p` > `eosid compile`
+* **keyboard shortcut:** `ctrl+shift+c`
 
-Build:
-* **vscode task:** Terminal => Run Build Task...
-* **vscode command:** ctrl+shift+p => eosid build
-* **keybord shortcut:** ctrl+shift+b
+To build:
+* **vsc task:** `Terminal` > `Run Build Task...`
+* **vsc command:** `ctrl+shift+p` > `eosid build`
+* **keyboard shortcut:** `ctrl+shift+b`
 
-In the picture below, it is shown the task selection dialog:
+The picture below shows how you can access tasks in VSC:
 
 ![Build task](images/build_task.png)
 
 ### Build using CMake
 
-If your computer system is Windows, the default terminal of the VSCode is Powershell, while the CMake operations have to be executed with Ubuntu bash, therefore use ctrl+shift+t shortcut to a vscode command that opens a new Ubuntu bash terminal. Or issue the command `bash` in the Powershell terminal.
+If you are on Windows, the default terminal of the VSC is PowerShell, while the CMake operations have to be executed with Ubuntu bash. To open a new Ubuntu bash terminal use the `ctrl+shift+t` shortcut in VSC. Alternatively, issue the `bash` command in the PowerShell terminal.
 
-In the Ubuntu bash terminal, do...
+In the Ubuntu bash terminal, type these commands:
 
 ```bash
 cd build
@@ -111,7 +125,7 @@ cmake ..
 make
 ```
 
-...you can expect a response like the following:
+As a result, you should get a response similar to this:
 
 ```bash
 cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token$ cd buildcartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$ cmake ..
@@ -132,20 +146,22 @@ cartman@cartman-PC:/mnt/c/Workspaces/EOS/contracts/token/build$
 
 ### Build with EOSFactory
 
-If your computer system is Windows, see [note](#Compile-and-build-using-CMake).
+You can build a smart-contract programmatically using Python.
 
-You can build a contract programmatically in a Python module. Here we present the idea of an interactive session. Start the session then use EOSFactory:
+Switch to Python console:
 
 ```bash
 python3
 ```
+
+Once the Python prompt appears, continue with these commands:
 
 ```python
 from eosfactory.eosf import ContractBuilder
 ContractBuilder().build()
 ```
 
-Here is an exemplary listing of the bash action:
+This is the expected result:
 
 ```bash
 Python 3.5.2 (default, Nov 23 2017, 16:37:01)
@@ -161,14 +177,14 @@ WASM file writen to file:
 
 ## Deploy contract
 
-Deployment means attaching a contract to an account. A default account be defined with the [*Setup*](#Dependency-management) view, see *Contract Account* button there.
+Deployment means attaching a smart-contract to an EOS account. A default account can be defined with the [*Setup*](#Dependency-management) view.
 
 The following three subsections show how to deploy the contract of the current project to the default account.
 
-### Deploy with VSCode command
+### Deploy with VSC command
 
-* **vscode command:** ctrl+shift+p => eosid deploy
-* **keybord shortcut:** ctrl+shift+y
+* **vsc command:** `ctrl+shift+p` > `eosid deploy`
+* **keyboard shortcut:** `ctrl+shift+y`
 
 ### Deploy with Ubuntu bash
 
@@ -215,24 +231,26 @@ Contract(contract_account).deploy()
 
 ## Testing
 
-Tests are Python scripts located in the directory *tests*. Any script can be executed in a bash terminal, for example:
+Tests are Python scripts located in the `tests` directory. Any test script can be executed in a bash terminal, for example:
 
 ```bash
 python3 tests/test1.py
 ```
 
-### VSCode style: testing with VSCode tasks
+### VSC style: testing with VSC tasks
 
 ### Testing with CMake
 
-In order to use CMake testing feature, test scripts have to be registered in the *CMakeLists* file, for example, two scripts named *test1* and *unittest1*:
+In order to use CMake testing feature, test scripts need to be registered in the `CMakeLists` file.
+
+Here is an example for scripts named `test1` and `unittest1`:
 
 ```cmake
 add_test( NAME tests COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test1.py )
 add_test( NAME unittest COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/unittest1.py )
 ```
 
-However, it is possible to select a single test, typically all the tests are automatically executed one-by-one, as an overall test.
+By default all the tests are automatically executed one-by-one, as an overall test. However, it is possible to run a single test.
 
 Tests are invoked in a bash terminal:
 
@@ -241,7 +259,7 @@ cd build
 ctest
 ```
 
-An exemplary listing of the ctest bash action:
+Here is the expected output:
 
 ```bash
 Test project /mnt/c/Workspaces/EOS/contracts/token/build
@@ -281,29 +299,12 @@ Contract(host).deploy()
 
 ## Install view
 
-With the VSCode command *ctrl+shift+p => eoside install*, you can display the status of the installation. The following picture shows the view. 
+With the VSC command `ctrl+shift+p` > `eoside install`, you can display the status of the installation and edit the settings: 
 
 ![Setup view](images/install.png)
 
-With the view, you may change settings.
+If you turn off the menu, still you can access EOSIDE views by using VSC commands:
 
-### Contract Workspace
-
-If you create a new [project](#Project-standardization) from a template, the system-native directory choosing dialog opens in the named directory. You can change it, starting with clicking the *change* button.
-
-### Configuration
-
-#### Start with eoside
-
-If launched with the EOSIDE extension installed, an instance of VSCode starts with the *Get Started* view (if the *Explorer* panel is empty). If you consider this behavior annoying, click the button *toggle*.
-
-You can call the view either with |EOS IDE|** menu item in the VSCode editor title bar, or ctrl+shift+p => eoside |EOS IDE|
-
-#### menu
-
-There is a menu in the right side of the VSCode editor title bar: it may be used to display an EOSIDE view. You can remove it, clicking the *change* button.
-
-Without this menu, still you can call the views:
-* **Get Started View:** ctrl+shift+p => eoside |EOS IDE|
-* **Setup View:** ctrl+shift+p => eoside |Setup|
-* **Install View:** ctrl+shift+p => eoside install
+- **Get Started View:** `ctrl+shift+p` > `eoside EOSIDE`
+- **Setup View:** `ctrl+shift+p` > `eoside setup`
+- **Install View:** `ctrl+shift+p` > `eoside install`
