@@ -4,7 +4,7 @@ Start point:
 * youyube 480 size
 * open start_point folder
 * view => Editor Layout => Two Columns:
-    the view '|EOS IDE|' in the left,
+    the view '|EOSIDE|' in the left,
     the file narration.md, empty, in the right one, see proper proportions
 '''
 
@@ -113,30 +113,30 @@ mv.wait(4)
 
 narration.type('''
 
-# EOS IDE view
+# EOSIDE view
 
-The view on the left can be displayed with the button '|EOS IDE|' in the 'editor title' menu.
+The view on the left can be displayed with the button '|EOSIDE|' in the 'editor title' menu.
 ''', "w")
 mv.find(
     "file_selection\eos_ide", 
     mv.region_file_selection).highlight(3, HIGHLIGHT_COLOR)
 
 narration.type('''
-## EOS IDE view => Get Started
+## EOSIDE view => Get Started
 
 Live references to tutorials and other documentation. For example, the current movie can be invoked there.
 ''')
 mv.find("eos_ide/build_first_five").highlight(4, HIGHLIGHT_COLOR)
 
 narration.type('''
-## EOS IDE view => Recent
+## EOSIDE view => Recent
 
 Live references to projects created with EOSIDE.
 ''')
 mv.find("eos_ide/recent_hello").highlight(3, HIGHLIGHT_COLOR)
 
 narration.type('''
-## EOS IDE view => Open
+## EOSIDE view => Open
 
 Starts 'Select Directory' dialog.
 ''')
@@ -149,7 +149,7 @@ mv.find("eos_ide/open_folder").highlight(3, HIGHLIGHT_COLOR)
 empty_project = mv.find("templates/empty_project")
 narration.type('''
 
-## EOS IDE view => New Project
+## EOSIDE view => New Project
 
 Creates new projects from templates. For example, the structure of empty smart-contract project.
 ''', "w")
@@ -298,7 +298,7 @@ narration.type('''
 Triggers for common actions:
 * 'Compile' verifies the code, without producing any saved output.
 * 'Build' produces ABI and WASM files.
-* 'EOS IDE' opens the 'EOS IDE' view.
+* 'EOSIDE' opens the 'EOSIDE' view.
 * 'bash' opens new terminal window.
 ''', "w")
 mv.find("setup/buttons").highlight(4, HIGHLIGHT_COLOR)

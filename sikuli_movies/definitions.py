@@ -36,7 +36,7 @@ def wait(time_sec):
 def get_image(file_name):
     return os.path.join(IMAGE_DIR, "", file_name + ".png")
 
-def get_region_vscode(window_title="EOS IDE - Visual Studio Code"):
+def get_region_vscode(window_title="EOSIDE - Visual Studio Code"):
     app = sikuli.App(window_title)
     print(app)
     sikuli.App.focus(window_title)

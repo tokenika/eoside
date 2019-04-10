@@ -112,31 +112,62 @@ export function clickable(id:string, title:string, text:string){
 }
 
 
-export function callEosfactory(cl:string, result:Function){
-    const child_process = require("child_process");
-
+export function callEosfactory(cl:string){
+    const spawn = require("child_process").spawnSync
     let clExe: string   
     if(exports.IS_WINDOWS){
         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
     } else{
         clExe = `\"${cl}\"`
     }
-
-    child_process.exec(
-        clExe, 
-        (err:string, stdout:string, stderr:string) => {
-        if(stderr){
-            vscode.window.showErrorMessage(stderr.replace(
-    /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, 
-    ''))
-            console.log('stderr is:' + stderr)            
-        }
-        result(stdout, stderr)
-    }).on(
-        'exit', 
-        (errorCode:number) => {}
-        )
+    const proc = spawn(clExe, [], {shell: true})
+    var stderr = proc.stderr.toString().replace(
+        /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
+    var stdout = proc.stdout.toString().replace(
+        /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')    
+    if(proc.status){
+        vscode.window.showErrorMessage(`
+Command line is
+${clExe}.
+<br>
+Error message is
+${stderr}
+            `)
+    }
+    return proc
 }
+
+
+// export function callEosfactory1(cl:string, result:Function){
+//     const child_process = require("child_process");
+
+//     let clExe: string   
+//     if(exports.IS_WINDOWS){
+//         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
+//     } else{
+//         clExe = `\"${cl}\"`
+//     }
+
+//     child_process.exec(
+//         clExe, 
+//         (err:string, stdout:string, stderr:string) => {
+//         if(stderr){
+//             stderr = stderr.replace(
+//                 /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
+//             vscode.window.showErrorMessage(`
+// Command line is
+// ${clExe}.
+
+// Error message is
+// ${stderr}
+//             `)
+//         }
+//         result(stdout, stderr)
+//     }).on(
+//         'exit', 
+//         (errorCode:number) => {}
+//         )
+// }
 
 
 export function wslMapLinuxWindows(path:string){

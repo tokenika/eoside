@@ -153,7 +153,7 @@ function body(extensionPath:string){
     <button 
         class="ctr"; 
         id="EOSIDE"; 
-        title="ctr">EOS IDE</button>
+        title="ctr">EOSIDE</button>
         
     ${def.IS_WINDOWS ?`
         <button class="ctr"; id="bash"; title="ctr">bash</button>
@@ -167,7 +167,7 @@ function body(extensionPath:string){
     </label>
     ${def.IS_WINDOWS ?`
         <p>WSL root is ${inst.root()}</p>
-    `: ""}
+    `: "<p></p>"}
     
     ${Includes.createOrGet(extensionPath).items()}
 </div>
@@ -179,7 +179,7 @@ function body(extensionPath:string){
     </label>
     ${def.IS_WINDOWS ?`
         <p>WSL root is ${inst.root()}</p>
-    `: ""}
+    `: "<p></p>"}
 
     ${Libs.createOrGet(extensionPath).items()}
 </div>
@@ -261,8 +261,11 @@ export function bash(){
     if(SetupPanel.currentPanel){
         SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two)
     }
-    let terminal = vscode.window.createTerminal("bash", def.SHELL_PATH)
-    terminal.show()
+    if(def.IS_WINDOWS){
+        vscode.window.createTerminal("bash", def.SHELL_PATH).show()
+    } else {
+        vscode.window.createTerminal("bash").show()
+    }
 }
 
 function action(message: any, panel: def.Panel){
@@ -491,26 +494,21 @@ class ContractAccount extends Base{
                     ignoreFocusOut: true,
                 }).then((name) => {
             if(name){
-                def.callEosfactory(
-                    `python3 -m eosfactory.testnets --name ${name}`, 
-                    (stdout:string, stderr:string) =>{
-                        if(stdout){
-                            let args = stdout.split(" ")                    
-                            this.read()
-                            this.json[CONTRACT_ACCOUNT] = 
-                                {
-                                    "template": args[0], 
-                                    "accountName": args[1],             
-                                    "url": args[2]
-                                }
-                            this.update()     
-                        } else {
-
+                let proc = def.callEosfactory(
+                            `python3 -m eosfactory.testnets --name ${name}`)
+                if(!proc.status){
+                    let args = proc.stdout.toString().split(" ")
+                    this.read()
+                    this.json[CONTRACT_ACCOUNT] = 
+                        {
+                            "template": args[0], 
+                            "accountName": args[1],             
+                            "url": args[2]
                         }
-                    }
-                )
+                    this.update()   
+                }
             }
-        })
+            })
     }
 }
 

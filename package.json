@@ -1,7 +1,7 @@
 {
     "name": "EOSIDE",
-    "displayName": "EOS IDE",
-    "version": "1.0.0",
+    "displayName": "EOSIDE",
+    "version": "1.0.4",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -83,7 +83,7 @@
             },
             {
                 "command": "eoside.GetStarted",
-                "title": "| EOS IDE |",
+                "title": "| EOSIDE |",
                 "category": "EOSIDE"
             },
             {

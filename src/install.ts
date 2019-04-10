@@ -1,3 +1,7 @@
+// var sync = require('child_process').spawnSync;
+// var pyt = sync('python3', ['-c', 'import eosfactory'])
+
+
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
@@ -39,9 +43,9 @@ export function errorConditions(){
     var isOK = true
 
     if(def.IS_WINDOWS){
-        const process = spawn("bash.exe", ["--version"])
-        let version = process.stdout.toString().match(/version\s{1}(.*)\./)[1]
-        if(process.status){
+        const proc = spawn("bash.exe", ["--version"])
+        let version = proc.stdout.toString().match(/version\s{1}(.*)\./)[1]
+        if(proc.status){
             errorMsg(
 `It seems that Windows Subsystem Linux is not in thse System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
@@ -63,11 +67,11 @@ EOSIDE cannot do without proper WSL.`)
     }
 
     {
-        const process = def.IS_WINDOWS 
+        const proc = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${exports.PYTHON} -V`])
             : spawn(`${exports.PYTHON}`, ["-V"])
             
-        if(process.status){
+        if(proc.status){
             let msg = 
 `It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -83,15 +87,15 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             isOK = false
         } else {
             conditionMsg(
-`<em>${process.stdout.toString().trim()}</em> detected.`)
+`<em>${proc.stdout.toString().trim()}</em> detected.`)
         } 
     }
 
     {
-        const process = def.IS_WINDOWS 
+        const proc = def.IS_WINDOWS 
             ? spawn("bash.exe", ["-c", `${exports.PIP} -V`])
             : spawn(`${exports.PIP}`, ["-V"])
-        if(process.status){
+        if(proc.status){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
 <em>python3</em> executable is not in the System path.<br>
@@ -107,7 +111,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             isOK = false
         } else {
             conditionMsg(
-`<em>${process.stdout.toString().trim()}</em> detected.`)
+`<em>${proc.stdout.toString().trim()}</em> detected.`)
         }
     }
 
@@ -116,8 +120,8 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
-        const process = spawn(clExe, [], {shell: true})
-        if(process.status){
+        const proc = spawn(clExe, [])
+        if(proc.status){
             let msg =
 `It seems that <em>eosfactory</em> package is not installed in 
 the System.<br>
@@ -135,12 +139,14 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
         }
     }
     {
-        let cl = `${exports.PYTHON} ` + '-m eosfactory.config --json ' +                                                       '--dont_set_workspace'
-        let clExe = def.IS_WINDOWS
-            ? `bash.exe -c "${cl}"`
-            : `"${cl}"`
-        const process = spawn(clExe, [], {shell: true})
-        if(process.status){
+        const proc = def.IS_WINDOWS
+            ? spawn(`bash.exe -c "${exports.PYTHON}` 
+                + ' -m eosfactory.config --json --dont_set_workspace"', 
+                [], {shell: true})
+            : spawn(`${exports.PYTHON}`, 
+                ['-m', 'eosfactory.config', '--json', 
+                                                '--dont_set_workspace'])
+        if(proc.status){
             errorMsg(
 `It seems that the eosfactory package is not installed or corrupted, as its 
 configuration file cannot be read.`)
@@ -148,7 +154,7 @@ configuration file cannot be read.`)
         } else {
             conditionMsg(`<em>EOSFactory</em> configuration file detected`)
 
-            exports.config = JSON.parse(process.stdout)
+            exports.config = JSON.parse(proc.stdout)
             conditionMsg(
 `Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
 
@@ -182,25 +188,24 @@ EOSIDE cannot do without it.`)
         }
     }
     {
-        if(exports.config && !exports.config["EOSIO_CONTRACT_WORKSPACE"]){
+        if(exports.config && (
+            !exports.config["EOSIO_CONTRACT_WORKSPACE"] || forceSetDirectory)){
+            isOK = false
             errorMsg(
 `
-Default workspace is not set. Setting it.
-            `)
+Default workspace is not set. 
+<button 
+class="btn"; 
+id="${CHANGE_WORKSPACE}"; 
+title="${CHANGE_WORKSPACE}">
+Set workspace.
+</button>
+`)
         }
-    }
-
-    try{
-        vscode.workspace.getConfiguration().eoside.specialEffects = []
-    } catch(err){
     }
 
     if(isOK){
-        if(!exports.config["EOSIO_CONTRACT_WORKSPACE"] || forceSetDirectory){
-            changeWorkspace()
-        } else {
-            passed()
-        }
+        passed()
     }
 }
 
@@ -518,12 +523,12 @@ export function writeRoot(){
     {
         let lxss="hkcu\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss"
         let cl = `REG QUERY ${lxss} -s -v BasePath`
-        const process = spawn(cl, [], {shell: true})
-        if(process.status){
+        const proc = spawn(cl, [], {shell: true})
+        if(proc.status){
             return -1
         }
         try{
-            var basePath = process.stdout.toString().match(/REG_SZ(.*)/)[1].trim()
+            var basePath = proc.stdout.toString().match(/REG_SZ(.*)/)[1].trim()
         } catch(err){
             return -1
         }
@@ -531,9 +536,9 @@ export function writeRoot(){
     } 
     {
         let cl = `bash.exe -c whoami`
-        const process = spawn(cl, [], {shell: true})
-        var user = process.stdout.toString()
-        if(process.status){
+        const proc = spawn(cl, [], {shell: true})
+        var user = proc.stdout.toString()
+        if(proc.status){
             return -1
         }
     }

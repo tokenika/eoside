@@ -18,7 +18,7 @@ export default class GetStartedPanel extends def.Panel {
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: GetStartedPanel | undefined
-    public static readonly viewType = "EOS IDE"
+    public static readonly viewType = "EOSIDE"
     private static c_cpp_prop_updated = false
 
     public static createOrShow(checkFolders: boolean=true) {
@@ -40,7 +40,7 @@ export default class GetStartedPanel extends def.Panel {
                 let cl = 'python3 -m eosfactory.core.vscode '
                 + `--c_cpp_prop_path \\"${c_cpp_prop_path}\\" `
                 + `--root \\"${inst.root()}\\" `
-                def.callEosfactory(cl, (stdout:string, stderr:string) =>{})
+                def.callEosfactory(cl)
             }
         }
 
@@ -64,7 +64,7 @@ export default class GetStartedPanel extends def.Panel {
 
         // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
-                GetStartedPanel.viewType, "EOS IDE", 
+                GetStartedPanel.viewType, "EOSIDE", 
                 column || vscode.ViewColumn.One, {
             // Enable javascript in the webview
             enableScripts: true,
@@ -201,18 +201,16 @@ class Templates {
                 + `'${def.wslMapWindowsLinux(templateDir)}' `
                 cl += '--silent '
 
-                def.callEosfactory(cl, (stdout:string, stderr:string) =>{
-                    if(!stderr){
-                        Recent.createOrGet(
-                            this._extensionPath).add(fileUri[0].fsPath)
+                if(!def.callEosfactory(cl).status){ // Is OK
+                    Recent.createOrGet(
+                        this._extensionPath).add(fileUri[0].fsPath)
 
-                        var openFolder = async function(){
-                            return await vscode.commands.executeCommand(
-                                'vscode.openFolder', fileUri[0])
-                        }
-                        openFolder()                        
+                    var openFolder = async function(){
+                        return await vscode.commands.executeCommand(
+                            'vscode.openFolder', fileUri[0])
                     }
-                })                          
+                    openFolder()                       
+                }                     
             }
         })
     }

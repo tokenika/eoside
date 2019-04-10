@@ -23,7 +23,7 @@ RIGHT = 2
 
 
 def focus_eos_ide(group=LEFT):
-    mv.focus_editor_title(">EOSIDE:|EOS IDE|", group)
+    mv.focus_editor_title(">EOSIDE:|EOSIDE|", group)
 
 
 def focus_setup(group=LEFT):

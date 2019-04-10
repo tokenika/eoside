@@ -131,7 +131,7 @@ narration.type('''
 
 With the 'Install' view all blue, EOSIDE should be fully functional.
 
-Try an EOSIO smart contract. Click '|EOS IDE|' or (ctrl+alt+e with US keyboard) to open 'Get Started' view.
+Try an EOSIO smart contract. Click '|EOSIDE|' or (ctrl+alt+e with US keyboard) to open 'Get Started' view.
 ''', "w")
 mv.wait(3)
 
