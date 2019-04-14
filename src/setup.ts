@@ -413,8 +413,9 @@ abstract class Dependencies extends Base{
     public items(title=""){
         let entries: string[] = []
         this.read()
-        if(this.getEntries()){
-            entries = this.getEntries()
+        let temp = this.getEntries()
+        if(temp){
+            entries = temp
         }
         
         let root = inst.root()

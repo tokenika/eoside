@@ -83,7 +83,9 @@ export function getTerminal(name: string, showTerminal=false, reset=false){
         }
     }
 
-    var terminal = vscode.window.createTerminal(name, exports.SHELL_PATH)
+    var terminal = IS_WINDOWS 
+            ? vscode.window.createTerminal(name, exports.SHELL_PATH)
+            : vscode.window.createTerminal(name)
     if(showTerminal){
         terminal.show()
     } else{
@@ -118,7 +120,7 @@ export function callEosfactory(cl:string){
     if(exports.IS_WINDOWS){
         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
     } else{
-        clExe = `\"${cl}\"`
+        clExe = cl
     }
     const proc = spawn(clExe, [], {shell: true})
     var stderr = proc.stderr.toString().replace(
@@ -129,45 +131,12 @@ export function callEosfactory(cl:string){
         vscode.window.showErrorMessage(`
 Command line is
 ${clExe}.
-<br>
 Error message is
-${stderr}
+${stderr ? stderr : stdout}
             `)
     }
     return proc
 }
-
-
-// export function callEosfactory1(cl:string, result:Function){
-//     const child_process = require("child_process");
-
-//     let clExe: string   
-//     if(exports.IS_WINDOWS){
-//         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
-//     } else{
-//         clExe = `\"${cl}\"`
-//     }
-
-//     child_process.exec(
-//         clExe, 
-//         (err:string, stdout:string, stderr:string) => {
-//         if(stderr){
-//             stderr = stderr.replace(
-//                 /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
-//             vscode.window.showErrorMessage(`
-// Command line is
-// ${clExe}.
-
-// Error message is
-// ${stderr}
-//             `)
-//         }
-//         result(stdout, stderr)
-//     }).on(
-//         'exit', 
-//         (errorCode:number) => {}
-//         )
-// }
 
 
 export function wslMapLinuxWindows(path:string){

@@ -13,6 +13,7 @@ export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
 const ERROR_COLOR = "indianred"
+const WARNING_COLOR = "yellow"
 
 const FIND_WSL = "findWsl"
 const CHANGE_WORKSPACE = "changeWorkspace"
@@ -22,7 +23,10 @@ const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
 
 export var isError = true
+export var isWarning = false
 var htmlBody: any = undefined
+var firstErrMsg: any = undefined
+var c_cpp_prop_updated = false
 
 export function errorConditions(){
     const spawn = require("child_process").spawnSync;
@@ -39,7 +43,10 @@ export function errorConditions(){
     }
 
     htmlBody = ''
+    firstErrMsg = ''
+
     exports.isError = true
+    exports.isWarning = false
     var isOK = true
 
     if(def.IS_WINDOWS){
@@ -47,7 +54,7 @@ export function errorConditions(){
         let version = proc.stdout.toString().match(/version\s{1}(.*)\./)[1]
         if(proc.status){
             errorMsg(
-`It seems that Windows Subsystem Linux is not in thse System, or the 
+`It seems that Windows Subsystem Linux is not in this System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
 EOSIDE cannot do without WSL.`)
             isOK = false           
@@ -153,24 +160,37 @@ configuration file cannot be read.`)
             isOK = false
         } else {
             conditionMsg(`<em>EOSFactory</em> configuration file detected`)
+            exports.config = JSON.parse(proc.stdout);
 
-            exports.config = JSON.parse(proc.stdout)
             conditionMsg(
 `Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
-
-            if(exports.config["EOSIO_CLI_EXECUTABLE"] ){
-                conditionMsg(`eosio detected.`)
+            var msg = ""
+            if(exports.config["EOSIO_VERSION"].length > 0){
+                var msg = `eosio version ${exports.config["EOSIO_VERSION"][0]} detected.`
+                if(exports.config["EOSIO_VERSION"].length > 1){
+                    exports.isWarning = true
+                    msg += warning("NOTE: EOSFactory was tested with version " 
+                        + `${exports.config["EOSIO_VERSION"][1]}`)
+                }
+                
             } else {
-                errorMsg(
-`Cannot determine that eosio is installed.
-`)
+                exports.isWarning = true
+                msg = warning(
+"Cannot determine that eosio is installed as 'nodeos' does not response.")
             }
+            conditionMsg(msg)
 
-            if(exports.config["EOSIO_CPP"]  && !forceError){
-                conditionMsg(`eosio.cdt detected.`)
+            if(exports.config["EOSIO_CDT_VERSION"].length > 0  && !forceError){
+                var msg = `eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][0]} detected.`
+                if(exports.config["EOSIO_CDT_VERSION"].length > 1){
+                    exports.isWarning = true
+                    msg += warning('NOTE: EOSFactory was tested with version '
+                        + `${exports.config["EOSIO_CDT_VERSION"][1]}`)
+                }
+                conditionMsg(msg)
             } else {
                 errorMsg(
-`Cannot determine that eosio.cdt is installed.
+`Cannot determine that eosio.cdt is installed as 'eosio-cpp' does not response.
 `)           
             }
 
@@ -205,17 +225,40 @@ Set workspace.
     }
 
     if(isOK){
-        passed()
+        exports.isError = false
+        if(vscode.workspace.workspaceFolders && !c_cpp_prop_updated){
+            //Especially, update eosio.cdt version.
+            c_cpp_prop_updated = true
+            let c_cpp_prop_path = path.join(
+                                    vscode.workspace.workspaceFolders[0].uri.fsPath, 
+                                    ".vscode", "c_cpp_properties.json")
+    
+            if(fs.existsSync(c_cpp_prop_path)){
+                let cl = 'python3 -m eosfactory.core.vscode '
+                + `--c_cpp_prop_path '${c_cpp_prop_path}' `
+                + `--root '${root()}' `
+    
+                def.callEosfactory(cl)
+            }
+        }
     }
+    setHtmlBody()
 }
-
 
 function conditionMsg(msg:string){
     htmlBody += `<li>${msg}</li>\n`
 }
 
 
+function warning(msg:string){
+    return `<em style="color: ${WARNING_COLOR}"> ${msg} </em>` 
+}
+
+
 function errorMsg(msg:string){
+    if(!firstErrMsg){
+        firstErrMsg = msg
+    }
     htmlBody += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
 }
 
@@ -283,8 +326,7 @@ function changeWorkspace(){
 }
 
 
-function passed(){
-    exports.isError = false
+function setHtmlBody(){  
     htmlBody += 
 `
 <p 
@@ -350,7 +392,7 @@ export default class InstallPanel extends def.Panel {
         
         if(!show){
             errorConditions()
-            if(!exports.isError){
+            if(!exports.isError && !exports.isWarning){
                 return
             }
         }
@@ -451,7 +493,9 @@ misses the 'home' directory.
                     switch (message.id) {
                         case START_WITH_EOSIDE: {
                             vscode.workspace.getConfiguration()
-                                .update("eoside.startWithEosIde",!vscode.workspace.getConfiguration()
+                                .update(
+                                        "eoside.startWithEosIde",
+                                        !vscode.workspace.getConfiguration()
                                     .eoside.startWithEosIde)
                                     .then(() => {this.update()})
                             break

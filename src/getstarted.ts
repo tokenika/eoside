@@ -19,29 +19,12 @@ export default class GetStartedPanel extends def.Panel {
      */
     public static currentPanel: GetStartedPanel | undefined
     public static readonly viewType = "EOSIDE"
-    private static c_cpp_prop_updated = false
 
     public static createOrShow(checkFolders: boolean=true) {
 
         if(inst.isError){
             vscode.window.showErrorMessage("Installation is not completed.")
             return
-        }
-
-        if(vscode.workspace.workspaceFolders 
-                                    && !GetStartedPanel.c_cpp_prop_updated){
-
-            GetStartedPanel.c_cpp_prop_updated = true
-            let c_cpp_prop_path = path.join(
-                    vscode.workspace.workspaceFolders[0].uri.fsPath, 
-                    ".vscode", "c_cpp_properties.json")
-
-            if(fs.existsSync(c_cpp_prop_path)){
-                let cl = 'python3 -m eosfactory.core.vscode '
-                + `--c_cpp_prop_path \\"${c_cpp_prop_path}\\" `
-                + `--root \\"${inst.root()}\\" `
-                def.callEosfactory(cl)
-            }
         }
 
         if(checkFolders){

@@ -1,7 +1,7 @@
 {
-    "name": "EOSIDE",
+    "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.4",
+    "version": "1.0.1",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
