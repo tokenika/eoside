@@ -2,12 +2,12 @@
     "configurations": [
         {
             "includePath": [
-                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include",
-                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/eosiolib",
-                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/libc",
-                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/libcxx",
+                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include",
+                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/libcxx",
+                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/eosiolib/core",
+                "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/eosiolib/contracts",
                 "${workspaceFolder}",
-                "/mnt/c/Users/cartman/.vscode/extensions/tokenika.eoside-0.0.1/include"
+                "C:/Workspaces/EOS/eosfactory/includes"
             ],
             "libs": [],
             "compilerOptions": [],
@@ -15,12 +15,12 @@
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
-                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include",
-                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/eosiolib",
-                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/libc",
-                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.5.0/include/libcxx",
+                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include",
+                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/libcxx",
+                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/eosiolib/core",
+                    "C:/Users/cartman/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs/usr/opt/eosio.cdt/1.6.1/include/eosiolib/contracts",
                     "${workspaceFolder}",
-                    "/mnt/c/Users/cartman/.vscode/extensions/tokenika.eoside-0.0.1/include"
+                    "C:/Workspaces/EOS/eosfactory/includes"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""

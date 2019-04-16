@@ -394,14 +394,6 @@ eosio::print("Hello, ", user);
 ''')
 mv.wait(5)
 
-hello_cpp.type( 
-'''
-// The EOSIO_DISPATCH macro to handle the dispatching 
-// of actions the hello contract.
-EOSIO_DISPATCH(hello, (hi))
-''')
-mv.wait(5)
-
 mv.save_all()
 
 narration.type('''

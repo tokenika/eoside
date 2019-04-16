@@ -85,7 +85,7 @@ All the dependencies are stored in the `.vscode/c_cpp_properties.json` file. Thi
 
 VSC has the *IntelliSense* code completion functionality built-in, but it only works if proper metadata is provided. EOSIDE supplies this metadata for EOS smart-contracts automatically.
 
-As an example, the following picture shows the result of the `Pick Definition` command applied to the `eosio_assert` function.
+As an example, the following picture shows the result of the `Pick Definition` command applied to the `check` function.
 
 ![Intellisense](images/intellisense.png)
 

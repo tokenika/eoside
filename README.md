@@ -1,6 +1,6 @@
 # EOSIDE - an Integrated Development Environment for EOSIO smart-contracts
 
-With [EOSIO](https://github.com/eosio) installed on your system, EOSIDE organizes the workflow of development process for EOSIO smart-contracts.
+With [EOSIO](https://github.com/eosio) and [eosio.cdt](https://github.com/EOSIO/eosio.cdt) installed on your system, powered with [EOSFactory](http://eosfactory.io/build/html/index.html), [EOSIDE](https://eosfactory.io/eoside/html/index.html) organizes the workflow of development process for EOSIO smart-contracts.
 
 This process is composed of the following elements:
 

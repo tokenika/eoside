@@ -69,9 +69,9 @@ narration.type('''
 
 * Python 3.7 or above.
 * pip 3.7 or above.
-* EOSFactory v3.4 or above.
-* EOSIO v1.6.0 or above.
-* eosio.cdt v1.5.0.
+* EOSFactory v3.6 or above.
+* EOSIO v1.7.1 or above.
+* eosio.cdt v1.6.1.
 ''', "w")
 mv.wait(4)
 
