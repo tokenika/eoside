@@ -2,14 +2,17 @@ import time
 import org.sikuli.script as sikuli
 import definitions as mv
 
+
 def view_explorer():
     mv.send_shortcut("e", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+    mv.wait_image("view/explorer", mv.region_side_bar, 10)
 
 
 def view_extensions():
     mv.send_shortcut("v", sikuli.Key.ALT)
     button = mv.wait_image("view/extensions")
     button.click()
+    mv.wait_image("view/extensions", mv.region_side_bar, 10)
 
 
 def view_two_columns():
@@ -22,7 +25,7 @@ LEFT = 1
 RIGHT = 2
 
 
-def focus_eos_ide(group=LEFT):
+def focus_eoside(group=LEFT):
     mv.focus_editor_title(">EOSIDE:|EOSIDE|", group)
 
 
@@ -35,14 +38,15 @@ def focus_install(group=LEFT):
 
 
 def cmake():
-    build_term = mv.Terminal()
-    build_term.new()
-    build_term.type("cd build")
+    terminal = mv.Terminal()
+    terminal.new()
+    terminal.type("cd build")
     mv.wait(1)
-    build_term.type("cmake ..")
+    terminal.type("cmake ..")
     mv.wait(1)
-    build_term.type("make")
+    terminal.type("make")
     mv.wait_image("terminal/built_target", seconds=20, wait=3, score=0.9)
+    return terminal
 
 
 def run_test(test_name, scroll_result):
@@ -54,7 +58,8 @@ def run_test(test_name, scroll_result):
 
     terminal.maximize()
     mv.wait(2)
-    terminal.scroll_down(scroll_result)  
+    terminal.scroll_down(scroll_result)
+    return terminal
 
 
 def show_and_run_test(test_name, scroll_script, scroll_result):
@@ -70,7 +75,7 @@ def show_and_run_test(test_name, scroll_script, scroll_result):
     test = mv.Edit(test_name, 1)
     test.scroll_down(scroll_script)
 
-    run_test(test_name, scroll_result)
+    return run_test(test_name, scroll_result)
 
 
 def install_view():
@@ -85,3 +90,18 @@ def setup_view():
 def ide_view():
     mv.region_menu_bar.type(
                     mv.region_menu_bar, "e", sikuli.Key.CTRL + sikuli.Key.ALT)
+
+
+def init():
+    view_explorer()
+    mv.toggle_side_bar()
+
+    terminal = mv.Terminal()
+    terminal.new()
+    mv.wait(1)
+    terminal.hide()
+
+    narration = mv.Edit("narration", 2)
+    narration.set_width()
+    narration.type("","w")
+    return narration

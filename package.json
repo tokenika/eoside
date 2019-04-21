@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -10,7 +10,7 @@
     "categories": [
         "Other"
     ],
-    "icon": "media/polygon_gold.png",
+    "icon": "media/polygon_gold1.png",
     "galleryBanner": {
         "color": "#C80000",
         "theme": "dark"
@@ -52,7 +52,7 @@
         "ms-vscode.cpptools",
         "ms-python.python"
     ],
-    "homepage": "https://github.com/tokenika/eoside/master/README.md",
+    "homepage": "https://github.com/tokenika/eoside",
     "contributes": {
         "configuration": {
             "type": "object",
@@ -130,8 +130,8 @@
             },                        
             {
                 "command": "eoside.bash",
-                "key": "ctrl+shift+t",
-                "mac": "cmd+shift+t"
+                "key": "ctrl+alt+t",
+                "mac": "cmd+alt+t"
             },
             {
                 "command": "eoside.Compile",

@@ -24,11 +24,10 @@ ffmpeg -i installing.mp4 -vcodec copy -acodec copy installing.avi
 ffmpeg -i ../../../docs/_static/installing.mp4 -c:v libx264 -movflags +faststart ../../../docs/_static/installing1.mp4
 '''
 
-import os, sys, time
-import shutil
-import org.sikuli.script as sikuli
+import os
 import definitions as mv
 import macros as ma
+
 
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts\\"
 CONTRACT_NAME = "hello"
@@ -36,19 +35,14 @@ START_POINT_DIR = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\start_point"
 
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 HIGHLIGHT_COLOR = "pink" 
-NAME = os.path.join(mv.definition_dir(), "movies", "installing", "installing")
+NAME = os.path.join(
+                mv.definition_dir(), "movies", "installing", "installing")
+START_POINT = "start_point"
 
-ma.view_explorer()
-mv.toggle_side_bar()
+mv.kill_ffmpeg()
+mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
 
-build_term = mv.Terminal()
-build_term.new()
-mv.wait(1)
-build_term.hide()
-
-narration = mv.Edit("narration", 2)
-narration.set_width()
-narration.type("","w")
+narration = ma.init()
 
 mv.focus_group(1)
 mv.show_enabled_extensions()
@@ -65,13 +59,13 @@ narration.type('''
 
 # Dependencies
 
-* If the operating system is Windows, it has to include Windows Subsystem Linux. Then, all other dependencies have to be installed under the Windows Ubuntu Bash.
-
 * Python 3.7 or above.
 * pip 3.7 or above.
 * EOSFactory v3.6 or above.
-* EOSIO v1.7.1 or above.
+* EOSIO v1.7.1.
 * eosio.cdt v1.6.1.
+
+Note: if the operating system is Windows, it has to include Windows Subsystem Linux, then all these dependencies are installed under Windows Ubuntu Bash.
 ''', "w")
 mv.wait(4)
 
@@ -79,37 +73,44 @@ narration.type('''
 
 # Installation
 
-If all the dependencies are satisfied and EOSFactory has the default workspace directory defined, EOSIDE should start ready to work, with its title bar menu.
+If all the dependencies are satisfied, EOSIDE should start ready to work, with its title bar menu.
 ''', "w")
 mv.focus_group(1)
-mv.find("file_selection/title_bar_menu", mv.region_file_selection).highlight(
-                                                            3, HIGHLIGHT_COLOR)
+mv.find(
+            "file_selection/title_bar_menu", 
+            mv.region_file_selection
+        ).highlight(3, HIGHLIGHT_COLOR)
 
 narration.type('''
 
 # Setting the default workspace directory
 
-If all the dependencies are satisfied but with newly installed EOSFactory, 'Select Directory' dialog opens.
+With newly installed EOSFactory, EOSIDE forces setting of the workspace.
 ''', "w")
-
 mv.set_special_effects(START_POINT_DIR, [False, True])
 mv.focus_group(1)
 ma.install_view()
-mv.set_folder(mv.CONTRACT_DIR)
+set_workspace = mv.wait_image("installing/set_workspace")
 mv.set_special_effects(START_POINT_DIR)
-
-mv.wait_image("installing/eosio.cdt_detected", seconds=20, wait=3)
+narration.type('''
+Click the button.
+''')
+set_workspace.click()
+mv.wait(1)
+mv.set_folder(mv.CONTRACT_DIR)
+mv.wait_image("installing/workspaces", seconds=20, wait=3)
 
 narration.type('''
-Now, the default contract workspace is set. It can be changed.
+Now, the contract workspace is set. It can be changed.
 ''')
+mv.wait(1)
 mv.wait_image("install/change_workspace").highlight(3, HIGHLIGHT_COLOR)
 
 narration.type('''
 
 # What if something is wrong?
 
-The 'Install` view tries to specify a trouble, if any. For example, it signals missing 'eosio.cdt'.
+The 'Install` view tries to specify a trouble. For example, it signals missing 'eosio.cdt'.
 ''', "w")
 mv.set_special_effects(START_POINT_DIR, [True, False])
 mv.focus_group(1)
@@ -153,15 +154,25 @@ mv.wait(1)
 mv.open_folder(CONTRACT_NAME)
 mv.wait(1)
 mv.wait_image("explorer/vscode", mv.region_side_bar)
-mv.set_settings(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
+mv.set_settings(
+    os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME), START_POINT)
 
+################################################################################
+# Restore 'narration' file into the new VSCode folder.
+# As a side-effect, Extension View appears: toggling it.
+# Position the file in the right panell.
+################################################################################
 mv.open_file(mv.NARRATION_FILE)
-ma.view_explorer()
+mv.toggle_side_bar()
 narration = mv.Edit("narration.md")
 narration.move_right()
 mv.wait_image("file_selection/narration", mv.region_file_selection)
 mv.wait(1)
 
+################################################################################
+# Open the file 'hello.cpp'
+################################################################################
+ma.view_explorer()
 mv.focus_group(1)
 if not mv.exists("explorer/hello.cpp", mv.region_side_bar):
     mv.find("explorer/src", mv.region_side_bar).click()
@@ -172,10 +183,10 @@ mv.toggle_side_bar()
 test1 = mv.Edit("hello.cpp", 1)
 test1.scroll_down(0)
 
-
 ################################################################################
 # Build the contract
 ################################################################################
+
 narration.set_width()
 narration.type('''
 # Build contract
@@ -183,13 +194,13 @@ narration.type('''
 EOSIDE has several methods, use CMake here.
 ''', "w")
 
-ma.cmake()
+terminal = ma.cmake()
 
 narration.focus_editor()
 narration.type('''
 Code files go to the 'build' folder.
 ''')
-build_term.hide()
+terminal.hide()
 
 
 ################################################################################

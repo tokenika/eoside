@@ -212,7 +212,7 @@ export function compile(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.build ' 
+            `${def.PYTHON} -m eosfactory.build ` 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
             + `--c_cpp_prop `
             + `'${path.join(
@@ -229,7 +229,7 @@ export function build(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.build ' 
+            `${def.PYTHON} -m eosfactory.build ` 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
             + `--c_cpp_prop `
             + `'${path.join(
@@ -245,7 +245,7 @@ export function deploy(){
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            'python3 -m eosfactory.deploy '
+            `${def.PYTHON} -m eosfactory.deploy `
             + `--dir ` 
             + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
             + `--c_cpp_prop `
@@ -258,9 +258,6 @@ export function deploy(){
 
 
 export function bash(){
-    if(SetupPanel.currentPanel){
-        SetupPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two)
-    }
     if(def.IS_WINDOWS){
         vscode.window.createTerminal("bash", def.SHELL_PATH).show()
     } else {
@@ -317,7 +314,7 @@ abstract class Base{
 
     protected update(){
         if(this._c_cpp_properties) {
-            def.writeJson(this._c_cpp_properties, this.json)
+            inst.writeJson(this._c_cpp_properties, this.json)
             if(SetupPanel.currentPanel){
                 SetupPanel.currentPanel.update()
             }            
@@ -487,7 +484,7 @@ class ContractAccount extends Base{
         let terminalName = "bash"
         if(vscode.workspace.workspaceFolders){
             let terminal = def.getTerminal(terminalName, true, true)            
-            terminal.sendText('python3 -m eosfactory.testnets')
+            terminal.sendText(`${def.PYTHON} -m eosfactory.testnets`)
         }
 
         vscode.window.showInputBox({
@@ -496,7 +493,7 @@ class ContractAccount extends Base{
                 }).then((name) => {
             if(name){
                 let proc = def.callEosfactory(
-                            `python3 -m eosfactory.testnets --name ${name}`)
+                            `${def.PYTHON} -m eosfactory.testnets --name ${name}`)
                 if(!proc.status){
                     let args = proc.stdout.toString().split(" ")
                     this.read()

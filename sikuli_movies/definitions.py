@@ -19,7 +19,6 @@ MOVIES_FORMAT = "mp4" #"wmv"
 MOVIES_FRAM_RATE = 25
 
 WAIT = True
-START_POINT = "start_point"
 
 X = 0
 Y = 0
@@ -154,18 +153,35 @@ def delete_contract(contract_dir):
         if os.path.exists(contract_dir):
             shutil.rmtree(contract_dir)
     except Exception as e:
-        print(e)
+        msg = '''
+While trying to delete the file
+    {},
+the follwing error message is issued:
+    {}
+'''.format(contract_dir, str(e))
+        print(msg)
+        exit()
 
 
-def set_settings(contract_dir):
+def set_settings(contract_dir, start_point):
     '''Copies workspace settings to the folder 'contract_dir`.
     '''
     with open (os.path.join(
-            os.path.dirname(__file__), START_POINT, ".vscode\settings.json"),
+            os.path.dirname(__file__), start_point, ".vscode\settings.json"),
                 "r") as file:
         settings = file.read()
     with open(os.path.join(contract_dir, ".vscode\settings.json"), "w") as file:
         file.write(settings)
+
+    with open (os.path.join(
+                            os.path.dirname(__file__), start_point, 
+                            ".vscode\c_cpp_properties.json"),
+                                                                "r") as file:
+        c_cpp_properties = file.read()
+    with open(
+                            os.path.join(contract_dir, 
+                            ".vscode\c_cpp_properties.json"), "w") as file:
+        file.write(c_cpp_properties)
 
 
 def focus_editor_title(name, group=1):
@@ -306,8 +322,9 @@ def type(PSMRL, text, region=region_vscode, modifiers=None):
         region.type(PSMRL, text)     
 
 
-def save_all():
+def save_all(wait_time=1.5):
     send_k("s")
+    wait(wait_time)
 
 
 def escape(PSMRL=focus_vscode):
@@ -376,7 +393,7 @@ class Terminal():
     def show(self):
         if not self.is_shown():
             # region_menu_bar.type(
-            #     region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+            #     region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.ALT)
             # find("terminal/TERMINAL").click()
             region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
 
@@ -386,7 +403,7 @@ class Terminal():
 
     def new(self):
         region_menu_bar.type(
-            region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.SHIFT)
+            region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.ALT)
         self.set_hight()
 
     def type(self, text, new_line=True):

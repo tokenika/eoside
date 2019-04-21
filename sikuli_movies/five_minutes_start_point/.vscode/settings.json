@@ -1,0 +1,18 @@
+{
+    "workbench.statusBar.visible": false, 
+    "C_Cpp.intelliSenseEngineFallback": "Enabled", 
+    "workbench.activityBar.visible": false, 
+    "languageTool.enabled": false, 
+    "cSpell.enabled": false, 
+    "editor.tabSize": 4, 
+    "files.associations": {
+        "functional": "cpp", 
+        "*.ipp": "cpp", 
+        "__config": "cpp"
+    }, 
+    "editor.lineNumbers": "off", 
+    "editor.rulers": [
+        120
+    ], 
+    "eoside.specialEffects": []
+}

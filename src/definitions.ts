@@ -1,4 +1,5 @@
 
+import * as path from 'path'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as extension from './extension'
@@ -7,6 +8,7 @@ export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
 export const SHELL_PATH = "bash.exe"
 export const HEADER_SIZE = "20px"
+export const PYTHON: string = "python3"
 
 export function getExtensionPath(){
     return extension.extensionPath
@@ -44,22 +46,6 @@ export abstract class Panel{
             }
         }
     }
-}
-
-
-export function writeJson(file:string, json:Object){
-    file = wslMapLinuxWindows(file)
-    try{
-        fs.writeFileSync(file, JSON.stringify(json, undefined, 4))
-    } catch(err){
-        vscode.window.showErrorMessage(
-`Cannot write. The path tried is
-${file}.
-Error message is
-${err}`)
-        return -1
-    }
-    return 0
 }
 
 export function getTerminal(name: string, showTerminal=false, reset=false){
@@ -139,34 +125,9 @@ ${stderr ? stderr : stdout}
 }
 
 
-export function wslMapLinuxWindows(path:string){
-    if(!exports.IS_WINDOWS){
-        return path
-    }
-    if(!path.includes("/mnt/")){
-        return path
-    }
-    path = `${path[5].toUpperCase()}:${path.substr(6)}`
-    return path.replace(/\//gi, "\\")
-}
-
-
-export function wslMapWindowsLinux(path:string){
-    if(!exports.IS_WINDOWS){
-        return path
-    }    
-    if(!path.includes(":")){
-        return path
-    }
-    path = path.replace(/\\/gi, "/")
-    let drive = path[0]
-    return path.replace(`${drive}:/`, `/mnt/${drive.toLowerCase()}/`)
-}
-
-
-export function javaPath(path:string){
-    path = path.replace(/\\/gi, "/")
-    return path.replace(path[0], path[0].toUpperCase())
+export function javaPath(convPath:string){
+    convPath = convPath.replace(/\\/gi, "/")
+    return convPath.replace(convPath[0], convPath[0].toUpperCase())
 }
 
 

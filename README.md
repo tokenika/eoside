@@ -1,6 +1,6 @@
 # EOSIDE - an Integrated Development Environment for EOSIO smart-contracts
 
-With [EOSIO](https://github.com/eosio) and [eosio.cdt](https://github.com/EOSIO/eosio.cdt) installed on your system, powered with [EOSFactory](http://eosfactory.io/build/html/index.html), [EOSIDE](https://eosfactory.io/eoside/html/index.html) organizes the workflow of development process for EOSIO smart-contracts.
+With [EOSFactory](http://eosfactory.io/build/html/index.html) -- which is a PyPi package -- installed on your system (note that EOSFactory depends on [EOSIO](https://github.com/eosio/html/index.html) and [eosio.cdt](https://github.com/EOSIO/eosio.cdt)), [EOSIDE](https://eosfactory.io/eoside/html/index.html) organizes the workflow of development process for EOSIO smart-contracts. 
 
 This process is composed of the following elements:
 
@@ -14,17 +14,11 @@ This process is composed of the following elements:
 * testing,
 * deployment.
 
-EOSIDE is an extension of [Visual Studio Code](https://code.visualstudio.com/) (VSC).
-
-Watch a short [video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action.
-
-And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
+Watch a short [contract-in-5-minutes video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
 
 ## Preview of the application
 
-The user interface of EOSIDE is composed of two views.
-
-The standard view, called `EOSIDE`, is displayed when VSC is started empty, i.e. with the `code -n ""` command.
+The user interface of EOSIDE is composed of two views. The front view, called `EOSIDE`, is automatically displayed when VSC is started empty, i.e. with the `code -n ` command.
 
 ![Get Started view](docs/images/get_started.png)
 
@@ -64,4 +58,8 @@ All the dependencies are stored in the `.vscode/c_cpp_properties.json` file. Thi
 EOSIDE requires a prior installation of [EOSIO](https://github.com/eosio) on your system.
 
 ![Setup view](docs/images/install.png)
+
+## Contact us
+
+If you run into any issues or have suggestions for us, please file issues and suggestions on [GitHub](https://github.com/tokenika/eoside/issues).
 

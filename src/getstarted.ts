@@ -4,7 +4,6 @@ import * as fs from 'fs'
 
 import * as def from './definitions'
 import * as inst from './install'
-import InstallPanel from "./install"
 
 const TEMPLATE: string = "template"
 const RECENT: string = "recent"
@@ -85,7 +84,19 @@ export default class GetStartedPanel extends def.Panel {
                     break
                 case OPEN:
                     if(message.id === "open_folder"){
-                        vscode.commands.executeCommand('vscode.openFolder')
+                        vscode.window.showOpenDialog({
+                            canSelectMany: false,
+                            canSelectFiles: false,
+                            canSelectFolders: true,
+                            defaultUri: vscode.Uri.file(
+                                    inst.config["EOSIO_CONTRACT_WORKSPACE"]),
+                            openLabel: 'Open'
+                        }).then(fileUri => {
+                            if (fileUri && fileUri[0]) {
+                                vscode.commands.executeCommand(
+                                    'vscode.openFolder', fileUri[0])
+                            }
+                        })
                     }
                     break
             }
@@ -121,7 +132,7 @@ export default class GetStartedPanel extends def.Panel {
                 .replace(/\$\{nonce\}/gi, def.getNonce())
                 .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
                 .replace(/\$\{getstartedList\}/gi, 
-                    GetStarted.createOrGet(this._extensionPath).list())                
+                    GetStarted.createOrGet(this._extensionPath).list())
                 .replace(/\$\{templateList\}/gi, 
                     Templates.createOrGet(this._extensionPath).templateList())
                 .replace(/\$\{recentList\}/gi, 
@@ -149,7 +160,7 @@ class Templates {
     private getTemplateDir(){
         let templateDir = inst.config["TEMPLATE_DIR"]
         if(def.IS_WINDOWS){
-            templateDir = def.wslMapLinuxWindows(templateDir)
+            templateDir = inst.wslMapLinuxWindows(templateDir)
         }
         return templateDir
     }
@@ -166,33 +177,29 @@ class Templates {
     }
 
     public action(templateName:string){
-        const options: vscode.OpenDialogOptions = {
+        vscode.window.showOpenDialog({
             canSelectMany: false,
             canSelectFiles: false,
             canSelectFolders: true,
-            defaultUri: vscode.Uri.file("C:\\Workspaces\\EOS\\contracts"),
+            defaultUri: vscode.Uri.file(
+                                    inst.config["EOSIO_CONTRACT_WORKSPACE"]),
             openLabel: 'Open'
-        }
-        vscode.window.showOpenDialog(options).then(fileUri => {
+        }).then(fileUri => {
             if (fileUri && fileUri[0]) {
                 let templateDir = vscode.Uri.file(
                     path.join(this.getTemplateDir(), templateName)).fsPath
                 console.log('Selected file: ' + fileUri[0].fsPath)
                 
-                let cl = 'python3 -m eosfactory.create_project '          
-                + `'${def.wslMapWindowsLinux(fileUri[0].fsPath)}' `
-                + `'${def.wslMapWindowsLinux(templateDir)}' `
+                let cl = `${def.PYTHON} -m eosfactory.create_project `          
+                + `'${inst.wslMapWindowsLinux(fileUri[0].fsPath)}' `
+                + `'${inst.wslMapWindowsLinux(templateDir)}' `
                 cl += '--silent '
 
                 if(!def.callEosfactory(cl).status){ // Is OK
                     Recent.createOrGet(
-                        this._extensionPath).add(fileUri[0].fsPath)
-
-                    var openFolder = async function(){
-                        return await vscode.commands.executeCommand(
-                            'vscode.openFolder', fileUri[0])
-                    }
-                    openFolder()                       
+                                    this._extensionPath).add(fileUri[0].fsPath)
+                    vscode.commands.executeCommand(
+                                                'vscode.openFolder', fileUri[0])          
                 }                     
             }
         })
@@ -281,7 +288,7 @@ class Recent {
         }
         
         if(list.length != this.list.length){
-            def.writeJson(this._file, this.list)
+            inst.writeJson(this._file, this.list)
         }
     }
 
@@ -307,7 +314,7 @@ class Recent {
     public add(projectPath:string){
         if(this.list.indexOf(projectPath) == -1){
             this.list.push(projectPath)
-            def.writeJson(this._file, this.list)            
+            inst.writeJson(this._file, this.list)            
         }
     }
 }

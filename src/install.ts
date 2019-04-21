@@ -1,5 +1,5 @@
 // var sync = require('child_process').spawnSync;
-// var pyt = sync('python3', ['-c', 'import eosfactory'])
+// var pyt = sync(`${def.PYTHON}`, ['-c', 'import eosfactory'])
 
 
 import * as path from 'path'
@@ -8,7 +8,6 @@ import * as fs from 'fs'
 import * as def from './definitions'
 
 export var config: any = undefined
-export const PYTHON: string = "python3"
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
@@ -28,12 +27,11 @@ var htmlBody: any = undefined
 var firstErrMsg: any = undefined
 var c_cpp_prop_updated = false
 
-export function errorConditions(){
+export function verify(){
     const spawn = require("child_process").spawnSync;
 
     var forceError = false
     var forceSetDirectory = false
-    if(!exports.isError)
     try{
         forceError = vscode.workspace.getConfiguration().eoside
                                                             .specialEffects[0]
@@ -60,7 +58,7 @@ EOSIDE cannot do without WSL.`)
             isOK = false           
         } else {
             if(version >= WSL_VERSION_MIN){
-                conditionMsg(
+                statusMsg(
                 `<em>Windows Subsystem Linux</em> version ${version} detected.`)
             } else {
                 
@@ -75,14 +73,14 @@ EOSIDE cannot do without proper WSL.`)
 
     {
         const proc = def.IS_WINDOWS 
-            ? spawn("bash.exe", ["-c", `${exports.PYTHON} -V`])
-            : spawn(`${exports.PYTHON}`, ["-V"])
+            ? spawn("bash.exe", ["-c", `${def.PYTHON} -V`])
+            : spawn(`${def.PYTHON}`, ["-V"])
             
         if(proc.status){
             let msg = 
-`It seams that <em>${exports.PYTHON}</em> is not in the System, as the 
-<em>python3</em> executable is not in the System path.<br>
-EOSIDE cannot do without <em>${exports.PYTHON}</em>.`
+`It seams that <em>${def.PYTHON}</em> is not in the System, as the 
+<em>${def.PYTHON}</em> executable is not in the System path.<br>
+EOSIDE cannot do without <em>${def.PYTHON}</em>.`
 
             if(def.IS_WINDOWS){
                 msg +=
@@ -93,7 +91,7 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             errorMsg(msg)
             isOK = false
         } else {
-            conditionMsg(
+            statusMsg(
 `<em>${proc.stdout.toString().trim()}</em> detected.`)
         } 
     }
@@ -105,7 +103,7 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
         if(proc.status){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
-<em>python3</em> executable is not in the System path.<br>
+<em>${def.PYTHON}</em> executable is not in the System path.<br>
 EOSIDE cannot do without <em>${exports.PIP}</em>.`
 
             if(def.IS_WINDOWS){
@@ -117,21 +115,24 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             errorMsg(msg)
             isOK = false
         } else {
-            conditionMsg(
-`<em>${proc.stdout.toString().trim()}</em> detected.`)
+            let msg = proc.stdout.toString().trim()
+            msg = msg.substr(0, msg.indexOf("from"))
+            statusMsg(
+`<em>${msg}</em> detected.`)
         }
     }
 
     {
-        let cl = `${exports.PYTHON} -c 'import eosfactory'`
+        let cl = `${def.PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `"${cl}"`
-        const proc = spawn(clExe, [])
+        const proc = spawn(clExe, [], {shell: true})
+
         if(proc.status){
             let msg =
 `It seems that <em>eosfactory</em> package is not installed in 
-the System.<br>
+the System, or it is corrupted.<br>
 EOSIDE cannot do without <em>eosfactory</em>.
 `
             if(def.IS_WINDOWS){
@@ -142,76 +143,78 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
             errorMsg(msg)
             isOK = false
         } else {
-            conditionMsg(`<em>eosfactory</em> package detected.`)
-        }
-    }
-    {
-        const proc = def.IS_WINDOWS
-            ? spawn(`bash.exe -c "${exports.PYTHON}` 
-                + ' -m eosfactory.config --json --dont_set_workspace"', 
-                [], {shell: true})
-            : spawn(`${exports.PYTHON}`, 
+            statusMsg(`<em>eosfactory</em> package detected.`)
+
+            const proc = def.IS_WINDOWS
+            ? spawn(
+                    `bash.exe -c "${def.PYTHON}` 
+                        + ' -m eosfactory.config --json --dont_set_workspace"', 
+                    [], {shell: true})
+            : spawn(`${def.PYTHON}`, 
                 ['-m', 'eosfactory.config', '--json', 
                                                 '--dont_set_workspace'])
-        if(proc.status){
-            errorMsg(
+            if(proc.status){
+                errorMsg(
 `It seems that the eosfactory package is not installed or corrupted, as its 
 configuration file cannot be read.`)
-            isOK = false
-        } else {
-            conditionMsg(`<em>EOSFactory</em> configuration file detected`)
-            exports.config = JSON.parse(proc.stdout);
+                isOK = false
+            } else {
+                statusMsg(`<em>EOSFactory</em> configuration file detected`)
+                exports.config = JSON.parse(proc.stdout);
 
-            conditionMsg(
-`Configuration file is ${def.wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
-            var msg = ""
-            if(exports.config["EOSIO_VERSION"].length > 0){
-                var msg = `eosio version ${exports.config["EOSIO_VERSION"][0]} detected.`
-                if(exports.config["EOSIO_VERSION"].length > 1){
-                    exports.isWarning = true
-                    msg += warning("NOTE: EOSFactory was tested with version " 
-                        + `${exports.config["EOSIO_VERSION"][1]}`)
-                }
+                statusMsg(
+`Configuration file is ${exports.config["CONFIG_FILE"]}`)
+                var msg = ""
+                if(exports.config["EOSIO_VERSION"][0]){
+                    var msg = `eosio version ${exports.config["EOSIO_VERSION"][0]} detected.`
+                    if(exports.config["EOSIO_VERSION"].length > 1){
+                        exports.isWarning = true
+                        msg += warning("NOTE: EOSFactory was tested with version " 
+                            + `${exports.config["EOSIO_VERSION"][1]}`)
+                    }
                 
-            } else {
-                exports.isWarning = true
-                msg = warning(
-"Cannot determine that eosio is installed as 'nodeos' does not response.")
-            }
-            conditionMsg(msg)
-
-            if(exports.config["EOSIO_CDT_VERSION"].length > 0  && !forceError){
-                var msg = `eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][0]} detected.`
-                if(exports.config["EOSIO_CDT_VERSION"].length > 1){
+                } else {
                     exports.isWarning = true
-                    msg += warning('NOTE: EOSFactory was tested with version '
-                        + `${exports.config["EOSIO_CDT_VERSION"][1]}`)
+                    msg = warning(
+`Cannot determine that eosio is installed as nodeos does not response. EOSFactory expects eosio version ${exports.config["EOSIO_VERSION"][1]}`)
                 }
-                conditionMsg(msg)
-            } else {
-                errorMsg(
-`Cannot determine that eosio.cdt is installed as 'eosio-cpp' does not response.
-`)           
-            }
+                statusMsg(msg)
 
-            if(def.IS_WINDOWS){
-                if(!exports.config["WSL_ROOT"] && !writeRoot()){
+                if(exports.config["EOSIO_CDT_VERSION"][0]  && !forceError){
+                    var msg = `eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][0]} detected.`
+                    if(exports.config["EOSIO_CDT_VERSION"].length > 1){
+                        exports.isWarning = true
+                        msg += warning('NOTE: EOSFactory was tested with version '
+                            + `${exports.config["EOSIO_CDT_VERSION"][1]}`)
+                    }
+                    statusMsg(msg)
+                } else {
                     errorMsg(
+`Cannot determine that eosio.cdt is installed as eosio-cpp does not response. 
+EOSFactory expects eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][1]}`)
+                    isOK = false
+                }
+
+                if(def.IS_WINDOWS){
+                    if(!exports.config["WSL_ROOT"] && !writeRoot()){
+                        errorMsg(
 `Cannot determine the root of the WSL.<br>
 EOSIDE cannot do without it.`)
-                    setWslRoot()
-                    isOK = false
-                } else {
-                    conditionMsg(`<em>WSL</em> root directory detected.<br>`)
-                } 
-            }            
-        }
-    }
-    {
-        if(exports.config && (
-            !exports.config["EOSIO_CONTRACT_WORKSPACE"] || forceSetDirectory)){
-            isOK = false
-            errorMsg(
+                        setWslRoot()
+                        isOK = false
+                    } else {
+                        statusMsg(`<em>WSL</em> root directory detected.<br>`)
+                    } 
+                }            
+            }
+            if(exports.config && (
+                !exports.config["EOSIO_CONTRACT_WORKSPACE"] 
+                                                        || forceSetDirectory)){
+                isOK = false
+                if(forceSetDirectory){
+                    exports.config["EOSIO_CONTRACT_WORKSPACE"] = "Not set"
+                }
+                errorMsg(
 `
 Default workspace is not set. 
 <button 
@@ -221,8 +224,11 @@ title="${CHANGE_WORKSPACE}">
 Set workspace.
 </button>
 `)
+            }
+
         }
     }
+ 
 
     if(isOK){
         exports.isError = false
@@ -234,7 +240,7 @@ Set workspace.
                                     ".vscode", "c_cpp_properties.json")
     
             if(fs.existsSync(c_cpp_prop_path)){
-                let cl = 'python3 -m eosfactory.core.vscode '
+                let cl = `${def.PYTHON} -m eosfactory.core.vscode `
                 + `--c_cpp_prop_path '${c_cpp_prop_path}' `
                 + `--root '${root()}' `
     
@@ -245,7 +251,7 @@ Set workspace.
     setHtmlBody()
 }
 
-function conditionMsg(msg:string){
+function statusMsg(msg:string){
     htmlBody += `<li>${msg}</li>\n`
 }
 
@@ -299,10 +305,14 @@ open file dialog. Then navigate to the repository's folder.
 }
 
 function changeWorkspace(){
+    if(!exports.config){
+        return
+    }
+
     let contract_workspace = exports.config["EOSIO_CONTRACT_WORKSPACE"]
     var defaultUri = ""
     if(contract_workspace){
-        defaultUri = def.wslMapLinuxWindows(contract_workspace)
+        defaultUri = wslMapLinuxWindows(contract_workspace)
     }
     
     vscode.window.showOpenDialog({
@@ -314,11 +324,11 @@ function changeWorkspace(){
     }).then(fileUri => {
     if (fileUri && fileUri[0]) {
         exports.config["EOSIO_CONTRACT_WORKSPACE"] 
-                            = def.wslMapWindowsLinux(fileUri[0].fsPath)
-        if(!def.writeJson( // OK, exit code is 0
+                            = wslMapWindowsLinux(fileUri[0].fsPath)
+        if(!writeJson( // OK, exit code is 0
             exports.config["CONFIG_FILE"], 
             {"EOSIO_CONTRACT_WORKSPACE": 
-                                def.wslMapWindowsLinux(fileUri[0].fsPath)})){
+                                wslMapWindowsLinux(fileUri[0].fsPath)})){
             InstallPanel.createOrShow()
         } 
     }
@@ -342,7 +352,8 @@ function setHtmlBody(){
             title="${CHANGE_WORKSPACE}">
         change
     </button>
-    ${def.wslMapLinuxWindows(exports.config["EOSIO_CONTRACT_WORKSPACE"])}
+    ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] ? exports.config
+                                    ["EOSIO_CONTRACT_WORKSPACE"] : "Not set"}
 </p>
 
 <p 
@@ -391,7 +402,7 @@ export default class InstallPanel extends def.Panel {
 
         
         if(!show){
-            errorConditions()
+            verify()
             if(!exports.isError && !exports.isWarning){
                 return
             }
@@ -399,7 +410,7 @@ export default class InstallPanel extends def.Panel {
 
         // If we already have a panel, show it.
         if (InstallPanel.currentPanel) {
-            InstallPanel.currentPanel.update()
+            InstallPanel.currentPanel.update(show)
             InstallPanel.currentPanel._panel.reveal(column)
         } else {
             // Otherwise, create a new panel.
@@ -413,19 +424,19 @@ export default class InstallPanel extends def.Panel {
                 // extension's `media` directory.
                 localResourceRoots: [
                     vscode.Uri.file(path.join(
-                                        def.getExtensionPath(), def.RESOURCE_DIR))
+                                    def.getExtensionPath(), def.RESOURCE_DIR))
                 ]
                 }
             )
-            InstallPanel.currentPanel = new InstallPanel(panel)
+            InstallPanel.currentPanel = new InstallPanel(panel, show)
         }
     }
 
-    protected constructor(panel: vscode.WebviewPanel) {
+    protected constructor(panel: vscode.WebviewPanel, doUpdate: boolean=true) {
         super(panel)
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
-        this.update()
+        this.update(doUpdate)
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
@@ -445,7 +456,7 @@ export default class InstallPanel extends def.Panel {
                             root = fileUri[0].fsPath
                             if(fs.existsSync(path.join(root, "home"))){
                                 exports.config["WSL_ROOT"] = root
-                                if(def.writeJson(
+                                if(writeJson(
                                                 exports.config["CONFIG_FILE"], 
                                                 exports.config)){
                                     this.update()
@@ -479,8 +490,8 @@ misses the 'home' directory.
                         }).then(fileUri => {
                             if (fileUri && fileUri[0]) {
                                 exports.config["EOSIO_SOURCE_DIR"] 
-                                    = def.wslMapWindowsLinux(fileUri[0].fsPath)
-                                if(!def.writeJson(
+                                    = wslMapWindowsLinux(fileUri[0].fsPath)
+                                if(!writeJson(
                                     exports.config["CONFIG_FILE"], 
                                                             exports.config)){
                                         this.update()
@@ -519,9 +530,12 @@ misses the 'home' directory.
         InstallPanel.currentPanel = undefined
     }
 
-    public update(){
+    public update(doUpdate: boolean=true){
+        if(!doUpdate){
+            return
+        }
         htmlBody = ''
-        errorConditions()
+        verify()
         this._panel.webview.html = this._getHtmlForWebview();
     }
 
@@ -587,6 +601,54 @@ export function writeRoot(){
         }
     }
     exports.config["WSL_ROOT"] = `${basePath}`//\\home\\${user}`
-    return def.writeJson(exports.config["CONFIG_FILE"], exports.config)
+    return writeJson(exports.config["CONFIG_FILE"], exports.config)
 }
 
+
+export function wslMapLinuxWindows(convPath:string){
+    if(!def.IS_WINDOWS || convPath.includes(":")){
+        return convPath
+    }
+    if(convPath.includes("/mnt/")){
+        convPath = `${convPath[5].toUpperCase()}:${convPath.substr(6)}`
+                                                        .replace(/\//gi, "\\")
+    } else {
+        convPath = path.join(root(), convPath)
+    }
+    return convPath
+}
+
+
+export function writeJson(file:string, json:Object){
+    file = wslMapLinuxWindows(file)
+    try{
+        fs.writeFileSync(file, JSON.stringify(json, undefined, 4))
+    } catch(err){
+        vscode.window.showErrorMessage(
+`Cannot write. The path tried is
+${file}.
+Error message is
+${err}`)
+        return -1
+    }
+    return 0
+}
+
+
+export function wslMapWindowsLinux(convPath:string){
+    if(!exports.IS_WINDOWS){
+        return convPath
+    }    
+    if(!convPath.includes(":")){
+        return convPath
+    }
+    convPath = convPath.replace(/\\/gi, "/")
+    if(convPath.includes("/mnt/")){
+        let drive = convPath[0]
+        convPath = convPath.replace(
+                                `${drive}:/`, `/mnt/${drive.toLowerCase()}/`)
+    } else {
+        convPath = convPath.replace(root(), "")
+    }
+    return convPath
+}
