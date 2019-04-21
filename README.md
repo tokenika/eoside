@@ -1,6 +1,6 @@
 # EOSIDE - an Integrated Development Environment for EOSIO smart-contracts
 
-With [EOSFactory](http://eosfactory.io/build/html/index.html) -- which is a PyPi package -- installed on your system (note that EOSFactory depends on [EOSIO](https://github.com/eosio/html/index.html) and [eosio.cdt](https://github.com/EOSIO/eosio.cdt)), [EOSIDE](https://eosfactory.io/eoside/html/index.html) organizes the workflow of development process for EOSIO smart-contracts. 
+With [EOSFactory](https://eosfactory.io/build/html/index.html) -- which is a PyPi package -- installed on your system (note that EOSFactory depends on [EOSIO](https://eosfactory.io/eoside/html/index.html) and [eosio.cdt](https://github.com/EOSIO/eosio.cdt)), [EOSIDE](https://eosfactory.io/eoside/html/index.html) organizes the workflow of development process for EOSIO smart-contracts. 
 
 This process is composed of the following elements:
 
