@@ -14,7 +14,7 @@ This process is composed of the following elements:
 * testing,
 * deployment.
 
-Watch a short [contract-in-5-minutes video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
+Watch a short [contract-in-5-minutes video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
 
 ## Preview of the application
 
