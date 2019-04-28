@@ -5,5 +5,5 @@
 "new_folder_change_name.png","open_folder/open.png",
 "btn_view.png","editor_layout.png",
 "two_columns.png","explorer/vscode.png","explorer/build.png","explorer/src.png",
-"explorer/tests.png", "explorer/resources.png","explorer/utils.png",
+"explorer/tests.png", "explorer/recardian.png","explorer/utils.png",
 "file_selection/hello_hpp.png","file_selection/narration.png", "eosiolib.png"

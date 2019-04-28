@@ -70,12 +70,12 @@ import definitions as mv
 import macros as ma
 
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts\\"
-CONTRACT_NAME = "hello1"
+CONTRACT_NAME = "hello2"
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 HIGHLIGHT_COLOR = "pink"
 NAME = os.path.join(
             mv.definition_dir(), "movies", "five_minutes", "five_minutes")
-START_POINT = "five_minutes_start_point"
+START_POINT = "movies/five_minutes/start_point"
 
 mv.kill_ffmpeg()
 mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
@@ -92,8 +92,12 @@ Is 'hello' project in the 'Recent' list?
     ''')
     exit()
 
+ma.type_setup(narration)
+
 mv.start_ffmpeg(NAME)
-mv.wait(3)
+mv.wait(5)
+narration.move_right()
+narration.set_width()
 
 ################################################################################
 # Starting EOSIDE
@@ -103,7 +107,7 @@ narration.type('''
 
 # Starting EOSIDE
 
-With the extension EOSIDE enabled, this Visual Studio Code window has been launched by the command 'code -n'.
+With the extension EOSIDE enabled, this Visual Studio Code window can be launched by the command 'code -n'.
 ''', "w")
 mv.wait(4)
 
@@ -188,7 +192,6 @@ mv.wait_image("file_selection/narration", mv.region_file_selection)
 mv.wait(1)
 ma.view_explorer()
 
-
 narration.focus_editor(1) # Sometimes focus is on Install -- if error
 narration.type('''
 
@@ -204,11 +207,15 @@ narration.type('''* 'build' -- contract ABIs and WASMs,
 ''')
 mv.find("explorer/build", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
-narration.type('''* 'resources' -- Ricardian Contract files,
+narration.type('''* 'include' -- C/CPP headers,
 ''')
-mv.find("explorer/resources", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
+mv.find("explorer/include", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
-narration.type('''* 'src' -- contract definition files,
+narration.type('''* 'recardian' -- Ricardian Contract files,
+''')
+mv.find("explorer/recardian", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
+
+narration.type('''* 'src' -- C/CPP source files,
 ''')
 mv.find("explorer/src", mv.region_side_bar).highlight(3, HIGHLIGHT_COLOR)
 
@@ -297,6 +304,8 @@ Linked libraries to be added to the eosio.cdt defaults.
 ''', "w")
 mv.find("setup/libs").highlight(4, HIGHLIGHT_COLOR)
 
+mv.focus_group(1)
+mv.go_bottom()
 narration.type('''
 
 ## Setup view => Compiler Options
@@ -305,6 +314,8 @@ Compiler options to be added to the eosio.cdt defaults.
 ''', "w")
 mv.find("setup/options").highlight(4, HIGHLIGHT_COLOR)
 
+mv.focus_group(1)
+mv.go_top()
 narration.type('''
 
 ## Setup view => Task Buttons
@@ -425,6 +436,7 @@ require_auth = mv.find("cpp/require_auth")
 require_auth.rightClick()
 mv.wait_image("right_menu/pick_definition").click()
 mv.wait(4)
+require_auth = mv.find("cpp/require_auth")
 mv.escape(require_auth)
 
 

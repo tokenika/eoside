@@ -16,9 +16,7 @@ This process is composed of the following elements:
 
 EOSIDE is an extension of [Visual Studio Code](https://code.visualstudio.com/) (VSC).
 
-Watch a short [video]("https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action.
-
-And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
+Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4) showing EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World*  test.
 
 ## Get Started view
 
@@ -40,8 +38,9 @@ EOSIDE supports a specific layout of the contract folder:
 * **root** -- project folder,
     * **.vscode** -- system folder
     * **build** -- folder where contract WASM and ABI files go,
-    * **resources** -- folder containing Ricardian contract files etc.,
-    * **src** -- folder containing CPP/C source files
+    * **recardian** -- folder containing Ricardian contract files etc.,
+    * **src** -- folder containing source files
+    * **include** -- folder containing header files
     * **tests** - folder containing Python scripts, especially EOSFactory scripts
     * `CMakeLists.txt`  - the CMake lists file of the project
 

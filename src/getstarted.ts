@@ -89,7 +89,7 @@ export default class GetStartedPanel extends def.Panel {
                             canSelectFiles: false,
                             canSelectFolders: true,
                             defaultUri: vscode.Uri.file(
-                                    inst.config["EOSIO_CONTRACT_WORKSPACE"]),
+                                                inst.getContractWorkspace()),
                             openLabel: 'Open'
                         }).then(fileUri => {
                             if (fileUri && fileUri[0]) {
@@ -181,8 +181,7 @@ class Templates {
             canSelectMany: false,
             canSelectFiles: false,
             canSelectFolders: true,
-            defaultUri: vscode.Uri.file(
-                                    inst.config["EOSIO_CONTRACT_WORKSPACE"]),
+            defaultUri: vscode.Uri.file(inst.getContractWorkspace()),
             openLabel: 'Open'
         }).then(fileUri => {
             if (fileUri && fileUri[0]) {

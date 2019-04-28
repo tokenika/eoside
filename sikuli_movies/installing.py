@@ -28,22 +28,19 @@ import os
 import definitions as mv
 import macros as ma
 
-
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts\\"
-CONTRACT_NAME = "hello"
-START_POINT_DIR = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\start_point"
+CONTRACT_NAME = "hello1"
 
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 HIGHLIGHT_COLOR = "pink" 
 NAME = os.path.join(
                 mv.definition_dir(), "movies", "installing", "installing")
-START_POINT = "start_point"
+START_POINT = "movies/installing/start_point"
 
 mv.kill_ffmpeg()
 mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
 
 narration = ma.init()
-
 mv.focus_group(1)
 mv.show_enabled_extensions()
 mv.wait(1)
@@ -52,8 +49,12 @@ extension_eoside.click()
 mv.wait_image("logo_tokenika")
 mv.toggle_side_bar()
 
+ma.type_setup(narration)
+
 mv.start_ffmpeg(NAME)
-mv.wait(3)
+mv.wait(5)
+narration.move_right()
+narration.set_width()
 
 narration.type('''
 
@@ -87,11 +88,11 @@ narration.type('''
 
 With newly installed EOSFactory, EOSIDE forces setting of the workspace.
 ''', "w")
-mv.set_special_effects(START_POINT_DIR, [False, True])
+mv.set_special_effects(START_POINT, [False, True])
 mv.focus_group(1)
 ma.install_view()
 set_workspace = mv.wait_image("installing/set_workspace")
-mv.set_special_effects(START_POINT_DIR)
+mv.set_special_effects(START_POINT)
 narration.type('''
 Click the button.
 ''')
@@ -112,11 +113,11 @@ narration.type('''
 
 The 'Install` view tries to specify a trouble. For example, it signals missing 'eosio.cdt'.
 ''', "w")
-mv.set_special_effects(START_POINT_DIR, [True, False])
+mv.set_special_effects(START_POINT, [True, False])
 mv.focus_group(1)
 ma.install_view()
 mv.wait_image("installing/eosio.cdt_installed", seconds=20)
-mv.set_special_effects(START_POINT_DIR)
+mv.set_special_effects(START_POINT)
 
 narration.type('''
 Go back to the successful installation.

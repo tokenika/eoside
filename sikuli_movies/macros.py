@@ -12,7 +12,7 @@ def view_extensions():
     mv.send_shortcut("v", sikuli.Key.ALT)
     button = mv.wait_image("view/extensions")
     button.click()
-    mv.wait_image("view/extensions", mv.region_side_bar, 10)
+    mv.wait_image("view/extensions", mv.region_side_bar, 10, 2)
 
 
 def view_two_columns():
@@ -101,7 +101,18 @@ def init():
     mv.wait(1)
     terminal.hide()
 
-    narration = mv.Edit("narration", 2)
-    narration.set_width()
-    narration.type("","w")
+    narration = mv.Edit("narration", 1)
+    
     return narration
+
+
+def type_setup(narration):
+    narration.focus_editor()
+    narration.type('''
+## Setup
+
+* eosio version 1.7.1
+* eosio.cdt version 1.6.1
+* EOSFactory version 3.1.0
+* EOSIDE version 1.0.0
+''', "w")

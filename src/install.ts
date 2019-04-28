@@ -336,6 +336,20 @@ function changeWorkspace(){
 }
 
 
+export function getContractWorkspace(){
+    if(!exports.config){
+        return null
+    }
+    var contractWorkspace = exports.config["EOSIO_CONTRACT_WORKSPACE"]
+    if(contractWorkspace){
+        contractWorkspace = def.IS_WINDOWS 
+                                    ? wslMapLinuxWindows(contractWorkspace)
+                                    : wslMapWindowsLinux(contractWorkspace)
+    }
+    return contractWorkspace
+}
+
+
 function setHtmlBody(){  
     htmlBody += 
 `
@@ -352,8 +366,8 @@ function setHtmlBody(){
             title="${CHANGE_WORKSPACE}">
         change
     </button>
-    ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] ? exports.config
-                                    ["EOSIO_CONTRACT_WORKSPACE"] : "Not set"}
+    ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] 
+                    ? exports.config["EOSIO_CONTRACT_WORKSPACE"] : "Not set"}
 </p>
 
 <p 

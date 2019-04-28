@@ -243,15 +243,19 @@ class Edit():
         region_vscode.type(text)
 
     def move_right(self):
-        self.focus_editor()
-        region_menu_bar.type(
-            region_menu_bar, sikuli.Key.RIGHT, sikuli.Key.CTRL + sikuli.Key.ALT)
+        region = region_menu_bar
+        region.type(region, "1", sikuli.Key.CTRL)
+        region.type(region, "p", sikuli.Key.CTRL)
+        region.type(region, self.name + "\n")
+        region.type(sikuli.Key.RIGHT, sikuli.Key.CTRL + sikuli.Key.ALT)
         self.group = 2
 
     def move_left(self):
-        self.focus_editor()
-        region_menu_bar.type(
-            region_menu_bar, sikuli.Key.LEFT, sikuli.Key.CTRL + sikuli.Key.ALT)
+        region = region_menu_bar
+        region.type(region, "2", sikuli.Key.CTRL)
+        region.type(region, "p", sikuli.Key.CTRL)
+        region.type(region, self.name + "\n")
+        region.type(sikuli.Key.LEFT, sikuli.Key.CTRL + sikuli.Key.ALT)
         self.group = 1
 
     def set_width(self):
