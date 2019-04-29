@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -130,8 +130,8 @@
             },                        
             {
                 "command": "eoside.bash",
-                "key": "ctrl+alt+t",
-                "mac": "cmd+alt+t"
+                "key": "ctrl+alt+b",
+                "mac": "cmd+alt+b"
             },
             {
                 "command": "eoside.Compile",

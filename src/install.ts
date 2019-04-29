@@ -126,12 +126,16 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
         let cl = `${def.PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
-            : `"${cl}"`
+            : `${cl}`
         const proc = spawn(clExe, [], {shell: true})
 
         if(proc.status){
             let msg =
-`It seems that <em>eosfactory</em> package is not installed in 
+`
+${clExe}
+${proc.stderr}
+${proc.stdout}
+It seems that <em>eosfactory</em> package is not installed in 
 the System, or it is corrupted.<br>
 EOSIDE cannot do without <em>eosfactory</em>.
 `

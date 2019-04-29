@@ -397,7 +397,7 @@ class Terminal():
     def show(self):
         if not self.is_shown():
             # region_menu_bar.type(
-            #     region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.ALT)
+            #     region_menu_bar, "b", sikuli.Key.CTRL + sikuli.Key.ALT)
             # find("terminal/TERMINAL").click()
             region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
 
@@ -407,7 +407,7 @@ class Terminal():
 
     def new(self):
         region_menu_bar.type(
-            region_menu_bar, "t", sikuli.Key.CTRL + sikuli.Key.ALT)
+            region_menu_bar, "b", sikuli.Key.CTRL + sikuli.Key.ALT)
         self.set_hight()
 
     def type(self, text, new_line=True):

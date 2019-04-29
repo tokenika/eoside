@@ -522,7 +522,8 @@ class Options extends Dependencies{
     }
 
     protected getEntries() {
-        return this.json["configurations"][0][OPTIONS].slice()
+        return OPTIONS in this.json["configurations"][0]
+                        ? this.json["configurations"][0][OPTIONS].slice(): []
     }
 
     protected setEntries(entries: string[]){
@@ -565,7 +566,8 @@ class Libs extends Dependencies{
     }
 
     protected getEntries() {
-        return this.json["configurations"][0][LIBS].slice()
+        return LIBS in this.json["configurations"][0]
+                            ? this.json["configurations"][0][LIBS].slice(): []
     }    
     
     protected setEntries(entries: string[]){
