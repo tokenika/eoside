@@ -246,7 +246,6 @@ Set workspace.
             if(fs.existsSync(c_cpp_prop_path)){
                 let cl = `${def.PYTHON} -m eosfactory.core.vscode `
                 + `--c_cpp_prop_path '${c_cpp_prop_path}' `
-                + `--root '${root()}' `
     
                 def.callEosfactory(cl)
             }

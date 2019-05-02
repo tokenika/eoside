@@ -5,7 +5,8 @@ function clickableOnclick(e){
     vscode.postMessage({
         title: e.target.title,
         id: e.target.id,
-        value: e.target.innerHTML
+        value: e.target.innerHTML,
+        button: e.button
     })
 }
 

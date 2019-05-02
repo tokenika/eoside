@@ -327,38 +327,51 @@ abstract class Dependencies extends Base{
     protected abstract getEntries(): string[]
     protected abstract setEntries(entries: string[]): void
 
-    protected insert(index: number, selectFiles: boolean=true){
-        let path = undefined
-        vscode.window.showOpenDialog({
-            canSelectMany: false,
-            canSelectFiles: selectFiles,
-            canSelectFolders: !selectFiles,
-            defaultUri: vscode.Uri.file(inst.root()),
-            openLabel: 'Open'
-        }).then(fileUri => {
-            if (!fileUri || !fileUri[0]) {
-                return
-            }
-                console.log('Selected file: ' + fileUri[0].fsPath)
-                path = def.javaPath(fileUri[0].fsPath)
-                let list: string[] = []
-                let entries = this.getEntries()
-                index = index == -1 ? entries.length : index + 1
-                for(let i = 0, j = 0; i < entries.length + 1; i++){
-                    if(i === index){
-                        list[index] = path
-                        continue
-                    }
-                    list[i] = entries[j++]
+    private insertPath(index: number, path: any){
+        if(path){
+            console.log('Selected file: ' + path)
+            let list: string[] = []
+            let entries = this.getEntries()
+            index = index == -1 ? entries.length : index + 1
+            for(let i = 0, j = 0; i < entries.length + 1; i++){
+                if(i === index){
+                    list[index] = path
+                    continue
                 }
-                this.setEntries(list)
-                this.update()                 
-        })
+                list[i] = entries[j++]
+            }
+            this.setEntries(list)
+            this.update() 
+            }
+    }
+
+    protected insert(index: number, button=0, selectFiles: boolean=true){
+        if(button == 0){
+            let path = undefined
+            vscode.window.showOpenDialog({
+                canSelectMany: false,
+                canSelectFiles: selectFiles,
+                canSelectFolders: !selectFiles,
+                defaultUri: vscode.Uri.file(inst.root()),
+                openLabel: 'Open'
+            }).then(fileUri => {
+                if (!fileUri || !fileUri[0]) {
+                    return
+                }
+                this.insertPath(index, def.javaPath(fileUri[0].fsPath))             
+            })
+        } else {
+            vscode.window.showInputBox({
+                placeHolder: "",
+                ignoreFocusOut: true
+            }).then((path) => {this.insertPath(index, path)})
+        }
+
     }
 
     public action(message: any){        
         if(message.id === ADD){
-            this.insert(-1)
+            this.insert(-1, message.button)
         }
 
         if(message.id.includes(DOWN)){
@@ -403,7 +416,7 @@ abstract class Dependencies extends Base{
         }  
         
         if(message.id.includes(INSERT)){
-            this.insert(Number(message.id.replace(INSERT, "")))
+            this.insert(Number(message.id.replace(INSERT, "")), message.button)
         }     
     }
 
@@ -449,12 +462,12 @@ class Includes extends Dependencies{
         this.json["configurations"][0]["browse"]["path"] = entries
     }
 
-    public insert(index: number){
-        super.insert(index, false)
-    }
-
     public items(){
         return super.items(INCLUDE)
+    }
+
+    public insert(index: number, button: number){
+        super.insert(index, button, false)
     }
 }
 
@@ -574,12 +587,12 @@ class Libs extends Dependencies{
         this.json["configurations"][0][LIBS] = entries
     }
 
-    public insert(index: number){
-        super.insert(index, true)
-    }
-
     public items(){
         return super.items(LIBS)
+    }
+
+    public insert(index: number, button: number){
+        super.insert(index, button, true)
     }
 }
 
