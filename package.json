@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.2",
+    "version": "1.0.0",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -10,7 +10,7 @@
     "categories": [
         "Other"
     ],
-    "icon": "media/polygon_gold1.png",
+    "icon": "media/polygon_gold.png",
     "galleryBanner": {
         "color": "#C80000",
         "theme": "dark"
