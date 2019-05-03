@@ -1,7 +1,7 @@
 [
     ["Installing EOSIDE -- movie", "https://eosfactory.io/eoside/html/_static/installing.mp4"],
     ["Build EOSIO contract in 5 minutes -- movie", "https://eosfactory.io/eoside/html/_static/five_minutes.mp4"],
-    ["Introduction to EOSIDE", "file:///C:/Workspaces/EOS/eoside/docs/_build/html/intro.html"],
+    ["Introduction to EOSIDE", "https://eosfactory.io/eoside/html/introduction_to_EOSIDE.html"],
     ["EOSFactory", "https://eosfactory.io/build/html/index.html"],
     ["Smart Contract API", "https://eosio.github.io/eosio.cdt/1.6.0/modules.html"]
 ]

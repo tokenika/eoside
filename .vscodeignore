@@ -2,3 +2,15 @@
 **/tsconfig.json
 **/*.ps
 sikuli_movies
+docs
+install.ps1
+recent.json
+.vscode
+media/polygon_black.png
+media/polygon_white.png
+media/tokenika.png
+node_modules
+package-lock.json
+.gitignore
+eoside.ps1
+
