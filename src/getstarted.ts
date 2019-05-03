@@ -1,7 +1,6 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
-
 import * as def from './definitions'
 import * as inst from './install'
 
@@ -246,7 +245,7 @@ class GetStarted {
     }
 
     public open(url:string) {
-        require('openurl').open(url)
+        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url))
     }
 }
 

@@ -18,3 +18,5 @@ docs/_static/dist
 docs/_static/dist
 docs/_static/five_minutes.mp4
 docs/_static/installing.mp4
+node_modules
+package-lock.json

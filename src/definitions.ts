@@ -115,9 +115,9 @@ export function callEosfactory(cl:string){
         /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')    
     if(proc.status){
         vscode.window.showErrorMessage(`
-Command line is
+Command line is 
 ${clExe}.
-Error message is
+Error message is 
 ${stderr ? stderr : stdout}
             `)
     }

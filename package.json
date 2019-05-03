@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "Tokenika",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -42,10 +42,8 @@
         "url": "https://github.com/tokenika/eoside"
     },
     "dependencies": {
-        "fs": "^0.0.1-security",
         "child_process": "^1.0.2",
-        "file-system": "^2.2.2",
-        "openurl": "^1.1.1",
+        "fs": "^0.0.1-security",
         "vscode": "^1.1.29"
     },
     "extensionDependencies": [
@@ -70,7 +68,10 @@
                 },
                 "eoside.specialEffects": {
                     "type": "array",
-                    "default": [false, false],
+                    "default": [
+                        false,
+                        false
+                    ],
                     "description": "Configure special effects for videos. Do not change it."
                 }
             }
@@ -116,18 +117,18 @@
             {
                 "command": "eoside.Install",
                 "key": "ctrl+alt+i",
-                "mac": "cmd+alt+i"                
+                "mac": "cmd+alt+i"
             },
             {
                 "command": "eoside.Setup",
                 "key": "ctrl+alt+s",
-                "mac": "cmd+alt+s"                
+                "mac": "cmd+alt+s"
             },
             {
                 "command": "eoside.GetStarted",
                 "key": "ctrl+alt+e",
-                "mac": "cmd+alt+e"                
-            },                        
+                "mac": "cmd+alt+e"
+            },
             {
                 "command": "eoside.bash",
                 "key": "ctrl+alt+b",
