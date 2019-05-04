@@ -111,14 +111,8 @@ export default class GetStartedPanel extends def.Panel {
         const scriptPathOnDisk = vscode.Uri.file(path.join(
             this._extensionPath, def.RESOURCE_DIR, 'getstarted.js'))
 
-        // And the uri we use to load this script in the webview
+        // The uri we use to load this script in the webview
         const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        if(vscode.workspace.workspaceFolders){
-            var folder = path.join(
-                        vscode.workspace.workspaceFolders[0].uri.fsPath, 
-                        "CMakeLists.txt")
-        }
 
         const htmlUri = vscode.Uri.file(
             path.join(this._extensionPath, def.RESOURCE_DIR, 'startpage.html'))
@@ -156,16 +150,13 @@ class Templates {
         this._extensionPath = extensionPath
     }
 
-    private getTemplateDir(){
-        let templateDir = inst.config["TEMPLATE_DIR"]
+    public templateList(){
+        var templateDir = inst.config["TEMPLATE_DIR"]
         if(def.IS_WINDOWS){
             templateDir = inst.wslMapLinuxWindows(templateDir)
-        }
-        return templateDir
-    }
+        }  
+        templateDir = vscode.Uri.file(templateDir).fsPath
 
-    public templateList(){
-        let templateDir = vscode.Uri.file(this.getTemplateDir()).fsPath
         var list:string = ""
         fs.readdirSync(templateDir).forEach((template:string) => {
             list += def.clickable(
@@ -184,8 +175,8 @@ class Templates {
             openLabel: 'Open'
         }).then(fileUri => {
             if (fileUri && fileUri[0]) {
-                let templateDir = vscode.Uri.file(
-                    path.join(this.getTemplateDir(), templateName)).fsPath
+                let templateDir = inst.config["TEMPLATE_DIR"] + "/" 
+                                                                + templateName
                 console.log('Selected file: ' + fileUri[0].fsPath)
                 
                 let cl = `${def.PYTHON} -m eosfactory.create_project `          
@@ -277,7 +268,7 @@ class Recent {
         }
         
         this.list = []
-        for(var i = 0; i < list.length; i++){
+        for(let i = 0; i < list.length; i++){
             if(fs.existsSync(list[i]) 
                     && fs.lstatSync(list[i]).isDirectory() 
                     && this.list.indexOf(list[i]) == -1){

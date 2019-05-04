@@ -198,9 +198,8 @@ configuration file cannot be read.`)
 EOSFactory expects eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][1]}`)
                     isOK = false
                 }
-
                 if(def.IS_WINDOWS){
-                    if(!exports.config["WSL_ROOT"] && !writeRoot()){
+                    if(!exports.config["WSL_ROOT"]){
                         errorMsg(
 `Cannot determine the root of the WSL.<br>
 EOSIDE cannot do without it.`)
@@ -585,6 +584,7 @@ misses the 'home' directory.
     }
 }
 
+
 export function root(){
     if(exports.config){
         return exports.config["WSL_ROOT"]
@@ -609,15 +609,15 @@ export function writeRoot(){
         }
         
     } 
-    {
-        let cl = `bash.exe -c whoami`
-        const proc = spawn(cl, [], {shell: true})
-        var user = proc.stdout.toString()
-        if(proc.status){
-            return -1
-        }
-    }
-    exports.config["WSL_ROOT"] = `${basePath}`//\\home\\${user}`
+    // {
+    //     let cl = `bash.exe -c whoami`
+    //     const proc = spawn(cl, [], {shell: true})
+    //     var user = proc.stdout.toString()
+    //     if(proc.status){
+    //         return -1
+    //     }
+    // }
+    exports.config["WSL_ROOT"] = basePath
     return writeJson(exports.config["CONFIG_FILE"], exports.config)
 }
 

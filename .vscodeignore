@@ -1,6 +1,7 @@
 **/*.ts
 **/tsconfig.json
 **/*.ps
+**/*.vsix
 sikuli_movies
 docs
 install.ps1
@@ -13,4 +14,3 @@ node_modules
 package-lock.json
 .gitignore
 eoside.ps1
-

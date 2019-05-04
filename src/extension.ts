@@ -9,6 +9,14 @@
 // - `F5` to start debugging
 // "terminal.integrated.shell.windows": "bash.exe"
 
+// vsce create-publisher TOKENIKAPublisher human-friendly name: (TOKENIKA)
+// E-mail: comtact@tokenika.ioPersonal Access Token: ****************************************************
+
+// Successfully created publisher 'TOKENIKA'.
+
+// vsce login TOKENIKA
+// vsce publish
+
 import * as vscode from 'vscode'
 import * as setup from './setup'
 import InstallPanel from "./install"

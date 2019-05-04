@@ -1,7 +1,5 @@
 
-import * as path from 'path'
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as extension from './extension'
 
 export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
@@ -50,14 +48,14 @@ export abstract class Panel{
 
 export function getTerminal(name: string, showTerminal=false, reset=false){
     if(reset){
-        for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
+        for(let i = 0; i < (<any>vscode.window).terminals.length; i++){
             let terminal = (<any>vscode.window).terminals[i]
             if( !terminal._disposed && terminal.name === name){terminal.dispose()
             }
-        }         
+        }
     }        
    
-    for(var i = 0; i < (<any>vscode.window).terminals.length; i++){
+    for(let i = 0; i < (<any>vscode.window).terminals.length; i++){
         let terminal = (<any>vscode.window).terminals[i]
         if( !terminal._disposed && terminal.name === name){
             if(showTerminal){
@@ -82,7 +80,7 @@ export function getTerminal(name: string, showTerminal=false, reset=false){
 
 
 export function getNonce() {
-    let text = ""
+    var text = ""
     const possible 
             = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     for (let i = 0; i < 32; i++) {
@@ -102,7 +100,7 @@ export function clickable(id:string, title:string, text:string){
 
 export function callEosfactory(cl:string){
     const spawn = require("child_process").spawnSync
-    let clExe: string   
+    var clExe: string   
     if(exports.IS_WINDOWS){
         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
     } else{
