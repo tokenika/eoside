@@ -92,7 +92,7 @@ def ide_view():
                     mv.region_menu_bar, "e", sikuli.Key.CTRL + sikuli.Key.ALT)
 
 
-def init():
+def init(group=1):
     view_explorer()
     mv.toggle_side_bar()
 
@@ -101,7 +101,7 @@ def init():
     mv.wait(1)
     terminal.hide()
 
-    narration = mv.Edit("narration", 1)
+    narration = mv.Edit("narration", group)
     
     return narration
 
@@ -109,7 +109,7 @@ def init():
 def type_setup(narration):
     narration.focus_editor()
     narration.type('''
-## Setup
+# Setup
 
 * eosio version 1.7.1
 * eosio.cdt version 1.6.1

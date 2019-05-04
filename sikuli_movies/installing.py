@@ -42,18 +42,25 @@ mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
 
 narration = ma.init()
 mv.focus_group(1)
+ma.type_setup(narration)
+mv.start_ffmpeg(NAME)
+
+mv.wait(5)
 mv.show_enabled_extensions()
 mv.wait(1)
+
 extension_eoside = mv.wait_image("extension_eoside", mv.region_side_bar)
+extension_eoside.highlight(3, HIGHLIGHT_COLOR)
 extension_eoside.click()
 mv.wait_image("logo_tokenika")
-mv.toggle_side_bar()
-
-ma.type_setup(narration)
-
-mv.start_ffmpeg(NAME)
-mv.wait(5)
 narration.move_right()
+narration.type('''
+# EOSIDE extends VSCode
+
+EOSIDE is available from the VSCode Extension Marketplace.
+''', "w")
+extension_eoside.highlight(3, HIGHLIGHT_COLOR)
+mv.toggle_side_bar()
 narration.set_width()
 
 narration.type('''
@@ -62,7 +69,7 @@ narration.type('''
 
 * Python 3.7 or above.
 * pip 3.7 or above.
-* EOSFactory v3.6 or above.
+* EOSFactory v3.1.0 or above.
 * EOSIO v1.7.1.
 * eosio.cdt v1.6.1.
 
