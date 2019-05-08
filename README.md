@@ -18,7 +18,7 @@ Watch a short [contract-in-5-minutes video](https://eosfactory.io/eoside/html/_s
 
 ## Preview of the application
 
-The user interface of EOSIDE is composed of two views. The front view, called `EOSIDE`, is automatically displayed when VSC is started empty, i.e. with the `code -n ` command.
+The user interface of EOSIDE is composed of three views. The front view, called `EOSIDE`, is automatically displayed when VSC is started empty, i.e. with the `code -n ` command.
 
 ![Get Started view](docs/images/get_started.png)
 

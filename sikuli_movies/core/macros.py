@@ -109,7 +109,7 @@ def init():
 def type_setup(narration):
     narration.focus_editor()
     narration.type('''
-## Setup
+# Setup
 
 * eosio version 1.7.1
 * eosio.cdt version 1.6.1

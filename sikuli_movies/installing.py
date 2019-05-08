@@ -34,7 +34,7 @@ CONTRACT_NAME = "hello1"
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 HIGHLIGHT_COLOR = "pink" 
 NAME = os.path.join(
-                mv.definition_dir(), "movies", "installing", "installing")
+                mv.sikuli_movies_dir(), "movies", "installing", "installing")
 START_POINT = "movies/installing/start_point"
 
 mv.kill_ffmpeg()
@@ -60,8 +60,8 @@ narration.type('''
 
 # Dependencies
 
-* Python 3.7 or above.
-* pip 3.7 or above.
+* Python 3.5 or above.
+* pip 3.5 or above.
 * EOSFactory v3.6 or above.
 * EOSIO v1.7.1.
 * eosio.cdt v1.6.1.

@@ -83,19 +83,31 @@ export default class GetStartedPanel extends def.Panel {
                     break
                 case OPEN:
                     if(message.id === "open_folder"){
-                        vscode.window.showOpenDialog({
-                            canSelectMany: false,
-                            canSelectFiles: false,
-                            canSelectFolders: true,
-                            defaultUri: vscode.Uri.file(
-                                                inst.getContractWorkspace()),
-                            openLabel: 'Open'
-                        }).then(fileUri => {
-                            if (fileUri && fileUri[0]) {
-                                vscode.commands.executeCommand(
-                                    'vscode.openFolder', fileUri[0])
-                            }
-                        })
+                        if(message.button == 0){
+                            vscode.window.showOpenDialog({
+                                canSelectMany: false,
+                                canSelectFiles: false,
+                                canSelectFolders: true,
+                                defaultUri: vscode.Uri.file(
+                                                    inst.getContractWorkspace()),
+                                openLabel: 'Open'
+                            }).then(fileUri => {
+                                if (fileUri && fileUri[0]) {
+                                    vscode.commands.executeCommand(
+                                        'vscode.openFolder', fileUri[0])
+                                }
+                            })
+                        } else {
+                            vscode.window.showInputBox({
+                                placeHolder: "",
+                                ignoreFocusOut: true
+                            }).then(fileUri => {
+                                if (fileUri && fileUri[0]) {
+                                    vscode.commands.executeCommand(
+                                        'vscode.openFolder', fileUri[0])
+                                }
+                            })                            
+                        }
                     }
                     break
             }

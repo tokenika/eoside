@@ -5,14 +5,15 @@ import subprocess
 import time
 import json
 import org.sikuli.script as sikuli
+import sikuli_movies
 
 VSCODE = "eosfactory - Visual Studio Code"
 NARRATION_FILE = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\narration.md"
 CONTRACT_DIR = "C:\\Workspaces\\EOS\\contracts"
 RIGHT_COLUMN_WIDTH = 350
 TERMINAL_HIGHT = 200
-IMAGE_DIR = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "images.sikuli")
+IMAGE_DIR = os.path.realpath(
+    os.path.join(os.path.dirname(sikuli_movies.__file__), "images.sikuli"))
 
 FF_MPEG = "ffmpeg.exe"
 MOVIES_FORMAT = "mp4" #"wmv"
@@ -25,15 +26,15 @@ Y = 0
 W = 854
 H = 480
 
-def definition_dir():
-    return os.path.dirname(os.path.realpath(__file__))
+def sikuli_movies_dir():
+    return os.path.realpath(os.path.dirname(sikuli_movies.__file__))
 
 def wait(time_sec):
     if WAIT:
         time.sleep(time_sec)
 
 def get_image(file_name):
-    return os.path.join(IMAGE_DIR, "", file_name + ".png")
+    return os.path.join(IMAGE_DIR, file_name + ".png")
 
 def get_region_vscode(window_title="EOSIDE - Visual Studio Code"):
     app = sikuli.App(window_title)
@@ -61,6 +62,17 @@ region_right_column = sikuli.Region(
 region_terminal = sikuli.Region(
     X, Y + H - TERMINAL_HIGHT, W, TERMINAL_HIGHT)
 region_scroll = sikuli.Region(X + W - 20, Y + H - 27, 20, 27)
+
+
+def build():
+    focus_vscode.type(focus_vscode, "b",
+                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
+
+
+def compile():
+    focus_vscode.type(focus_vscode, "c",
+                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
+
 
 def show_enabled_extensions():
     region_menu_bar.type(region_menu_bar, "x", 

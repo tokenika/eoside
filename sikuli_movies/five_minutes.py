@@ -71,11 +71,13 @@ import macros as ma
 
 CONTRACT_WORKSPACE = "C:\\Workspaces\\EOS\\contracts\\"
 CONTRACT_NAME = "hello2"
+MOVIE_NAME = "five_minutes"
+
 # black, blue, cyan, gray, green, magenta, orange, pink, red, white, yellow
 HIGHLIGHT_COLOR = "pink"
 NAME = os.path.join(
-            mv.definition_dir(), "movies", "five_minutes", "five_minutes")
-START_POINT = "movies/five_minutes/start_point"
+            mv.sikuli_movies_dir(), "movies", MOVIE_NAME, MOVIE_NAME)
+START_POINT = "movies/" + MOVIE_NAME + "/start_point"
 
 mv.kill_ffmpeg()
 mv.delete_contract(os.path.join(CONTRACT_WORKSPACE, CONTRACT_NAME))
