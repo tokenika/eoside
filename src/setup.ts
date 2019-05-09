@@ -117,7 +117,7 @@ export default class SetupPanel extends def.Panel{
 
     private _getHtmlForWebview() {
         const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'setup.js'))
+            this._extensionPath, def.RESOURCE_DIR, 'clickables.js'))
 
         // And the uri we use to load this script in the webview
         const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })

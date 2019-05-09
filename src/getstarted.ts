@@ -12,9 +12,6 @@ const GET_STARTED_JSON: string = GET_STARTED + ".json"
 const OPEN: string = "open"
 
 export default class GetStartedPanel extends def.Panel {
-    /**
-     * Track the currently panel. Only allow a single panel to exist at a time.
-     */
     public static currentPanel: GetStartedPanel | undefined
     public static readonly viewType = "EOSIDE"
 
@@ -37,13 +34,11 @@ export default class GetStartedPanel extends def.Panel {
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 
-        // If we already have a panel, show it.
         if (GetStartedPanel.currentPanel) {
             GetStartedPanel.currentPanel._panel.reveal(column)
             return
         }
 
-        // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
                 GetStartedPanel.viewType, "EOSIDE", 
                 column || vscode.ViewColumn.One, {
@@ -64,10 +59,8 @@ export default class GetStartedPanel extends def.Panel {
 
     protected constructor(panel: vscode.WebviewPanel) {
         super(panel)
-        // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
 
-        // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case TEMPLATE:
@@ -121,9 +114,8 @@ export default class GetStartedPanel extends def.Panel {
 
     private _getHtmlForWebview() {
         const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'getstarted.js'))
+            this._extensionPath, def.RESOURCE_DIR, 'clickables.js'))
 
-        // The uri we use to load this script in the webview
         const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
 
         const htmlUri = vscode.Uri.file(
@@ -131,7 +123,7 @@ export default class GetStartedPanel extends def.Panel {
 
         const htmlBase = vscode.Uri.file(path.join(
                             this._extensionPath, def.RESOURCE_DIR, '/'))
-                            .with({ scheme: 'vscode-resource' })
+                                        .with({ scheme: 'vscode-resource' })
 
         return fs.readFileSync(htmlUri.fsPath).toString()
                 .replace(/\$\{nonce\}/gi, def.getNonce())
@@ -303,8 +295,8 @@ class Recent {
     }
 
     public open(projectPath:string){
-        var openFolder = async function(){
-            return await vscode.commands.executeCommand(
+        var openFolder = function(){
+            return vscode.commands.executeCommand(
                 'vscode.openFolder', 
                 vscode.Uri.file(projectPath))
         }
