@@ -1,8 +1,5 @@
-// var sync = require('child_process').spawnSync;
-// var pyt = sync(`${def.PYTHON}`, ['-c', 'import eosfactory'])
-
-
 import * as path from 'path'
+import * as child_process from 'child_process'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as def from './definitions'
@@ -20,16 +17,15 @@ const EOS_REPOSITORY = "eosRepository"
 const CONFIGURATION = "configuration"
 const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
+const TITLE = '<p style="color: unset; font-size: 35px;">Installing EOSIDE</p>'
 
 export var isError = true
 export var isWarning = false
-var htmlBody: any = undefined
+var htmlContents: any = undefined
 var firstErrMsg: any = undefined
 var c_cpp_prop_updated = false
 
 export function verify(){
-    const spawn = require("child_process").spawnSync;
-
     var forceError = false
     var forceSetDirectory = false
     try{
@@ -40,7 +36,7 @@ export function verify(){
     } catch(err){
     }
 
-    htmlBody = ''
+    htmlContents = TITLE
     firstErrMsg = ''
 
     exports.isError = true
@@ -48,9 +44,13 @@ export function verify(){
     var isOK = true
 
     if(def.IS_WINDOWS){
-        const proc = spawn("bash.exe", ["--version"])
-        let version = proc.stdout.toString().match(/version\s{1}(.*)\./)[1]
-        if(proc.status){
+        let version = ""
+        const proc = child_process.spawnSync("bash.exe", ["--version"])
+        let match = proc.stdout.toString().match(/version\s{1}(.*)\./)
+        if(match){
+            version = match[1]
+        }
+        if(proc.status || !version){
             errorMsg(
 `It seems that Windows Subsystem Linux is not in this System, or the 
 <em>bash.exe</em> executable is not in the System path.<br> 
@@ -73,8 +73,8 @@ EOSIDE cannot do without proper WSL.`)
 
     {
         const proc = def.IS_WINDOWS 
-            ? spawn("bash.exe", ["-c", `${def.PYTHON} -V`])
-            : spawn(`${def.PYTHON}`, ["-V"])
+            ? child_process.spawnSync("bash.exe", ["-c", `${def.PYTHON} -V`])
+            : child_process.spawnSync(`${def.PYTHON}`, ["-V"])
             
         if(proc.status){
             let msg = 
@@ -98,8 +98,8 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
 
     {
         const proc = def.IS_WINDOWS 
-            ? spawn("bash.exe", ["-c", `${exports.PIP} -V`])
-            : spawn(`${exports.PIP}`, ["-V"])
+            ? child_process.spawnSync("bash.exe", ["-c", `${exports.PIP} -V`])
+            : child_process.spawnSync(`${exports.PIP}`, ["-V"])
         if(proc.status){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
@@ -127,7 +127,7 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
         let clExe = def.IS_WINDOWS
             ? `bash.exe -c "${cl}"`
             : `${cl}`
-        const proc = spawn(clExe, [], {shell: true})
+        const proc = child_process.spawnSync(clExe, [], {shell: true})
 
         if(proc.status){
             let msg =
@@ -150,11 +150,11 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
             statusMsg(`<em>eosfactory</em> package detected.`)
 
             const proc = def.IS_WINDOWS
-            ? spawn(
+            ? child_process.spawnSync(
                     `bash.exe -c "${def.PYTHON}` 
                         + ' -m eosfactory.config --json --dont_set_workspace"', 
                     [], {shell: true})
-            : spawn(`${def.PYTHON}`, 
+            : child_process.spawnSync(`${def.PYTHON}`, 
                 ['-m', 'eosfactory.config', '--json', 
                                                 '--dont_set_workspace'])
             if(proc.status){
@@ -164,7 +164,7 @@ configuration file cannot be read.`)
                 isOK = false
             } else {
                 statusMsg(`<em>EOSFactory</em> configuration file detected`)
-                exports.config = JSON.parse(proc.stdout);
+                exports.config = JSON.parse(proc.stdout.toString());
 
                 statusMsg(
 `Configuration file is ${exports.config["CONFIG_FILE"]}`)
@@ -228,10 +228,8 @@ Set workspace.
 </button>
 `)
             }
-
         }
     }
- 
 
     if(isOK){
         exports.isError = false
@@ -254,7 +252,7 @@ Set workspace.
 }
 
 function statusMsg(msg:string){
-    htmlBody += `<li>${msg}</li>\n`
+    htmlContents += `<li>${msg}</li>\n`
 }
 
 
@@ -267,12 +265,12 @@ function errorMsg(msg:string){
     if(!firstErrMsg){
         firstErrMsg = msg
     }
-    htmlBody += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
+    htmlContents += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
 }
 
 
 function setWslRoot(){
-    htmlBody += 
+    htmlContents += 
 `
 <p>
 You can indicate the WSL root in your system. Click the button below to open
@@ -290,7 +288,7 @@ file dialog. Then navigate to a directory containing the Ubuntu file system.
 
 
 function setEosRepository(){
-    htmlBody += 
+    htmlContents += 
 `
 <p>
 You can indicate the EOS repository in your system. Click the button below to 
@@ -353,50 +351,38 @@ export function getContractWorkspace(){
 
 
 function setHtmlBody(){  
-    htmlBody += 
+    htmlContents += 
 `
-<p 
-        style="
-        color: unset;
-        font-size: ${def.HEADER_SIZE};">
-    Contract Workspace
-</p>
-<p>
-    <button 
-            class="btn"; 
-            id="${CHANGE_WORKSPACE}"; 
-            title="${CHANGE_WORKSPACE}">
-        change
-    </button>
-    ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] 
+        <p style="color: unset; font-size: ${def.HEADER_SIZE};">
+            Contract Workspace
+        </p>
+        <p>
+            <button class="btn"; id="${CHANGE_WORKSPACE}"; 
+                                                    title="${CHANGE_WORKSPACE}">
+                change
+            </button>
+            ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] 
                     ? exports.config["EOSIO_CONTRACT_WORKSPACE"] : "Not set"}
-</p>
+        </p>
 
-<p 
-        style="
-        color: unset;
-        font-size: ${def.HEADER_SIZE};">
-    Configuration
-</p>
-<p>
-    <button 
-            class="btn"; 
-            id="${START_WITH_EOSIDE}"; 
-            title="${CONFIGURATION}">
-        toggle
-    </button>
-    startWithEosIde = ${vscode.workspace.getConfiguration()
+        <p 
+            style="color: unset; font-size: ${def.HEADER_SIZE};">
+            Configuration
+        </p>
+        <p>
+            <button class="btn"; id="${START_WITH_EOSIDE}"; 
+                                                    title="${CONFIGURATION}">
+                toggle
+            </button>
+            startWithEosIde = ${vscode.workspace.getConfiguration()
                                                     .eoside.startWithEosIde}
-</p>
-<p>
-    <button 
-            class="btn"; 
-            id="${MENU}"; 
-            title="${CONFIGURATION}">
-        toggle
-    </button>
-    menu = ${vscode.workspace.getConfiguration().eoside.menu}
-</p>
+        </p>
+        <p>
+            <button class="btn"; id="${MENU}"; title="${CONFIGURATION}">
+                toggle
+            </button>
+            menu = ${vscode.workspace.getConfiguration().eoside.menu}
+        </p>
 `
 }
 
@@ -550,37 +536,14 @@ misses the 'home' directory.
         if(!doUpdate){
             return
         }
-        htmlBody = ''
+        htmlContents = TITLE
         verify()
         this._panel.webview.html = this._getHtmlForWebview();
     }
 
     private _getHtmlForWebview() {
-        const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'clickables.js'))
-
-        // And the uri we use to load this script in the webview
-        const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        if(vscode.workspace.workspaceFolders){
-            var folder = path.join(
-                        vscode.workspace.workspaceFolders[0].uri.fsPath, 
-                        "CMakeLists.txt")
-        }
-
-        const htmlUri = vscode.Uri.file(
-            path.join(this._extensionPath, def.RESOURCE_DIR, 'install.html'))
-
-        const htmlBase = vscode.Uri.file(path.join(
-                            this._extensionPath, def.RESOURCE_DIR, '/'))
-                            .with({ scheme: 'vscode-resource' })
-
-        let html = fs.readFileSync(htmlUri.fsPath).toString()
-                            .replace(/\$\{nonce\}/gi, def.getNonce())
-                            .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
-                            .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
-                            .replace(/\$\{htmlBody\}/gi, htmlBody)                      
-        return html
+        return def.htmlForWebview(
+                            this._extensionPath, "Install EOSIDE", htmlContents)
     }
 }
 

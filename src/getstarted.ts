@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+
 import * as def from './definitions'
 import * as inst from './install'
 
@@ -111,32 +112,44 @@ export default class GetStartedPanel extends def.Panel {
         super.dispose()
         GetStartedPanel.currentPanel = undefined
     }
-
+    
     private _getHtmlForWebview() {
-        const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'clickables.js'))
-
-        const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        const htmlUri = vscode.Uri.file(
-            path.join(this._extensionPath, def.RESOURCE_DIR, 'startpage.html'))
-
-        const htmlBase = vscode.Uri.file(path.join(
-                            this._extensionPath, def.RESOURCE_DIR, '/'))
-                                        .with({ scheme: 'vscode-resource' })
-
-        return fs.readFileSync(htmlUri.fsPath).toString()
-                .replace(/\$\{nonce\}/gi, def.getNonce())
-                .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
-                .replace(/\$\{getstartedList\}/gi, 
-                    GetStarted.createOrGet(this._extensionPath).list())
-                .replace(/\$\{templateList\}/gi, 
-                    Templates.createOrGet(this._extensionPath).templateList())
-                .replace(/\$\{recentList\}/gi, 
-                    Recent.createOrGet(this._extensionPath).recentList())
-                .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
+        return def.htmlForWebview(
+            this._extensionPath, "Get Started", body(this._extensionPath))     
     }
 }
+
+
+function body(extensionPath:string){
+    return `
+        <div class="row">
+            <div class="leftcolumn">
+                <div>
+                    <p style="color: unset; font-size: 35px;">Get Started</p>
+                    ${GetStarted.createOrGet(extensionPath).list()}
+                </div>
+                <div>
+                    <p style="color: unset; font-size: 35px;">Recent</p>
+                    ${Recent.createOrGet(extensionPath).recentList()}
+                </div>
+            </div>
+
+            <div class="rightcolumn">
+                <div>
+                    <p style="color: unset; font-size: 35px;">Open</p>
+                    <label id="open_folder" title="open" class="clickable" >
+                        Open folder...
+                    </label><br>
+                </div>
+                <div>
+                    <p style="color: unset; font-size: 35px;">New project</p>
+                    ${Templates.createOrGet(extensionPath).templateList()}
+                </div>
+            </div>
+        </div>
+    `
+}
+
 
 class Templates {
     public static instance: Templates | undefined
@@ -300,7 +313,6 @@ class Recent {
                 'vscode.openFolder', 
                 vscode.Uri.file(projectPath))
         }
-// vscode.workspace.updateWorkspaceFolders(0, 0, {uri: fileUri[0]})
         openFolder()        
     }
 

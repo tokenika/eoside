@@ -116,93 +116,77 @@ export default class SetupPanel extends def.Panel{
     }
 
     private _getHtmlForWebview() {
-        const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'clickables.js'))
-
-        // And the uri we use to load this script in the webview
-        const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        const htmlUri = vscode.Uri.file(
-            path.join(this._extensionPath, def.RESOURCE_DIR, 'setup.html'))
-
-        const htmlBase = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, '/'))
-                            .with({ scheme: 'vscode-resource' })
-        
-        let html = fs.readFileSync(htmlUri.fsPath).toString()
-        html = html.replace(/\$\{nonce\}/gi, def.getNonce())
-        html = html.replace(/\$\{scriptUri\}/gi, scriptUri.toString())
-        html = html.replace(/\$\{htmlBody\}/gi, body(this._extensionPath))
-        
-        return html
+        return def.htmlForWebview(
+            this._extensionPath, "Setup EOSIDE", body(this._extensionPath))
     }
 }
 
 
 function body(extensionPath:string){
     return `
-<div class="row">
-    <button
-        class="ctr"; 
-        id="compile"; 
-        title="ctr">Compile</button>
-    <button 
-        class="ctr"; 
-        id="build"; 
-        title="ctr">Build</button>    
-    <button 
-        class="ctr"; 
-        id="EOSIDE"; 
-        title="ctr">EOSIDE</button>
-        
-    ${def.IS_WINDOWS ?`
-        <button class="ctr"; id="bash"; title="ctr">bash</button>
-    `: ""}
-</div>
+        <div class="row">
+            <button
+                class="ctr"; 
+                id="compile"; 
+                title="ctr">Compile</button>
+            <button 
+                class="ctr"; 
+                id="build"; 
+                title="ctr">Build</button>    
+            <button 
+                class="ctr"; 
+                id="EOSIDE"; 
+                title="ctr">EOSIDE</button>
+                
+            ${def.IS_WINDOWS ?`
+                <button class="ctr"; id="bash"; title="ctr">bash</button>
+            `: ""}
+        </div>
 
-<div class="row">
-    <button class="btn"; id="include"; title="${INCLUDE}">&#8627</button>
-    <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
-        Include
-    </label>
-    ${def.IS_WINDOWS ?`
-        <p>WSL root is ${inst.root()}</p>
-    `: "<p></p>"}
-    
-    ${Includes.createOrGet(extensionPath).items()}
-</div>
+        <div class="row">
+            <button class="btn"; id="include"; 
+                                            title="${INCLUDE}">&#8627</button>
+            <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
+                Include
+            </label>
+            ${def.IS_WINDOWS ?`
+                <p>WSL root is ${inst.root()}</p>
+            `: "<p></p>"}
+            
+            ${Includes.createOrGet(extensionPath).items()}
+        </div>
 
-<div class="row">
-    <button class="btn"; id="include"; title="${LIBS}">&#8627</button>
-    <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
-        Libs
-    </label>
-    ${def.IS_WINDOWS ?`
-        <p>WSL root is ${inst.root()}</p>
-    `: "<p></p>"}
+        <div class="row">
+            <button class="btn"; id="include"; title="${LIBS}">&#8627</button>
+            <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
+                Libs
+            </label>
+            ${def.IS_WINDOWS ?`
+                <p>WSL root is ${inst.root()}</p>
+            `: "<p></p>"}
 
-    ${Libs.createOrGet(extensionPath).items()}
-</div>
+            ${Libs.createOrGet(extensionPath).items()}
+        </div>
 
-<div class="row">
-    <button  class="btn"; id="include"; title="${OPTIONS}">&#8627</button>
-    <label style="color: unset; font-size: ${def.HEADER_SIZE};">
-        Compiler Options
-    </label>
-    <br><br>
-    ${Options.createOrGet(extensionPath).items()}
-</div>
+        <div class="row">
+            <button  class="btn"; id="include"; 
+                                            title="${OPTIONS}">&#8627</button>
+            <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+                Compiler Options
+            </label>
+            <br><br>
+            ${Options.createOrGet(extensionPath).items()}
+        </div>
 
-<div class="row">
-    <button class="btn"; id="change"; 
-        title="${CONTRACT_ACCOUNT}">&#8627</button>
-    <label style="color: unset; font-size: ${def.HEADER_SIZE};">
-        Contract Account
-    </label>
-    <br><br>
-    ${ContractAccount.createOrGet(extensionPath).items()}
-</div>
-
+        <div class="row">
+            <button class="btn"; id="change"; 
+                title="${CONTRACT_ACCOUNT}">&#8627</button>
+            <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+                Contract Account
+            </label>
+            <br><br>
+            ${ContractAccount.createOrGet(extensionPath).items()}
+        </div>
 `
 }
 

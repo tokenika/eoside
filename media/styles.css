@@ -1,0 +1,66 @@
+* {
+    box-sizing: border-box;
+}
+.body {
+    background-color: rgb(30, 30, 30);
+    background-image: url("tokenika_body.png");
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: top;
+    /* rgb(83, 157, 241) */
+    color: DodgerBlue; 
+    opacity: 0.8;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13;
+}
+.clickable {
+    background-color: unset;
+    color: unset;
+    border: 0px;
+    text-align: left;
+    font-family: unset;
+    font-size: unset;        
+}
+.clickable:hover {
+    color: rgb(150, 150, 150);
+}
+.leftcolumn {
+    float: left;
+    width: 60%;
+    padding: 10px;
+}
+.rightcolumn {
+    float: left;
+    width: 40%;
+    padding: 10px;
+}
+.row {
+    margin-top: 40px;
+}
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.ctr {
+    background-color: indianred;
+    border: none;
+    color: black;
+    padding: 2px 2px;
+    cursor: pointer;
+    font-size: 16px;            
+}
+.ctr:hover {
+    background-color: RoyalBlue;
+}
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: black;
+    padding: 2px 2px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: RoyalBlue;
+}
