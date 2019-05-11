@@ -1,4 +1,6 @@
-# EOSIDE - an Integrated Development Environment for EOSIO smart-contracts
+# EOSIDE - Overview of the Main Features
+
+#### EOSIDE is an Integrated Development Environment for EOSIO smart-contracts.
 
 EOSIDE organizes the workflow of development process for EOSIO smart-contracts. It leverages the functionality of [EOSFactory](https://eosfactory.io/) and it's implemented as a [Visual Studio Code](https://code.visualstudio.com/) (VSC) extension.
 

@@ -1,4 +1,4 @@
-# EOSIO smart contract in five minutes -- short movie
+# EOSIDE - Overview of the Main Features (short video)
 
 <!-- The HTML tag <video> is not served well by Markdown: therefore the source has to be expressed explicitly. Compare:
 ![](../images/file_structure.png)
