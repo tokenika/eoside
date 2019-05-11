@@ -6,9 +6,9 @@
 Welcome to EOSIDE documentation!
 ==================================
 
-`EOSIDE <https://github.com/tokenika/eoside>`_ , created by 
-`Tokenika <https://tokenika.io>`_, is an integrated development environment 
-for EOSIO smart-contracts.
+`EOSIDE <https://github.com/tokenika/eoside>`_ is an integrated development environment for EOSIO smart-contracts. It leverages the functionality of `EOSFactory <https://eosfactory.io/>`_ and it's implemented as a `Visual Studio Code <https://code.visualstudio.com/>`_ (VSC) extension.
+
+It's part of development tools created by `TOKENIKA <https://tokenika.io>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -18,9 +18,9 @@ for EOSIO smart-contracts.
     :maxdepth: 1
 
     installing_EOSIDE
+    installing_movie
     introduction_to_EOSIDE
     five_minutes_movie
-    installing_movie
 
 Indices and tables
 ==================
