@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+
 import * as def from './definitions'
 import * as inst from './install'
 
@@ -12,9 +13,6 @@ const GET_STARTED_JSON: string = GET_STARTED + ".json"
 const OPEN: string = "open"
 
 export default class GetStartedPanel extends def.Panel {
-    /**
-     * Track the currently panel. Only allow a single panel to exist at a time.
-     */
     public static currentPanel: GetStartedPanel | undefined
     public static readonly viewType = "EOSIDE"
 
@@ -37,13 +35,11 @@ export default class GetStartedPanel extends def.Panel {
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 
-        // If we already have a panel, show it.
         if (GetStartedPanel.currentPanel) {
             GetStartedPanel.currentPanel._panel.reveal(column)
             return
         }
 
-        // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
                 GetStartedPanel.viewType, "EOSIDE", 
                 column || vscode.ViewColumn.One, {
@@ -64,10 +60,8 @@ export default class GetStartedPanel extends def.Panel {
 
     protected constructor(panel: vscode.WebviewPanel) {
         super(panel)
-        // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
 
-        // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
             switch (message.title) {
                 case TEMPLATE:
@@ -83,19 +77,31 @@ export default class GetStartedPanel extends def.Panel {
                     break
                 case OPEN:
                     if(message.id === "open_folder"){
-                        vscode.window.showOpenDialog({
-                            canSelectMany: false,
-                            canSelectFiles: false,
-                            canSelectFolders: true,
-                            defaultUri: vscode.Uri.file(
-                                                inst.getContractWorkspace()),
-                            openLabel: 'Open'
-                        }).then(fileUri => {
-                            if (fileUri && fileUri[0]) {
-                                vscode.commands.executeCommand(
-                                    'vscode.openFolder', fileUri[0])
-                            }
-                        })
+                        if(message.button == 0){
+                            vscode.window.showOpenDialog({
+                                canSelectMany: false,
+                                canSelectFiles: false,
+                                canSelectFolders: true,
+                                defaultUri: vscode.Uri.file(
+                                                    inst.getContractWorkspace()),
+                                openLabel: 'Open'
+                            }).then(fileUri => {
+                                if (fileUri && fileUri[0]) {
+                                    vscode.commands.executeCommand(
+                                        'vscode.openFolder', fileUri[0])
+                                }
+                            })
+                        } else {
+                            vscode.window.showInputBox({
+                                placeHolder: "",
+                                ignoreFocusOut: true
+                            }).then(fileUri => {
+                                if (fileUri && fileUri[0]) {
+                                    vscode.commands.executeCommand(
+                                        'vscode.openFolder', fileUri[0])
+                                }
+                            })                            
+                        }
                     }
                     break
             }
@@ -106,33 +112,44 @@ export default class GetStartedPanel extends def.Panel {
         super.dispose()
         GetStartedPanel.currentPanel = undefined
     }
-
+    
     private _getHtmlForWebview() {
-        const scriptPathOnDisk = vscode.Uri.file(path.join(
-            this._extensionPath, def.RESOURCE_DIR, 'getstarted.js'))
-
-        // The uri we use to load this script in the webview
-        const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' })
-
-        const htmlUri = vscode.Uri.file(
-            path.join(this._extensionPath, def.RESOURCE_DIR, 'startpage.html'))
-
-        const htmlBase = vscode.Uri.file(path.join(
-                            this._extensionPath, def.RESOURCE_DIR, '/'))
-                            .with({ scheme: 'vscode-resource' })
-
-        return fs.readFileSync(htmlUri.fsPath).toString()
-                .replace(/\$\{nonce\}/gi, def.getNonce())
-                .replace(/\$\{scriptUri\}/gi, scriptUri.toString())
-                .replace(/\$\{getstartedList\}/gi, 
-                    GetStarted.createOrGet(this._extensionPath).list())
-                .replace(/\$\{templateList\}/gi, 
-                    Templates.createOrGet(this._extensionPath).templateList())
-                .replace(/\$\{recentList\}/gi, 
-                    Recent.createOrGet(this._extensionPath).recentList())
-                .replace(/\$\{htmlBase\}/gi, htmlBase.toString())
+        return def.htmlForWebview(
+            this._extensionPath, "Get Started", body(this._extensionPath))     
     }
 }
+
+
+function body(extensionPath:string){
+    return `
+        <div class="row">
+            <div class="leftcolumn">
+                <div>
+                    <p style="color: unset; font-size: 35px;">Get Started</p>
+                    ${GetStarted.createOrGet(extensionPath).list()}
+                </div>
+                <div>
+                    <p style="color: unset; font-size: 35px;">Recent</p>
+                    ${Recent.createOrGet(extensionPath).recentList()}
+                </div>
+            </div>
+
+            <div class="rightcolumn">
+                <div>
+                    <p style="color: unset; font-size: 35px;">Open</p>
+                    <label id="open_folder" title="open" class="clickable" >
+                        Open folder...
+                    </label><br>
+                </div>
+                <div>
+                    <p style="color: unset; font-size: 35px;">New project</p>
+                    ${Templates.createOrGet(extensionPath).templateList()}
+                </div>
+            </div>
+        </div>
+    `
+}
+
 
 class Templates {
     public static instance: Templates | undefined
@@ -291,12 +308,11 @@ class Recent {
     }
 
     public open(projectPath:string){
-        var openFolder = async function(){
-            return await vscode.commands.executeCommand(
+        var openFolder = function(){
+            return vscode.commands.executeCommand(
                 'vscode.openFolder', 
                 vscode.Uri.file(projectPath))
         }
-// vscode.workspace.updateWorkspaceFolders(0, 0, {uri: fileUri[0]})
         openFolder()        
     }
 

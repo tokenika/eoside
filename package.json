@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "publisher": "TOKENIKA",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -72,7 +72,13 @@
                         false
                     ],
                     "description": "Configure special effects for videos. Do not change it."
+                },
+                "eoside.test_mode": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "If set, display the native test buttons and test compiler options."
                 }
+
             }
         },
         "commands": [
@@ -97,8 +103,18 @@
                 "category": "EOSIDE"
             },
             {
+                "command": "eoside.CompileTest",
+                "title": "compile test",
+                "category": "EOSIDE"
+            },
+            {
                 "command": "eoside.Build",
                 "title": "build",
+                "category": "EOSIDE"
+            },
+            {
+                "command": "eoside.BuildTest",
+                "title": "build test",
                 "category": "EOSIDE"
             },
             {
@@ -139,9 +155,19 @@
                 "mac": "cmd+shift+c"
             },
             {
+                "command": "eoside.CompileTest",
+                "key": "ctrl+alt+c",
+                "mac": "cmd+alt+c"
+            },
+            {
                 "command": "eoside.Build",
                 "key": "ctrl+shift+b",
                 "mac": "cmd+shift+b"
+            },
+            {
+                "command": "eoside.BuildTest",
+                "key": "ctrl+alt+t",
+                "mac": "cmd+shift+t"
             },
             {
                 "command": "eoside.Deploy",

@@ -1,4 +1,5 @@
-
+import * as path from 'path'
+import * as child_process from 'child_process'
 import * as vscode from 'vscode'
 import * as extension from './extension'
 
@@ -6,7 +7,9 @@ export const IS_WINDOWS = (vscode.env.appRoot.indexOf("\\") != -1)
 export const RESOURCE_DIR: string = "media"
 export const SHELL_PATH = "bash.exe"
 export const HEADER_SIZE = "20px"
-export const PYTHON: string = "python3"
+export const PYTHON = "python3"
+const SCRIPTS = "scripts.js"
+const STYLES = "styles.css"
 
 export function getExtensionPath(){
     return extension.extensionPath
@@ -99,14 +102,13 @@ export function clickable(id:string, title:string, text:string){
 
 
 export function callEosfactory(cl:string){
-    const spawn = require("child_process").spawnSync
     var clExe: string   
     if(exports.IS_WINDOWS){
         clExe = `cmd.exe /c bash.exe -c \"${cl}\"`
     } else{
         clExe = cl
     }
-    const proc = spawn(clExe, [], {shell: true})
+    const proc = child_process.spawnSync(clExe, [], {shell: true})
     var stderr = proc.stderr.toString().replace(
         /[\u001b\u009b][[()#?]*(?:[0-9]{1,4}(?:[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
     var stdout = proc.stdout.toString().replace(
@@ -129,5 +131,51 @@ export function javaPath(convPath:string){
 }
 
 
+export function htmlForWebview(
+    extensionPath: string, title: string, htmlContents: string){
+
+const htmlBase = vscode.Uri.file(path.join(
+extensionPath, RESOURCE_DIR, '/')).with({scheme: 'vscode-resource'})
+const cssPageUri = vscode.Uri.file(path.join(
+extensionPath, RESOURCE_DIR, STYLES)).with({scheme: 'vscode-resource'})
+const scriptUri = vscode.Uri.file(path.join(
+extensionPath, RESOURCE_DIR, SCRIPTS)).with({scheme: 'vscode-resource'})
+const nonce = getNonce()
+
+var html = `
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>${title}</title>
+        <base href="${htmlBase}">
+        <link rel="stylesheet" href="${cssPageUri}">
+        <meta charset="utf-8">
+
+        <!--
+        Use a content security policy to only allow loading images from https 
+        or from our extension directory,
+        and only allow scripts that have a specific nonce.
+        -->
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'nonce-${nonce}' 'unsafe-inline';
+        style-src 'unsafe-inline';
+        img-src vscode-resource: https:; 
+        ">
+
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>EOSIDE install page</title>
+    </head>
+        <body class="body">
+        <script nonce="${nonce}" src="${scriptUri}"></script>
+        ${htmlContents}
+        </body>
+
+</html>
+`
+return html
+}
 
 

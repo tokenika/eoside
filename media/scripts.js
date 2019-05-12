@@ -12,8 +12,7 @@ function clickableOnclick(e){
 window.addEventListener(
     "load", 
     function(event) {
-        
-        clickables =  document.getElementsByClassName("btn");
+        var clickables =  document.getElementsByClassName("btn");
         for(var i = 0; i < clickables.length; i++){
             clickables[i].onmouseup = clickableOnclick
         }
@@ -21,6 +20,11 @@ window.addEventListener(
         clickables =  document.getElementsByClassName("ctr");
         for(var i = 0; i < clickables.length; i++){
             clickables[i].onmouseup = clickableOnclick
-        }        
+        }
+
+        clickables =  document.getElementsByClassName("clickable");
+        for(var i = 0; i < clickables.length; i++){
+            clickables[i].onmouseup = clickableOnclick
+        } 
     }
 );   

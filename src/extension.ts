@@ -53,8 +53,20 @@ export function activate(context: vscode.ExtensionContext) {
     ))
 
     context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.CompileTest', () => {
+            setup.compile(true)
+        }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
         'eoside.Build', () => {
             setup.build()
+        }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.BuildTest', () => {
+            setup.build(true)
         }
     ))
 
