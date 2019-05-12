@@ -6,7 +6,8 @@ import * as inst from './install'
 
 const INCLUDE: string = "includePath"
 const LIBS: string = "libs"
-const OPTIONS: string = "compilerOptions"
+const CODE_OPTIONS: string = "codeOptions"
+const TEST_OPTIONS: string = "testOptions"
 const CONTRACT_ACCOUNT: string = "contractAccount"
 const UP: string = "up"
 const ADD: string = "include"
@@ -90,9 +91,12 @@ export default class SetupPanel extends def.Panel{
                 case LIBS:
                     Libs.createOrGet(this._extensionPath).action(message)
                     break
-                case OPTIONS:
-                    Options.createOrGet(this._extensionPath).action(message)
+                case CODE_OPTIONS:
+                    CodeOptions.createOrGet(this._extensionPath).action(message)
                     break
+                    case TEST_OPTIONS:
+                    TestOptions.createOrGet(this._extensionPath).action(message)
+                    break   
                 case CONTROL:
                     if(SetupPanel.currentPanel){
                         action(message, SetupPanel.currentPanel)
@@ -123,6 +127,52 @@ export default class SetupPanel extends def.Panel{
 
 
 function body(extensionPath:string){
+    var options = vscode.workspace.getConfiguration().eoside.test_mode
+        ? `
+        <div class="row">
+            <div class="leftcolumn">
+                <button  class="btn"; id="include"; 
+                                        title="${CODE_OPTIONS}">&#8627</button>
+                <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+                    Code Options
+                </label>
+                <br><br>
+                ${CodeOptions.createOrGet(extensionPath).items()}
+            </div>
+
+            <div class="rightcolumn">
+                <button  class="btn"; id="include"; 
+                                        title="${TEST_OPTIONS}">&#8627</button>
+                <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+                    Test Options
+                </label>
+                <br><br>
+                ${TestOptions.createOrGet(extensionPath).items()}
+            </div>            
+        </div>
+        ` : `
+        <div class="row">
+            <button  class="btn"; id="include"; 
+                                    title="${CODE_OPTIONS}">&#8627</button>
+            <label style="color: unset; font-size: ${def.HEADER_SIZE};">
+                Code Options
+            </label>
+            <br><br>
+            ${CodeOptions.createOrGet(extensionPath).items()}
+        </div>
+        `
+    var testButtons = vscode.workspace.getConfiguration().eoside.test_mode
+    ? `
+            <button
+                class="ctr"; 
+                id="compileTest"; 
+                title="ctr">Compile Test</button>
+            <button 
+                class="ctr"; 
+                id="buildTest"; 
+                title="ctr">Build and Run Test</button>  
+    ` : ''
+
     return `
         <div class="row">
             <button
@@ -141,6 +191,8 @@ function body(extensionPath:string){
             ${def.IS_WINDOWS ?`
                 <button class="ctr"; id="bash"; title="ctr">bash</button>
             `: ""}
+
+            ${testButtons}
         </div>
 
         <div class="row">
@@ -168,15 +220,7 @@ function body(extensionPath:string){
             ${Libs.createOrGet(extensionPath).items()}
         </div>
 
-        <div class="row">
-            <button  class="btn"; id="include"; 
-                                            title="${OPTIONS}">&#8627</button>
-            <label style="color: unset; font-size: ${def.HEADER_SIZE};">
-                Compiler Options
-            </label>
-            <br><br>
-            ${Options.createOrGet(extensionPath).items()}
-        </div>
+        ${options}
 
         <div class="row">
             <button class="btn"; id="change"; 
@@ -191,7 +235,7 @@ function body(extensionPath:string){
 }
 
 
-export function compile(){
+export function compile(test_mode=false){
     let terminalName = "compile"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
@@ -203,24 +247,44 @@ export function compile(){
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}' `
             + ' --compile'
+        if(test_mode){
+            cl += ' --test_mode'
+        }
         terminal.sendText(cl)
     }    
 }
 
 
-export function build(){
+export function build(test_mode=false){
     let terminalName = "build"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            `${def.PYTHON} -m eosfactory.build ` 
-            + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
-            + `--c_cpp_prop `
-            + `'${path.join(
+            `${def.PYTHON} -m eosfactory.build` 
+            + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+            + ` --c_cpp_prop`
+            + ` '${path.join(
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
-                    ".vscode/c_cpp_properties.json")}' `
+                    ".vscode/c_cpp_properties.json")}'`
+        if(test_mode){
+            cl += " --test_mode"
+        }                    
         terminal.sendText(cl)
-    }      
+
+        if(test_mode){
+            let cl = 
+            `${def.PYTHON} -m eosfactory.build` 
+            + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+            + " --c_cpp_prop"
+            + ` '${path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath,
+                    ".vscode/c_cpp_properties.json")}'`
+            + " --test_mode"
+            + " --execute"
+            terminal.sendText(" ")
+            terminal.sendText(cl)
+        }
+    }    
 }
 
 
@@ -255,8 +319,16 @@ function action(message: any, panel: def.Panel){
                 compile()
             }
             break
+        case "compileTest": {
+                compile(true)
+            }
+            break
         case "build": {
                 build()
+            }
+            break
+        case "buildTest": {
+                build(true)
             }
             break
         case "EOSIDE":
@@ -267,6 +339,22 @@ function action(message: any, panel: def.Panel){
             break
     }
 }
+
+function readProperties(c_cpp_propertiesPath: any){
+        var json = null
+        if(c_cpp_propertiesPath && fs.existsSync(c_cpp_propertiesPath)){
+            try {
+                json = JSON.parse(
+                            fs.readFileSync(c_cpp_propertiesPath, 'utf8'))
+            } catch(err){
+                if(err.code !== "ENOENT"){
+                    vscode.window.showErrorMessage(err)
+                    console.log(err)                
+                }
+            }
+        }
+        return json        
+    }
 
 abstract class Base{
     protected readonly _extensionPath: string
@@ -283,17 +371,7 @@ abstract class Base{
     }
 
     protected read(){
-        if(this._c_cpp_properties && fs.existsSync(this._c_cpp_properties)){
-            try {
-                this.json = JSON.parse(
-                            fs.readFileSync(this._c_cpp_properties, 'utf8'))
-            } catch(err){
-                if(err.code !== "ENOENT"){
-                    vscode.window.showErrorMessage(err)
-                    console.log(err)                
-                }
-            }
-        }
+        this.json = readProperties(this._c_cpp_properties)
     }
 
     protected update(){
@@ -507,26 +585,7 @@ class ContractAccount extends Base{
     }
 }
 
-
-class Options extends Dependencies{
-    public static instance: Options | undefined
-
-    public static createOrGet(extensionPath:string) {
-        if(! Options.instance){
-            Options.instance = new Options(extensionPath)
-        }
-        return Options.instance
-    }
-
-    protected getEntries() {
-        return OPTIONS in this.json["configurations"][0]
-                        ? this.json["configurations"][0][OPTIONS].slice(): []
-    }
-
-    protected setEntries(entries: string[]){
-        this.json["configurations"][0][OPTIONS] = entries
-    }
-
+abstract class Options extends Dependencies{
     public insert(index: number){
         vscode.window.showInputBox().then((option) => {
             if(option){
@@ -545,9 +604,54 @@ class Options extends Dependencies{
             }
         })       
     }
+}
+
+class CodeOptions extends Options{
+    public static instance: CodeOptions | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! CodeOptions.instance){
+            CodeOptions.instance = new CodeOptions(extensionPath)
+        }
+        return CodeOptions.instance
+    }
+
+    protected getEntries() {
+        return CODE_OPTIONS in this.json["configurations"][0]
+                    ? this.json["configurations"][0][CODE_OPTIONS].slice(): []
+    }
+
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0][CODE_OPTIONS] = entries
+    }
 
     public items(){
-        return super.items(OPTIONS)
+        return super.items(CODE_OPTIONS)
+    }
+}
+
+
+class TestOptions extends Options{
+    public static instance: TestOptions | undefined
+
+    public static createOrGet(extensionPath:string) {
+        if(! TestOptions.instance){
+            TestOptions.instance = new TestOptions(extensionPath)
+        }
+        return TestOptions.instance
+    }
+
+    protected getEntries() {
+        return TEST_OPTIONS in this.json["configurations"][0]
+                    ? this.json["configurations"][0][TEST_OPTIONS].slice(): []
+    }
+
+    protected setEntries(entries: string[]){
+        this.json["configurations"][0][TEST_OPTIONS] = entries
+    }
+
+    public items(){
+        return super.items(TEST_OPTIONS)
     }
 }
 
