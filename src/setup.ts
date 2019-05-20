@@ -84,7 +84,11 @@ export default class SetupPanel extends def.Panel{
         // Handle messages from the webview
         var prevMsg: any = undefined
         this._panel.webview.onDidReceiveMessage(message => {
-            switch (message.title) {
+
+            var caseSeletor = message.class.split(" ").length == 1
+                    ? message.title: message.class.split(" ")[1].trim()
+
+            switch (caseSeletor) {
                 case INCLUDE:
                     Includes.createOrGet(this._extensionPath).action(message)
                     break
@@ -99,7 +103,36 @@ export default class SetupPanel extends def.Panel{
                     break   
                 case CONTROL:
                     if(SetupPanel.currentPanel){
-                        action(message, SetupPanel.currentPanel)
+                        switch(message.id) {
+                            case "compile": {
+                                    compile()
+                                }
+                                break
+                            case "compileTest": {
+                                    compile(true)
+                                }
+                                break
+                            case "build": {
+                                    build()
+                                }
+                                break
+                            case "buildTest": {
+                                    build(true)
+                                }
+                                break
+                            case "EOSIDE":
+                                vscode.commands.executeCommand(
+                                                        "eoside.GetStarted")
+                                break
+                            case "bash": {
+                                    bash()
+                                }            
+                                break
+                            case "zip": {
+                                    zip()
+                                }            
+                                break
+                        }
                     }
                     break
                 case CONTRACT_ACCOUNT:
@@ -131,8 +164,8 @@ function body(extensionPath:string){
         ? `
         <div class="row">
             <div class="leftcolumn">
-                <button  class="btn"; id="include"; 
-                                        title="${CODE_OPTIONS}">&#8627</button>
+                <button  class="btn ${CODE_OPTIONS}"; id="include"; 
+                                title="Add a new code option.">&#8627</button>
                 <label style="color: unset; font-size: ${def.HEADER_SIZE};">
                     Code Options
                 </label>
@@ -141,8 +174,8 @@ function body(extensionPath:string){
             </div>
 
             <div class="rightcolumn">
-                <button  class="btn"; id="include"; 
-                                        title="${TEST_OPTIONS}">&#8627</button>
+                <button  class="btn ${TEST_OPTIONS}"; id="include"; 
+                                title="Add a new test option.">&#8627</button>
                 <label style="color: unset; font-size: ${def.HEADER_SIZE};">
                     Test Options
                 </label>
@@ -152,8 +185,8 @@ function body(extensionPath:string){
         </div>
         ` : `
         <div class="row">
-            <button  class="btn"; id="include"; 
-                                    title="${CODE_OPTIONS}">&#8627</button>
+            <button  class="btn ${CODE_OPTIONS}"; id="include"; 
+                                title="Add a new code option.">&#8627</button>
             <label style="color: unset; font-size: ${def.HEADER_SIZE};">
                 Code Options
             </label>
@@ -164,40 +197,49 @@ function body(extensionPath:string){
     var testButtons = vscode.workspace.getConfiguration().eoside.test_mode
     ? `
             <button
-                class="ctr"; 
+                class="ctr ctr"; 
                 id="compileTest"; 
-                title="ctr">Compile Test</button>
+                title="Compile with the test options.">Compile Test</button>
             <button 
-                class="ctr"; 
+                class="ctr ctr"; 
                 id="buildTest"; 
-                title="ctr">Build and Run Test</button>  
+                title="Build with the test options.">Build and Run Test</button>  
     ` : ''
 
     return `
         <div class="row">
             <button
-                class="ctr"; 
+                class="ctr ctr"; 
                 id="compile"; 
-                title="ctr">Compile</button>
+                title="Compile with the code options.">Compile</button>
             <button 
-                class="ctr"; 
+                class="ctr ctr"; 
                 id="build"; 
-                title="ctr">Build</button>    
+                title="Build with the code options">Build</button>    
             <button 
-                class="ctr"; 
+                class="ctr ctr"; 
                 id="EOSIDE"; 
-                title="ctr">EOSIDE</button>
+                title="Open the EOSIDE view">EOSIDE</button>
                 
             ${def.IS_WINDOWS ?`
-                <button class="ctr"; id="bash"; title="ctr">bash</button>
+                <button class="ctr ctr"; id="bash"; 
+                title="Open a new bash terminal panel.">bash</button>
             `: ""}
 
             ${testButtons}
-        </div>
+
+            <br><br>
+
+            <button
+                class="ctr ctr"; 
+                id="zip"; 
+                title="Create zipped distribution of the current project.">
+                Zip</button>
+        </div>        
 
         <div class="row">
-            <button class="btn"; id="include"; 
-                                            title="${INCLUDE}">&#8627</button>
+            <button class="btn ${INCLUDE}"; id="include"; 
+                    title="Add a new include folder. Left mouse -- use dialog, right mouse -- use input box.">&#8627</button>
             <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
                 Include
             </label>
@@ -209,7 +251,8 @@ function body(extensionPath:string){
         </div>
 
         <div class="row">
-            <button class="btn"; id="include"; title="${LIBS}">&#8627</button>
+            <button class="btn ${LIBS}"; id="include"; 
+                title="Add a new library file. Left mouse -- use dialog, right mouse -- use input box.">&#8627</button>
             <label style=" color: unset; font-size: ${def.HEADER_SIZE};">
                 Libs
             </label>
@@ -223,8 +266,8 @@ function body(extensionPath:string){
         ${options}
 
         <div class="row">
-            <button class="btn"; id="change"; 
-                title="${CONTRACT_ACCOUNT}">&#8627</button>
+            <button class="btn ${CONTRACT_ACCOUNT}"; id="change"; 
+                title="Set a contract deployment account.">&#8627</button>
             <label style="color: unset; font-size: ${def.HEADER_SIZE};">
                 Contract Account
             </label>
@@ -247,7 +290,7 @@ export function compile(test_mode=false){
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}' `
             + ' --compile'
-        if(test_mode){
+        if(test_mode && vscode.workspace.getConfiguration().eoside.test_mode){
             cl += ' --test_mode'
         }
         terminal.sendText(cl)
@@ -266,7 +309,7 @@ export function build(test_mode=false){
             + ` '${path.join(
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}'`
-        if(test_mode){
+        if(test_mode && vscode.workspace.getConfiguration().eoside.test_mode){
             cl += " --test_mode"
         }                    
         terminal.sendText(cl)
@@ -289,17 +332,17 @@ export function build(test_mode=false){
 
 
 export function deploy(){
-    let terminalName = "deploy"
+    var terminalName = "deploy"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
         let cl = 
-            `${def.PYTHON} -m eosfactory.deploy `
-            + `--dir ` 
-            + `'${vscode.workspace.workspaceFolders[0].uri.fsPath}' `
-            + `--c_cpp_prop `
-            + `'${path.join(
+            `${def.PYTHON} -m eosfactory.deploy`
+            + ` --dir` 
+            + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
+            + ` --c_cpp_prop`
+            + ` '${path.join(
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
-                    ".vscode/c_cpp_properties.json")}' `
+                    ".vscode/c_cpp_properties.json")}'`
         terminal.sendText(cl)
     }      
 }
@@ -313,32 +356,17 @@ export function bash(){
     }
 }
 
-function action(message: any, panel: def.Panel){
-    switch(message.id) {
-        case "compile": {
-                compile()
-            }
-            break
-        case "compileTest": {
-                compile(true)
-            }
-            break
-        case "build": {
-                build()
-            }
-            break
-        case "buildTest": {
-                build(true)
-            }
-            break
-        case "EOSIDE":
-            vscode.commands.executeCommand("eoside.GetStarted")
-            break
-        case "bash":            
-            bash()
-            break
-    }
+
+export function zip(){
+    var terminalName = "zip"
+    if(vscode.workspace.workspaceFolders){
+        let terminal = def.getTerminal(terminalName, true, true)
+        let cl = 
+            `${def.PYTHON} -m eosfactory.pack_contract`
+        terminal.sendText(cl)
+    }      
 }
+
 
 function readProperties(c_cpp_propertiesPath: any){
         var json = null
@@ -482,7 +510,7 @@ abstract class Dependencies extends Base{
         }     
     }
 
-    public items(title=""){
+    public items(clazz=""){
         let entries: string[] = []
         this.read()
         let temp = this.getEntries()
@@ -499,7 +527,7 @@ abstract class Dependencies extends Base{
 
         let items = ""
         for(let i = 0; i < entries.length; i++){
-            items += setupEntry(i, title, entries[i])
+            items += setupEntry(i, entries[i], clazz,)
         }
         return items;
     }    
@@ -685,24 +713,24 @@ class Libs extends Dependencies{
 }
 
 
-function setupEntry(index:number, title:string, text:string){
+function setupEntry(index:number, text:string, clazz:string){
     return `
-        <button 
-            class="btn"; 
-            id="${DOWN}${index}"; 
-            title="${title}">&#9660</button>
-        <button class="btn"
-            class="btn"; 
-            id="${UP}${index}"; 
-            title="${title}">&#9650</button>
-        <button class="btn"
-            class="btn"; 
-            id="${DELETE}${index}"; 
-            title="${title}";>X</button>
-        <button class="btn"
-            class="btn"; 
-            id="${INSERT}${index}"; 
-            title="${title}">&#8627</button>
+        <button class="btn ${clazz}"; id="${DOWN}${index}"; 
+            title="Move the entry DOWN.">
+            &#9660
+        </button>
+        <button class="btn ${clazz}"; id="${UP}${index}"; 
+            title="Move the entry UP">
+            &#9650
+        </button>
+        <button class="btn ${clazz}"; id="${DELETE}${index}"; 
+            title="Remove the entry from the list.";>
+            X
+        </button>
+        <button class="btn ${clazz}"; id="${INSERT}${index}"; 
+            title="Insert a new entry after the current one. Left mouse -- use dialog, right mouse -- use input box." class="clickable open">
+            &#8627
+        </button>
         <label>${text}</label>
         <br>
     `

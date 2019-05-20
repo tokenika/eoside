@@ -58,12 +58,30 @@ export default class GetStartedPanel extends def.Panel {
         GetStartedPanel.currentPanel = new GetStartedPanel(panel)        
     }
 
+    private openZip(zipFile: string, contractDir: string){
+        console.log(`Project folder:  + '${contractDir}'`)
+
+        let cl = 
+            `${def.PYTHON} -m eosfactory.pack_contract`
+            +  ' --unpack'
+            + ` --dir '${contractDir}'`
+            + ` --zip '${zipFile}'`
+        
+        if(!def.callEosfactory(cl).status){
+           vscode.commands.executeCommand(
+               'vscode.openFolder', vscode.Uri.file(contractDir))  
+        }
+    }
+
     protected constructor(panel: vscode.WebviewPanel) {
         super(panel)
         this._panel.webview.html = this._getHtmlForWebview()
 
         this._panel.webview.onDidReceiveMessage(message => {
-            switch (message.title) {
+            var caseSeletor = message.class.split(" ").length == 1
+                    ? message.title: message.class.split(" ")[1].trim()
+
+            switch (caseSeletor) {
                 case TEMPLATE:
                     Templates.createOrGet(this._extensionPath)
                         .action(message.id)
@@ -76,33 +94,89 @@ export default class GetStartedPanel extends def.Panel {
                         .open(message.id)
                     break
                 case OPEN:
-                    if(message.id === "open_folder"){
-                        if(message.button == 0){
-                            vscode.window.showOpenDialog({
-                                canSelectMany: false,
-                                canSelectFiles: false,
-                                canSelectFolders: true,
-                                defaultUri: vscode.Uri.file(
-                                                    inst.getContractWorkspace()),
-                                openLabel: 'Open'
-                            }).then(fileUri => {
-                                if (fileUri && fileUri[0]) {
-                                    vscode.commands.executeCommand(
-                                        'vscode.openFolder', fileUri[0])
-                                }
-                            })
-                        } else {
-                            vscode.window.showInputBox({
-                                placeHolder: "",
-                                ignoreFocusOut: true
-                            }).then(fileUri => {
-                                if (fileUri && fileUri[0]) {
-                                    vscode.commands.executeCommand(
-                                        'vscode.openFolder', fileUri[0])
-                                }
-                            })                            
-                        }
+                    switch(message.id) {
+                        case "open_folder":
+                            if(message.button == 0){
+                                vscode.window.showOpenDialog({
+                                    canSelectMany: false,
+                                    canSelectFiles: false,
+                                    canSelectFolders: true,
+                                    defaultUri: vscode.Uri.file(
+                                                inst.getContractWorkspace()),
+                                    openLabel: 'Open'
+                                }).then(fileUri => {
+                                    if (fileUri && fileUri[0]) {
+                                        vscode.commands.executeCommand(
+                                            'vscode.openFolder', fileUri[0])
+                                    }
+                                })
+                            } else {
+                                vscode.window.showInputBox({
+                                    placeHolder: "",
+                                    ignoreFocusOut: true
+                                }).then(contractDir => {
+                                    if (contractDir) {
+                                        vscode.commands.executeCommand(
+                                            'vscode.openFolder', vscode.Uri.file(contractDir))
+                                    }
+                                })                            
+                            }
+
+                            break                           
+                        case "open_zip":
+                            if(message.button == 0){
+                                vscode.window.showOpenDialog({
+                                    canSelectMany: false,
+                                    canSelectFiles: true,
+                                    canSelectFolders: false,
+                                    defaultUri: vscode.Uri.file(
+                                                inst.getContractWorkspace()),
+                                    openLabel: 'Select zip file',
+                                    filters: {
+                                        "zip files": ["zip"]
+                                    }
+                                }).then(fileUri => {
+                                    if (fileUri && fileUri[0]) {
+                                        var zipFile = fileUri[0].fsPath
+                                        console.log(`Zip file:  + '${zipFile}'`)
+                                        vscode.window.showOpenDialog({
+                                            canSelectMany: false,
+                                            canSelectFiles: false,
+                                            canSelectFolders: true,
+                                            defaultUri: vscode.Uri.file(
+                                                inst.getContractWorkspace()),
+                                            openLabel: 'Select project folder'
+                                        }).then((fileUri) => {
+                                            if (fileUri && fileUri[0]) {
+                                                this.openZip(
+                                                    zipFile, fileUri[0].fsPath)
+                                            }
+                                        })
+                                    }
+                                })
+                            } else {
+                                vscode.window.showInputBox({
+                                    placeHolder: "Select zip file",
+                                    ignoreFocusOut: true
+                                }).then(zipFile => {
+                                    if (zipFile) {
+                                        console.log(`Zip file:  + '${zipFile}'`)
+                                        vscode.window.showInputBox({
+                                            placeHolder: "Select project folder",
+                                            ignoreFocusOut: true
+                                        }).then(contractDir => {
+                                            if (contractDir) {
+                                                this.openZip(
+                                                        zipFile, contractDir)
+                                            }
+                                        })   
+                                    }
+                                })                            
+                            }
+
+                        break
                     }
+
                     break
             }
         }, null, this._disposables)
@@ -137,8 +211,11 @@ function body(extensionPath:string){
             <div class="rightcolumn">
                 <div>
                     <p style="color: unset; font-size: 35px;">Open</p>
-                    <label id="open_folder" title="open" class="clickable" >
+                    <label id="open_folder" title="Open folder. Left mouse -- use dialog, right mouse -- use input box." class="clickable open">
                         Open folder...
+                    </label><br>
+                    <label id="open_zip" title="Open zip file. Left mouse -- use dialog, right mouse -- use input box." class="clickable open">
+                        Open zip file...
                     </label><br>
                 </div>
                 <div>
@@ -177,7 +254,9 @@ class Templates {
         var list:string = ""
         fs.readdirSync(templateDir).forEach((template:string) => {
             list += def.clickable(
-                template, TEMPLATE, template.replace(/_/gi, " "))
+                template, 
+                "Create a new project from the template.", 
+                template.replace(/_/gi, " "), TEMPLATE)
           })
 
         return list
@@ -247,7 +326,10 @@ class GetStarted {
     public list() {
         var list:string = ""
         for(let entry of this.json.entries()){
-            list += def.clickable(entry[1], GET_STARTED, entry[0])
+            list += def.clickable(
+                entry[1], 
+                "Open the document.", 
+                entry[0], GET_STARTED)
         }
         return list
     }
@@ -302,7 +384,8 @@ class Recent {
         var recentList:string = ""
         this.list.forEach(
             (recent:string) => {
-                recentList += def.clickable(recent, RECENT, recent)
+                recentList += def.clickable(
+                    recent, "Open folder", recent, RECENT)
           })
         return recentList
     }
@@ -323,5 +406,3 @@ class Recent {
         }
     }
 }
-
-

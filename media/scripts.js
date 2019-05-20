@@ -5,7 +5,8 @@ function clickableOnclick(e){
         title: e.target.title,
         id: e.target.id,
         value: e.target.innerHTML,
-        button: e.button
+        button: e.button,
+        class: e.target.getAttribute("class")
     })
 }
 

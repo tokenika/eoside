@@ -126,6 +126,11 @@
                 "command": "eoside.bash",
                 "title": "bash terminal",
                 "category": "EOSIDE"
+            },
+            {
+                "command": "eoside.Zip",
+                "title": "zip",
+                "category": "EOSIDE"
             }
         ],
         "keybindings": [
@@ -146,8 +151,8 @@
             },
             {
                 "command": "eoside.bash",
-                "key": "ctrl+alt+b",
-                "mac": "cmd+alt+b"
+                "key": "ctrl+alt+x",
+                "mac": "cmd+alt+x"
             },
             {
                 "command": "eoside.Compile",
@@ -166,13 +171,18 @@
             },
             {
                 "command": "eoside.BuildTest",
-                "key": "ctrl+alt+t",
-                "mac": "cmd+shift+t"
+                "key": "ctrl+alt+b",
+                "mac": "cmd+alt+b"
             },
             {
                 "command": "eoside.Deploy",
                 "key": "ctrl+shift+y",
                 "mac": "cmd+shift+y"
+            },
+            {
+                "command": "eoside.Zip",
+                "key": "ctrl+alt+z",
+                "mac": "cmd+alt+z"
             }
         ],
         "menus": {

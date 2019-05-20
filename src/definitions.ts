@@ -93,9 +93,9 @@ export function getNonce() {
 }
 
 
-export function clickable(id:string, title:string, text:string){
+export function clickable(id:string, title:string, text:string, clazz:string){
     return `<label id="${id}" 
-                title=${title} class="clickable">
+                title="${title}" class="clickable ${clazz}">
                 ${text}
             </label><br>`
 }

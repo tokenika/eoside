@@ -81,6 +81,12 @@ export function activate(context: vscode.ExtensionContext) {
             setup.bash()
         }
     ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.Zip', () => {
+            setup.zip()
+        }
+    ))    
     
     InstallPanel.createOrShow(false)
     GetStartedPanel.createOrShow()
