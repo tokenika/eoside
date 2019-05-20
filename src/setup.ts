@@ -199,11 +199,11 @@ function body(extensionPath:string){
             <button
                 class="ctr ctr"; 
                 id="compileTest"; 
-                title="Compile with the test options.">Compile Test</button>
+                title="Compile with the test options (ctrl/cmd+alt+c).">Compile Test</button>
             <button 
                 class="ctr ctr"; 
                 id="buildTest"; 
-                title="Build with the test options.">Build and Run Test</button>  
+                title="Build with the test options (ctrl/cmd+alt+b).">Build and Run Test</button>  
     ` : ''
 
     return `
@@ -211,19 +211,19 @@ function body(extensionPath:string){
             <button
                 class="ctr ctr"; 
                 id="compile"; 
-                title="Compile with the code options.">Compile</button>
+                title="Compile with the code options (ctrl/cmd+shift+c).">Compile</button>
             <button 
                 class="ctr ctr"; 
                 id="build"; 
-                title="Build with the code options">Build</button>    
+                title="Build with the code options (ctrl/cmd+shift+b).">Build</button>    
             <button 
                 class="ctr ctr"; 
                 id="EOSIDE"; 
-                title="Open the EOSIDE view">EOSIDE</button>
+                title="Open the EOSIDE view (ctrl/cmd+alt+i).">EOSIDE</button>
                 
             ${def.IS_WINDOWS ?`
                 <button class="ctr ctr"; id="bash"; 
-                title="Open a new bash terminal panel.">bash</button>
+                title="Open a new bash terminal panel (ctrl/cmd+alt+x).">bash</button>
             `: ""}
 
             ${testButtons}
@@ -233,7 +233,7 @@ function body(extensionPath:string){
             <button
                 class="ctr ctr"; 
                 id="zip"; 
-                title="Create zipped distribution of the current project.">
+                title="Create zipped distribution of the current project. (ctrl/cmd+alt+z)">
                 Zip</button>
         </div>        
 
