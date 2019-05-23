@@ -100,7 +100,6 @@ export function clickable(id:string, title:string, text:string, clazz:string){
             </label><br>`
 }
 
-
 export function callEosfactory(cl:string){
     var clExe: string   
     if(exports.IS_WINDOWS){

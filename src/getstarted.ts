@@ -5,12 +5,16 @@ import * as fs from 'fs'
 import * as def from './definitions'
 import * as inst from './install'
 
-const TEMPLATE: string = "template"
-const RECENT: string = "recent"
-const RECENT_JSON: string = RECENT + ".json"
-const GET_STARTED: string = "getstarted"
-const GET_STARTED_JSON: string = GET_STARTED + ".json"
-const OPEN: string = "open"
+const TEMPLATE = "template"
+const RECENT = "recent"
+const RECENT_JSON = RECENT + ".json"
+const GET_STARTED = "getstarted"
+const README = "readme"
+const README_LINK = "https://github.com/tokenika/eosfactory.io/blob/master/eoside/html/_static/1.0.3-native_tests.md"
+const README_TEXT = "README: native test compilation"
+const README_COLLOR = "yellow"
+const GET_STARTED_JSON = GET_STARTED + ".json"
+const OPEN = "open"
 
 export default class GetStartedPanel extends def.Panel {
     public static currentPanel: GetStartedPanel | undefined
@@ -82,6 +86,11 @@ export default class GetStartedPanel extends def.Panel {
                     ? message.title: message.class.split(" ")[1].trim()
 
             switch (caseSeletor) {
+                case README:
+                    vscode.commands.executeCommand(
+                                                'vscode.open', 
+                                                vscode.Uri.parse(message.id))
+                    break
                 case TEMPLATE:
                     Templates.createOrGet(this._extensionPath)
                         .action(message.id)
@@ -200,6 +209,9 @@ function body(extensionPath:string){
             <div class="leftcolumn">
                 <div>
                     <p style="color: unset; font-size: 35px;">Get Started</p>
+
+                    <em style="color: ${README_COLLOR}"> ${def.clickable(README_LINK, README_TEXT, README_TEXT,README)}</em>
+                    <br><br>                    
                     ${GetStarted.createOrGet(extensionPath).list()}
                 </div>
                 <div>

@@ -22,6 +22,15 @@ It's part of development tools created by `TOKENIKA <https://tokenika.io>`_.
     introduction_to_EOSIDE
     five_minutes_movie
 
+Release Notes
+-------------
+
+.. toctree::
+    :maxdepth: 1
+
+    release_notes
+    release_notes_history
+
 Indices and tables
 ==================
 

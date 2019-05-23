@@ -2,12 +2,14 @@ import * as path from 'path'
 import * as child_process from 'child_process'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+
 import * as def from './definitions'
 
 export var config: any = undefined
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
+const EOSFACTORY_VERSION_MIN = "3.1.3"
 const ERROR_COLOR = "indianred"
 const WARNING_COLOR = "yellow"
 
@@ -163,8 +165,15 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
 configuration file cannot be read.`)
                 isOK = false
             } else {
-                statusMsg(`<em>EOSFactory</em> configuration file detected`)
                 exports.config = JSON.parse(proc.stdout.toString());
+
+                if(!isEosfactoryVersionOK()){
+                    var msg = warning(
+`The version of the detected EOSFactory package is ${exports.config["VERSION"]} while EOSIDE wants ${EOSFACTORY_VERSION_MIN}.`)
+                } else {
+                    var msg = `<em>EOSFactory</em> ${exports.config["VERSION"]} configuration  file detected`
+                }
+                statusMsg(msg)
 
                 statusMsg(
 `Configuration file is ${exports.config["CONFIG_FILE"]}`)
@@ -631,4 +640,18 @@ export function wslMapWindowsLinux(convPath:string){
         convPath = convPath.replace(root(), "")
     }
     return convPath
+}
+
+
+function isEosfactoryVersionOK(){
+    var versionMin = EOSFACTORY_VERSION_MIN.split('.')
+    var version = exports.config["VERSION"].split('.')
+     
+    for(let i = 0; i < versionMin.length; i++){
+        if(versionMin[i] > version[i]){
+            return false
+        }
+    }
+
+    return true
 }

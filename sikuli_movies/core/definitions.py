@@ -370,13 +370,17 @@ ffmpeg \
     output.mp4
 '''
 
+def raw_name(output_file, format):
+    return output_file + "_raw." + format
+
+
 def start_ffmpeg(output_file, 
         format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
 
     if not os.path.isabs(output_file):
         output_file = os.path.join(output_file)
 
-    output_file = output_file + "_raw." + format
+    output_file = raw_name(output_file, format)
 
     try:
         if os.path.exists(output_file):
@@ -395,6 +399,19 @@ def start_ffmpeg(output_file,
 
     print(" ".join(arg))
     subprocess.Popen(arg)
+
+
+def make_linking_bat(output_file, format=MOVIES_FORMAT):
+    fade_time = 1
+    fade_n = int(round(fade_time * MOVIES_FRAM_RATE))
+    script = '''
+ffmpeg -y -i {0} -vf "fade=in:0:{3:d}" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart {2}_faded.{1}
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/{2}.{1}
+    '''.format(
+        raw_name(output_file, format), format, output_file, fade_n)
+
+    with open("link.bat", "w+") as f:
+        f.write(script)
 
 
 class Terminal():

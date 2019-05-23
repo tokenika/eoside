@@ -28,10 +28,10 @@ The standard view is named `EOSIDE` and is displayed when VSC is started empty, 
 
 Let's go through its options:
 
-- *Get Started* contains links to tutorials and other documentation.
+- *Get Started* contains links to tutorials and other documentation. Especially, the `README` entry highlights a special issue.
 - *New project* lets you create a new project from a template.
 - *Recent* lists existing projects.
-- *Open* triggers specific actions.
+- *Open* triggers specified actions.
 - And the two menu buttons located in the title bar, namely `EOSIDE` and `Setup`, display corresponding views.
 
 ## Project standardization
@@ -73,7 +73,9 @@ Let's go through its options:
 
 - *Libs* lists libraries resolving outer dependencies of the project.
 
-- *Compiler Options* lists parameters of the WASM compiler.
+- *Code Options* lists parameters of the WASM compiler/builder.
+
+- *Tests Options* lists parameters of the native compiler/builder.
 
 - *Contract Account* defines the account that holds the smart-contract. Its name has to be chosen from a list given with the bash command:
 
@@ -81,7 +83,7 @@ Let's go through its options:
   python3 -m eosfactory.testnets
   ```
 
-- The buttons in the top, labelled `Compile`, `Build`, `EOSIDE` and `Bash`, trigger corresponding actions. The `Bash` button, available on Windows only, starts a new bash terminal. All these actions can be invoked with keyboard shortcuts or with extension commands.
+- The buttons in the top, labelled `Compile`, `Build`, `Compile Test`, `Build and Run Test`, `EOSIDE` and `Bash`, trigger corresponding actions. The `Bash` button, available on Windows only, starts a new bash terminal. The `Zip` button compresses, with defined exclusions, the project. All these actions can be invoked with keyboard shortcuts or with extension commands.
 
 All the dependencies are stored in the `.vscode/c_cpp_properties.json` file. This file feeds the compile procedures, build procedures and the *IntelliSense* features of VSC.
 
