@@ -160,7 +160,7 @@ export default class SetupPanel extends def.Panel{
 
 
 function body(extensionPath:string){
-    var options = vscode.workspace.getConfiguration().eoside.test_mode
+    var options = vscode.workspace.getConfiguration().eoside.testMode
         ? `
         <div class="row">
             <div class="leftcolumn">
@@ -194,7 +194,7 @@ function body(extensionPath:string){
             ${CodeOptions.createOrGet(extensionPath).items()}
         </div>
         `
-    var testButtons = vscode.workspace.getConfiguration().eoside.test_mode
+    var testButtons = vscode.workspace.getConfiguration().eoside.testMode
     ? `
             <button
                 class="ctr ctr"; 
@@ -290,7 +290,7 @@ export function compile(test_mode=false){
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}' `
             + ' --compile'
-        if(test_mode && vscode.workspace.getConfiguration().eoside.test_mode){
+        if(test_mode && vscode.workspace.getConfiguration().eoside.testMode){
             cl += ' --test_mode'
         }
         terminal.sendText(cl)
@@ -309,7 +309,7 @@ export function build(test_mode=false){
             + ` '${path.join(
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}'`
-        if(test_mode && vscode.workspace.getConfiguration().eoside.test_mode){
+        if(test_mode && vscode.workspace.getConfiguration().eoside.testMode){
             cl += " --test_mode"
         }                    
         terminal.sendText(cl)

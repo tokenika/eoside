@@ -10,9 +10,8 @@ const RECENT = "recent"
 const RECENT_JSON = RECENT + ".json"
 const GET_STARTED = "getstarted"
 const README = "readme"
-const README_LINK = "https://github.com/tokenika/eosfactory.io/blob/master/eoside/html/_static/1.0.3-native_tests.md"
 const README_TEXT = "README: native test compilation"
-const README_COLLOR = "yellow"
+const README_COLOR = "yellow"
 const GET_STARTED_JSON = GET_STARTED + ".json"
 const OPEN = "open"
 
@@ -204,15 +203,24 @@ export default class GetStartedPanel extends def.Panel {
 
 
 function body(extensionPath:string){
-    return `
+    var body = `
         <div class="row">
             <div class="leftcolumn">
                 <div>
-                    <p style="color: unset; font-size: 35px;">Get Started</p>
+                    <p style="color: unset; font-size: 35px;">Get Started</p>`
 
-                    <em style="color: ${README_COLLOR}"> ${def.clickable(README_LINK, README_TEXT, README_TEXT,README)}</em>
-                    <br><br>                    
-                    ${GetStarted.createOrGet(extensionPath).list()}
+    body += vscode.workspace.getConfiguration().eoside.readme
+                ?
+                `
+                <em style="color: ${README_COLOR}"> ${def.clickable(
+                vscode.workspace.getConfiguration().eoside.readme,
+                vscode.workspace.getConfiguration().eoside.readmeTitle, 
+                vscode.workspace.getConfiguration().eoside.readmeTitle, 
+                README)}</em>
+                `
+                : ``
+    body += `
+                ${GetStarted.createOrGet(extensionPath).list()}
                 </div>
                 <div>
                     <p style="color: unset; font-size: 35px;">Recent</p>
@@ -237,6 +245,7 @@ function body(extensionPath:string){
             </div>
         </div>
     `
+    return body
 }
 
 
