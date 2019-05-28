@@ -78,15 +78,10 @@
                     "default": true,
                     "description": "If set, display the native test buttons and test compiler options."
                 },
-                "eoside.readme": {
+                "eoside.highlights": {
                     "type": "string",
-                    "default": "https://github.com/tokenika/eosfactory.io/blob/master/eoside/html/_static/1.0.3-native_tests.md",
-                    "description": "Set to null to remove the README in the EOSIDE view."
-                },
-                "eoside.readmeTitle": {
-                    "type": "string",
-                    "default": "README: native test compilation",
-                    "description": "For system use."
+                    "default": "https://eosfactory.io/eoside/html/index.html",
+                    "description": "Set to null to remove the Highlights entry from the EOSIDE view."
                 }
             }
         },

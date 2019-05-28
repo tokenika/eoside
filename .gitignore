@@ -24,3 +24,6 @@ package-lock.json
 docs/_static/faq.mp4
 sikuli_movies/narration.md
 
+.vscode/c_cpp_properties.json
+.vscode/tasks.json
+.vscode/tasks.json

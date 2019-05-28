@@ -22,5 +22,6 @@ Please refer to the [this document](https://eosfactory.io/eoside/html/index.html
 
 ## Contact us
 
-If you run into any problems or have suggestions for us, please post them on [GitHub](https://github.com/tokenika/eoside/issues).
+If you run into any problems or have suggestions for us, please post them on [GitHub](https://github.com/tokenika/eoside/issues), or use a dedicated [EOS Factory Support](https://t.me/EOSFactorySupport) channel on Telegram.
+
 

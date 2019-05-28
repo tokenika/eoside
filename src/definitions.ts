@@ -8,8 +8,10 @@ export const RESOURCE_DIR: string = "media"
 export const SHELL_PATH = "bash.exe"
 export const HEADER_SIZE = "20px"
 export const PYTHON = "python3"
+
 const SCRIPTS = "scripts.js"
 const STYLES = "styles.css"
+
 
 export function getExtensionPath(){
     return extension.extensionPath

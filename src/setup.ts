@@ -3,18 +3,19 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as def from './definitions'
 import * as inst from './install'
+import * as deb from './native_debugger'
 
-const INCLUDE: string = "includePath"
-const LIBS: string = "libs"
-const CODE_OPTIONS: string = "codeOptions"
-const TEST_OPTIONS: string = "testOptions"
-const CONTRACT_ACCOUNT: string = "contractAccount"
-const UP: string = "up"
-const ADD: string = "include"
-const DOWN: string = "down"
-const DELETE:string = "del"
-const INSERT:string = "insert"
-const CONTROL:string = "ctr"
+const INCLUDE = "includePath"
+const LIBS = "libs"
+const CODE_OPTIONS = "codeOptions"
+const TEST_OPTIONS = "testOptions"
+const CONTRACT_ACCOUNT = "contractAccount"
+const UP = "up"
+const ADD = "include"
+const DOWN = "down"
+const DELETE = "del"
+const INSERT = "insert"
+const CONTROL = "ctr"
 
 
 export default class SetupPanel extends def.Panel{
@@ -302,26 +303,26 @@ export function build(test_mode=false){
     let terminalName = "build"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
+        let c_cpp_propertiesPath = path.join(
+                    vscode.workspace.workspaceFolders[0].uri.fsPath,
+                    ".vscode/c_cpp_properties.json")
         let cl = 
             `${def.PYTHON} -m eosfactory.build` 
             + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
             + ` --c_cpp_prop`
-            + ` '${path.join(
-                    vscode.workspace.workspaceFolders[0].uri.fsPath,
-                    ".vscode/c_cpp_properties.json")}'`
+            + ` '${c_cpp_propertiesPath}'`
         if(test_mode && vscode.workspace.getConfiguration().eoside.testMode){
             cl += " --test_mode"
         }                    
         terminal.sendText(cl)
 
         if(test_mode){
+            deb.createEosideLaunchConfig(readProperties(c_cpp_propertiesPath))
             let cl = 
             `${def.PYTHON} -m eosfactory.build` 
             + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
             + " --c_cpp_prop"
-            + ` '${path.join(
-                    vscode.workspace.workspaceFolders[0].uri.fsPath,
-                    ".vscode/c_cpp_properties.json")}'`
+            + ` '${c_cpp_propertiesPath}'`
             + " --test_mode"
             + " --execute"
             terminal.sendText(" ")
@@ -544,7 +545,8 @@ class Includes extends Dependencies{
     }
 
     protected getEntries() {
-        return this.json["configurations"][0][INCLUDE].slice()
+        return this.json["configurations"][0][INCLUDE]
+                ? this.json["configurations"][0][INCLUDE].slice(): []
     }
 
     protected setEntries(entries: string[]){

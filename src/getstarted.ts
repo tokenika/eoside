@@ -9,11 +9,11 @@ const TEMPLATE = "template"
 const RECENT = "recent"
 const RECENT_JSON = RECENT + ".json"
 const GET_STARTED = "getstarted"
-const README = "readme"
-const README_TEXT = "README: native test compilation"
-const README_COLOR = "yellow"
+const HIGHLIGHTS = "highlights"
+const HIGHLIGHTS_COLOR = "yellow"
 const GET_STARTED_JSON = GET_STARTED + ".json"
 const OPEN = "open"
+
 
 export default class GetStartedPanel extends def.Panel {
     public static currentPanel: GetStartedPanel | undefined
@@ -85,7 +85,7 @@ export default class GetStartedPanel extends def.Panel {
                     ? message.title: message.class.split(" ")[1].trim()
 
             switch (caseSeletor) {
-                case README:
+                case HIGHLIGHTS:
                     vscode.commands.executeCommand(
                                                 'vscode.open', 
                                                 vscode.Uri.parse(message.id))
@@ -209,14 +209,12 @@ function body(extensionPath:string){
                 <div>
                     <p style="color: unset; font-size: 35px;">Get Started</p>`
 
-    body += vscode.workspace.getConfiguration().eoside.readme
+    body += vscode.workspace.getConfiguration().eoside.highlights
                 ?
                 `
-                <em style="color: ${README_COLOR}"> ${def.clickable(
-                vscode.workspace.getConfiguration().eoside.readme,
-                vscode.workspace.getConfiguration().eoside.readmeTitle, 
-                vscode.workspace.getConfiguration().eoside.readmeTitle, 
-                README)}</em>
+                <em style="color: ${HIGHLIGHTS_COLOR}"> ${def.clickable(
+                vscode.workspace.getConfiguration().eoside.highlights, 
+                "Open the document", "Highlights", HIGHLIGHTS)}</em>
                 `
                 : ``
     body += `

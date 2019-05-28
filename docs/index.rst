@@ -22,11 +22,19 @@ It's part of development tools created by `TOKENIKA <https://tokenika.io>`_.
     introduction_to_EOSIDE
     five_minutes_movie
 
+Highlights
+----------
+
+.. toctree::
+    :maxdepth: 1
+
+    highlights/native_tests
+
 Release Notes
 -------------
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 0
 
     release_notes
     release_notes_history

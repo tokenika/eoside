@@ -25,6 +25,7 @@ import SetupPanel from "./setup"
 
 export var extensionPath = ""
 
+
 export function activate(context: vscode.ExtensionContext) {
     exports.extensionPath = context.extensionPath
 

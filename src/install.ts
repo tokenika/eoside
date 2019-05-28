@@ -27,6 +27,7 @@ var htmlContents: any = undefined
 var firstErrMsg: any = undefined
 var c_cpp_prop_updated = false
 
+
 export function verify(){
     var forceError = false
     var forceSetDirectory = false
@@ -557,7 +558,7 @@ misses the 'home' directory.
 }
 
 
-export function root(){
+export function root():string {
     if(exports.config){
         return exports.config["WSL_ROOT"]
     }
@@ -625,7 +626,7 @@ ${err}`)
 
 
 export function wslMapWindowsLinux(convPath:string){
-    if(!exports.IS_WINDOWS){
+    if(!def.IS_WINDOWS){
         return convPath
     }    
     if(!convPath.includes(":")){
@@ -633,11 +634,11 @@ export function wslMapWindowsLinux(convPath:string){
     }
     convPath = convPath.replace(/\\/gi, "/")
     if(convPath.includes("/mnt/")){
+        convPath = convPath.replace(root(), "")
+    } else {
         let drive = convPath[0]
         convPath = convPath.replace(
-                                `${drive}:/`, `/mnt/${drive.toLowerCase()}/`)
-    } else {
-        convPath = convPath.replace(root(), "")
+                                `${drive}:/`, `/mnt/${drive.toLowerCase()}/`)        
     }
     return convPath
 }
