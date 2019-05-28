@@ -334,13 +334,13 @@ function changeWorkspace(){
     }).then(fileUri => {
     if (fileUri && fileUri[0]) {
         exports.config["EOSIO_CONTRACT_WORKSPACE"] 
-                            = wslMapWindowsLinux(fileUri[0].fsPath)
+                                        = wslMapWindowsLinux(fileUri[0].fsPath)
         if(!writeJson( // OK, exit code is 0
             exports.config["CONFIG_FILE"], 
             {"EOSIO_CONTRACT_WORKSPACE": 
-                                wslMapWindowsLinux(fileUri[0].fsPath)})){
-            InstallPanel.createOrShow()
-        } 
+                                    wslMapWindowsLinux(fileUri[0].fsPath)})){
+                                        InstallPanel.createOrShow()
+                                    } 
     }
     })
 }
