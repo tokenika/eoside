@@ -15,7 +15,6 @@ const WARNING_COLOR = "yellow"
 
 const FIND_WSL = "findWsl"
 const CHANGE_WORKSPACE = "changeWorkspace"
-const EOS_REPOSITORY = "eosRepository"
 const CONFIGURATION = "configuration"
 const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
@@ -177,7 +176,7 @@ configuration file cannot be read.`)
                 statusMsg(msg)
 
                 statusMsg(
-`Configuration file is ${exports.config["CONFIG_FILE"]}`)
+`Configuration file is ${wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
                 var msg = ""
                 if(exports.config["EOSIO_VERSION"][0]){
                     var msg = `eosio version ${exports.config["EOSIO_VERSION"][0]} detected.`
@@ -203,6 +202,10 @@ configuration file cannot be read.`)
                     }
                     statusMsg(msg)
                 } else {
+                    if(forceError){
+                        exports.config["EOSIO_CDT_VERSION"][1] = 
+                                        exports.config["EOSIO_CDT_VERSION"][0]
+                    }
                     errorMsg(
 `Cannot determine that eosio.cdt is installed as eosio-cpp does not response. 
 EOSFactory expects eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][1]}`)
@@ -296,24 +299,6 @@ file dialog. Then navigate to a directory containing the Ubuntu file system.
 `
 }
 
-
-function setEosRepository(){
-    htmlContents += 
-`
-<p>
-You can indicate the EOS repository in your system. Click the button below to 
-open file dialog. Then navigate to the repository's folder.
-</p>
-<p>
-    <button 
-        class="btn"; 
-        id="${EOS_REPOSITORY}"; 
-        title="${EOS_REPOSITORY}">find WSL root
-    </button>
-</p>
-`
-}
-
 function changeWorkspace(){
     if(!exports.config){
         return
@@ -330,7 +315,7 @@ function changeWorkspace(){
         canSelectFiles: false,
         canSelectFolders: true,
         defaultUri: vscode.Uri.file(defaultUri),
-        openLabel: 'Open'
+        openLabel: 'Select workspace directory'
     }).then(fileUri => {
     if (fileUri && fileUri[0]) {
         exports.config["EOSIO_CONTRACT_WORKSPACE"] 
@@ -372,7 +357,8 @@ function setHtmlBody(){
                 change
             </button>
             ${exports.config && exports.config["EOSIO_CONTRACT_WORKSPACE"] 
-                    ? exports.config["EOSIO_CONTRACT_WORKSPACE"] : "Not set"}
+                ? wslMapLinuxWindows(exports.config["EOSIO_CONTRACT_WORKSPACE"])
+                : "Not set"}
         </p>
 
         <p 
@@ -412,7 +398,6 @@ export default class InstallPanel extends def.Panel {
         const column = vscode.window.activeTextEditor 
             ? vscode.window.activeTextEditor.viewColumn : undefined
 
-        
         if(!show){
             verify()
             if(!exports.isError && !exports.isWarning){
@@ -488,29 +473,6 @@ misses the 'home' directory.
                 case CHANGE_WORKSPACE: {
                     changeWorkspace()
                     break
-                }
-                case EOS_REPOSITORY: {
-                        let defaultUri = def.IS_WINDOWS 
-                            ? "": "/home"
-
-                        vscode.window.showOpenDialog({
-                            canSelectMany: false,
-                            canSelectFiles: false,
-                            canSelectFolders: true,
-                            defaultUri: vscode.Uri.file(defaultUri),
-                            openLabel: 'Open'
-                        }).then(fileUri => {
-                            if (fileUri && fileUri[0]) {
-                                exports.config["EOSIO_SOURCE_DIR"] 
-                                    = wslMapWindowsLinux(fileUri[0].fsPath)
-                                if(!writeJson(
-                                    exports.config["CONFIG_FILE"], 
-                                                            exports.config)){
-                                        this.update()
-                                } 
-                            }
-                        })
-                    break    
                 }
                 case CONFIGURATION: {
                     switch (message.id) {
@@ -595,20 +557,6 @@ export function writeRoot(){
 }
 
 
-export function wslMapLinuxWindows(convPath:string){
-    if(!def.IS_WINDOWS || convPath.includes(":")){
-        return convPath
-    }
-    if(convPath.includes("/mnt/")){
-        convPath = `${convPath[5].toUpperCase()}:${convPath.substr(6)}`
-                                                        .replace(/\//gi, "\\")
-    } else {
-        convPath = path.join(root(), convPath)
-    }
-    return convPath
-}
-
-
 export function writeJson(file:string, json:Object){
     file = wslMapLinuxWindows(file)
     try{
@@ -625,15 +573,30 @@ ${err}`)
 }
 
 
-export function wslMapWindowsLinux(convPath:string){
-    if(!def.IS_WINDOWS){
-        return convPath
-    }    
-    if(!convPath.includes(":")){
-        return convPath
+export function wslMapLinuxWindows(originalPath:string){
+    if(!def.IS_WINDOWS || originalPath.includes(":")){
+        return originalPath
     }
-    convPath = convPath.replace(/\\/gi, "/")
-    if(convPath.includes("/mnt/")){
+    if(originalPath.includes("/mnt/")){
+        var convPath = `${originalPath[5].toUpperCase()}:${originalPath.substr(6)}`
+                                                        .replace(/\//gi, "\\")
+    } else {
+        convPath = path.join(root(), originalPath)
+    }
+    return convPath
+}
+
+
+export function wslMapWindowsLinux(originalPath:string){
+    if(!def.IS_WINDOWS){
+        return originalPath
+    }    
+    if(!originalPath.includes(":")){
+        return originalPath
+    }
+    var convPath = originalPath.replace(/\\/gi, "/")
+
+    if(convPath.includes(root())){
         convPath = convPath.replace(root(), "")
     } else {
         let drive = convPath[0]

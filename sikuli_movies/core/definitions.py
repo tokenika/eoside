@@ -3,185 +3,248 @@ import os
 import shutil
 import subprocess
 import time
+import threading
 import json
+import inspect
 import org.sikuli.script as sikuli
+import org.sikuli.basics as basics
 import sikuli_movies
 
+SETUP = '''
+# Setup
+
+* eosio version 1.7.1
+* eosio.cdt version 1.6.1
+* EOSFactory version 3.1.4
+* EOSIDE version 1.1.1
+'''
+
 VSCODE = "eosfactory - Visual Studio Code"
-NARRATION_FILE = "C:\\Workspaces\\EOS\\eoside\\sikuli_movies\\narration.md"
 CONTRACT_DIR = "C:\\Workspaces\\EOS\\contracts"
+DOCS_STATIC = "C:\\Workspaces\\EOS\\eoside\\docs\\_static"
 RIGHT_COLUMN_WIDTH = 350
 TERMINAL_HIGHT = 200
 IMAGE_DIR = os.path.realpath(
     os.path.join(os.path.dirname(sikuli_movies.__file__), "images.sikuli"))
+NARRATION_FILE = os.path.realpath(
+    os.path.join(os.path.dirname(sikuli_movies.__file__), "movies", 
+    "narration.md"))
 
 FF_MPEG = "ffmpeg.exe"
 MOVIES_FORMAT = "mp4" #"wmv"
 MOVIES_FRAM_RATE = 25
 
-WAIT = True
-
-X = 0
-Y = 0
+X = 50
+Y = 50
 W = 854
 H = 480
+
+REGION_VSCODE = sikuli.Region(X, Y, W, H)
+FOCUS_VSCODE = sikuli.Region(X + 700, Y, 20, 25)
+REGION_SIDE_BAR = sikuli.Region(X, Y + 30, 240, H-50)
+REGION_SIDE_BAR_SELECTION = sikuli.Region(X, Y+20, W, 35)
+REGION_COLUMN_BORDER = sikuli.Region(
+                        X+W-RIGHT_COLUMN_WIDTH, Y + H - TERMINAL_HIGHT, 0, 0)
+
+################################################################################
+# Switch verbosity status:
+basics.Settings.ActionLogs = False
+def excepthook(type, value, traceback):
+    print(value)
+# sys.excepthook = excepthook
+################################################################################
+
 
 def sikuli_movies_dir():
     return os.path.realpath(os.path.dirname(sikuli_movies.__file__))
 
+
 def wait(time_sec):
-    if WAIT:
-        time.sleep(time_sec)
+    time.sleep(time_sec)
+
+
+def sleep(time_sec):
+    wait(time_sec)
+
 
 def get_image(file_name):
+    path = os.path.join(IMAGE_DIR, file_name + ".png")
+    if not os.path.exists(path):
+        exit('''
+The path 
+'{}'
+does not exist.
+'''.format(path))
+
     return os.path.join(IMAGE_DIR, file_name + ".png")
 
-def get_region_vscode(window_title="EOSIDE - Visual Studio Code"):
-    app = sikuli.App(window_title)
-    print(app)
-    sikuli.App.focus(window_title)
-    return sikuli.App.focusedWindow()
 
-#region_vscode = get_region_vscode()
-region_vscode = sikuli.Region(X, Y, W, H)
-X = region_vscode.getX()
-Y = region_vscode.getY()
-W = region_vscode.getW()
-H = region_vscode.getH()
-
-print(region_vscode)
-focus_vscode = sikuli.Region(X + W - 100, Y + 50, 100, 100)
-status_bar = sikuli.Region(X, Y+H-20, W, 20)
-region_side_bar = sikuli.Region(X, Y + 30, 240, H-50)
-region_menu_bar = sikuli.Region(X + 700, Y, 20, 25)
-region_file_selection = sikuli.Region(X, Y+20, W, 35)
-region_column_border = sikuli.Region(
-    X+W-RIGHT_COLUMN_WIDTH, Y + H - TERMINAL_HIGHT, 0, 0)
-region_right_column = sikuli.Region(
-    X+W-RIGHT_COLUMN_WIDTH, X+50, RIGHT_COLUMN_WIDTH, H-50)
-region_terminal = sikuli.Region(
-    X, Y + H - TERMINAL_HIGHT, W, TERMINAL_HIGHT)
-region_scroll = sikuli.Region(X + W - 20, Y + H - 27, 20, 27)
+# def get_region_vscode(window_title="EOSIDE - Visual Studio Code"):
+#     app = sikuli.App(window_title)
+#     print(app)
+#     sikuli.App.focus(window_title)
+#     return sikuli.App.focusedWindow()
 
 
-def build():
-    focus_vscode.type(focus_vscode, "b",
-                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
+def ACTION(msg=None, module_level=2):
+    module_level = min(len(inspect.stack()) - 1, module_level)
+    function_name = inspect.stack()[module_level - 1][3].replace("_", " ")
+
+    if inspect.stack()[module_level][3] == "<module>":  
+        print(">" * 50)
+        title = ">>> " + function_name
+        print(title if not msg else title + msg)
+
+    return function_name
 
 
-def compile():
-    focus_vscode.type(focus_vscode, "c",
-                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
-
-
-def show_enabled_extensions():
-    region_menu_bar.type(region_menu_bar, "x", 
-                                        sikuli.Key.CTRL + sikuli.Key.SHIFT)
-    region_menu_bar.type(region_menu_bar, "e", 
-                                        sikuli.Key.CTRL)
+def CUT(module_level=2):
+    module_level = min(len(inspect.stack()) - 1, module_level)
+    if inspect.stack()[module_level][3] == "<module>":
+        print("<" * 50 + "\n")
 
 
 def set_special_effects(contract_dir, special_effects=[]):
-    with open (os.path.join(
-        contract_dir, ".vscode\settings.json"), "r") as infile:
+    ACTION(": {}".format(special_effects))
+
+    path = os.path.join(contract_dir, ".vscode\settings.json")
+    with open (path, "r") as infile:
             settings = json.load(infile)
             settings["eoside.specialEffects"] = special_effects
             with open(os.path.join(
                 contract_dir, ".vscode\settings.json"), "w") as outfile:
                 json.dump(settings, outfile, indent=4)
+    CUT()
 
 
-def open_folder(folder_name):
+def create_folder(
+        folder_name,
+        PS=None, region=REGION_VSCODE, seconds=3, wait=0, score=0):
+    ACTION()
+
     find("open_folder/new_folder").click()
     wait_image("new_folder_change_name")
-    wait(1)
-    region_vscode.type(sikuli.Key.BACKSPACE )
-    region_vscode.type(folder_name + "\n")
+    sleep(1)
+    REGION_VSCODE.type(sikuli.Key.BACKSPACE )
+    REGION_VSCODE.type(folder_name + "\n")
+    sleep(1)    
     wait_image("open_folder/open").click()
+    detected = None
+    if PS:
+        detected = wait_image(PS, region, seconds, wait, score)
+
+    CUT()
+    return detected
 
 
-def set_folder(path):
+def open_folder_right(
+        folder_name,
+        PS=None, region=REGION_VSCODE, seconds=3, wait=0, score=0):
+    ACTION()
+
+    input_box = wait_image("open_folder/input_box1")
+    input_box.type(input_box.offset(-80, -25), folder_name)
+    sleep(2)
+    input_box.type(input_box.offset(-80, -25), "\n")
+    input_box.waitVanish(get_image("open_folder/input_box1"), 3)
+    detected = None
+    if PS:
+        detected = wait_image(PS, region, seconds, wait, score)
+
+    CUT()
+    return detected
+
+
+
+def set_folder(path, open_image):
     folder = wait_image("open_folder/folder")
-    region_vscode.type(region_menu_bar, path + "\n")
-    wait_image("open_folder/open").click()
+    REGION_VSCODE.type(FOCUS_VSCODE, path + "\n")
+    wait(3)
+    wait_image(open_image).click()
 
 
-def open_file(path):
+def open_file(
+        path,
+        PS=None, region=REGION_VSCODE, seconds=3, wait=0, score=0):
+    ACTION()
+    
     if not os.path.isabs(path):
         path = os.path.join(CONTRACT_DIR, path)
-    region_vscode.type(focus_vscode, "o", sikuli.Key.CTRL)
-    region_vscode.wait(get_image("file_name"))
-    region_vscode.type(get_image("file_name"), path)
-    region_vscode.click(get_image("open_folder/open"))
+    print("The path is {}.".format(path))
+
+    REGION_VSCODE.type(FOCUS_VSCODE, "o", sikuli.Key.CTRL)
+    REGION_VSCODE.wait(get_image("file_name"))
+    REGION_VSCODE.type(get_image("file_name"), path)
+    REGION_VSCODE.click(get_image("open_folder/open"))
+
+    detected = None
+    if PS:
+        detected = wait_image(PS, region, seconds, wait, score)
+    CUT()
+    return detected
 
 
 def new_file(path):
-    region_menu_bar.type(region_menu_bar, "n", sikuli.Key.CTRL)
-    region_menu_bar.type(region_menu_bar, "s", sikuli.Key.CTRL)
-    region_menu_bar.type(
-        region_menu_bar, path)
-    region_vscode.find(get_image("open_folder/save")).click()
+    FOCUS_VSCODE.type(FOCUS_VSCODE, "n", sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, "s", sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, path)
+    REGION_VSCODE.find(get_image("open_folder/save")).click()
 
 
 def send_shortcut(letter, key_modifiers=sikuli.Key.CTRL):
-    region_vscode.type(focus_vscode, letter, key_modifiers)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, letter, key_modifiers)
+    return FOCUS_VSCODE
 
 
 def send_k(letter, modifier=None):
-    region_vscode.type(focus_vscode, "k", sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, "k", sikuli.Key.CTRL)
     if modifier:
-        region_vscode.type(focus_vscode, letter, MODIFIERS[modifier])
+        FOCUS_VSCODE.type(FOCUS_VSCODE, letter, MODIFIERS[modifier])
     else:
-        region_vscode.type(focus_vscode, letter)
+        FOCUS_VSCODE.type(FOCUS_VSCODE, letter)
 
 
 def go_to_file(go_to_file_image_name):
     go_to_file_image = get_image(go_to_file_image_name)
-    region_vscode.type(focus_vscode, "p", sikuli.Key.CTRL) 
-    region_vscode.click(go_to_file_image)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, "p", sikuli.Key.CTRL) 
+    FOCUS_VSCODE.click(go_to_file_image)
 
 
-def set_side_bar(on=True):
-    if not region_vscode.exists(get_image("side_bar_is_on")) == on:
-        region_vscode.type(focus_vscode, "b", sikuli.Key.CTRL) 
+# REGION_VSCODE.exists("C:/Workspaces/EOS/eoside/sikuli_movies/images.sikuli/explorer_is_on").getScore() 1; 0.75
+
+# REGION_VSCODE.exists("C:/Workspaces/EOS/eoside/sikuli_movies/images.sikuli/side_bar_is_on").getScore() 0.98; 0.78; 0.82; 0.81; 0.94/
 
 
-def toggle_panel():
-    region_vscode.hover()
-    region_vscode.type(focus_vscode, "j", sikuli.Key.CTRL)
+def delete_contract(contract_workspace, contract_name):
 
-def panel(on=True):
-    terminal = region_vscode.exists(get_image("TERMINAL"))
-    if on and not terminal or not on and terminal:
-       toggle_panel()
+    for suffix in ["1", "2", "3"]:
+        name = contract_name + suffix
+        path = os.path.join(contract_workspace, name)
+        try:
+            if os.path.exists(path):
+                shutil.rmtree(path)
+            return name
+        except Exception as e:
+            pass
 
-# region_vscode.exists("C:/Workspaces/EOS/eoside/sikuli_movies/images.sikuli/explorer_is_on").getScore() 1; 0.75
-
-# region_vscode.exists("C:/Workspaces/EOS/eoside/sikuli_movies/images.sikuli/side_bar_is_on").getScore() 0.98; 0.78; 0.82; 0.81; 0.94/
-
-
-def delete_contract(contract_dir):
-    try:
-        if os.path.exists(contract_dir):
-            shutil.rmtree(contract_dir)
-    except Exception as e:
-        msg = '''
+    print('''
 While trying to delete the file
     {},
-the follwing error message is issued:
+the following error message is issued:
     {}
-'''.format(contract_dir, str(e))
-        print(msg)
-        exit()
+'''.format(path, str(e)))
+    exit()
 
 
 def set_settings(contract_dir, start_point):
     '''Copies workspace settings to the folder 'contract_dir`.
     '''
+    ACTION()
     with open (os.path.join(
-            os.path.dirname(__file__), start_point, ".vscode\settings.json"),
-                "r") as file:
+            os.path.dirname(__file__), start_point, ".vscode\settings.json"), 
+            "r") as file:
         settings = file.read()
+
     with open(os.path.join(contract_dir, ".vscode\settings.json"), "w") as file:
         file.write(settings)
 
@@ -190,146 +253,92 @@ def set_settings(contract_dir, start_point):
                             ".vscode\c_cpp_properties.json"),
                                                                 "r") as file:
         c_cpp_properties = file.read()
-    with open(
-                            os.path.join(contract_dir, 
+    with open(os.path.join(
+                            contract_dir, 
                             ".vscode\c_cpp_properties.json"), "w") as file:
         file.write(c_cpp_properties)
-
-
-def focus_editor_title(name, group=1):
-    region = region_menu_bar
-    region.type(region, str(group), sikuli.Key.CTRL)
-    region.type(region, "p", sikuli.Key.CTRL)
-    region.type(region, name + "\n")
-
+    CUT()
 
 def focus_group(group):
-    region = region_menu_bar
-    region.type(region, str(group), sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(FOCUS_VSCODE, str(group), sikuli.Key.CTRL)
 
 
-class Edit():
-    def __init__(self, name, group=1):
-        self.name = name
-        self.group = self.limits(group)
-
-    def limits(self, group):
-        if group <=1:
-            return 1
-        if group >= 2:
-            return 2
-
-    def scroll_down(self, count):
-        self.focus_editor()
-        region_vscode.type(sikuli.Key.HOME, sikuli.Key.CTRL)
-        for i in range(0, count):
-            region_vscode.type(sikuli.Key.DOWN, sikuli.Key.CTRL)
-            time.sleep(0.5)
-
-    def focus_group(self, group=None):
-        if not group:
-            group = self.group
-        
-        self.group = self.limits(group)
-        region = region_menu_bar
-        region.type(region, str(self.group), sikuli.Key.CTRL)
-
-    def focus_editor(self, group=None):
-        self.focus_group(group)
-        region = region_menu_bar
-        region.type(region, "p", sikuli.Key.CTRL)
-        region.type(region, self.name + "\n")
-
-    def type(self, text, action="a", end_of_file=True):
-        self.focus_group()
-        if action == "w":
-            region_vscode.type("a", sikuli.Key.CTRL)
-            region_vscode.type(sikuli.Key.BACKSPACE)
-
-        if end_of_file:
-            region_vscode.type(sikuli.Key.END, sikuli.Key.CTRL)
-        else:
-            region_vscode.type("k", sikuli.Key.CTRL)
-            region_vscode.type("q", sikuli.Key.CTRL)
-
-        region_vscode.type(text)
-
-    def move_right(self):
-        region = region_menu_bar
-        region.type(region, "1", sikuli.Key.CTRL)
-        region.type(region, "p", sikuli.Key.CTRL)
-        region.type(region, self.name + "\n")
-        region.type(sikuli.Key.RIGHT, sikuli.Key.CTRL + sikuli.Key.ALT)
-        self.group = 2
-
-    def move_left(self):
-        region = region_menu_bar
-        region.type(region, "2", sikuli.Key.CTRL)
-        region.type(region, "p", sikuli.Key.CTRL)
-        region.type(region, self.name + "\n")
-        region.type(sikuli.Key.LEFT, sikuli.Key.CTRL + sikuli.Key.ALT)
-        self.group = 1
-
-    def set_width(self):
-        ## Move column border
-        drag_drop(
-            find("column_border").offset(5, 0), region_column_border)
-
-
-def toggle_side_bar():
-    region_menu_bar.type(region_menu_bar, "b", sikuli.Key.CTRL)
-
-
-def find(PSMRL, region=region_vscode):
+def find(PSMRL, region=REGION_VSCODE):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
     return region.find(PSMRL)
 
 
-def hover(PSMRL, region=region_vscode):
+def hover(PSMRL, wait=0, region=None):
     if isinstance(PSMRL, str):
-        PSMRL = get_image(PSMRL)
-    return region.hover(PSMRL)
+        if not region:
+            region = find(PSMRL)
+        could_be_moved = region.hover(get_image(PSMRL))
+    else:
+        if not region:
+            region = REGION_VSCODE
+        could_be_moved = region.hover(PSMRL)
+
+    if wait:
+        sleep(wait)
+    
+    return could_be_moved
 
 
-def exists(PSMRL, region=region_vscode):
+def exists(PSMRL, region=REGION_VSCODE):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
     return region.exists(PSMRL)
 
 
-def wait_image(PS, region=region_vscode, seconds=3, wait=0, score=0):
+def exit(msg):
+    kill_ffmpeg()
+    raise Exception("ERROR:" + msg)
+
+
+def wait_image(PS, region=REGION_VSCODE, seconds=3, wait=0, score=0):
+
+    PERIOD = 1
+    count = seconds / PERIOD
+    detected = None
+
     if isinstance(PS, str):
         PS = get_image(PS)
-    count = 2 * seconds
-    exists = None
+
     while True:
-        exists = region.exists(PS)
-        if exists and exists.getScore() > score:
+        detected = region.exists(PS)
+        if detected and detected.getScore() > score:
+            print
             break
         else:
-            time.sleep(0.5)
+            print ".", 
+            sys.stdout.flush()
+            time.sleep(PERIOD)
+
         count = count - 1
         if count < 0:
-            break
-    if wait:
-        time.sleep(wait)
-    return exists
+            print
+            exit('''
+Waiting for {}, the waiting time {} exceeded.
+            '''.format(str(PS), seconds))
+
+    time.sleep(wait)
+    return detected
 
 
-def click(PSMRL, region=region_vscode):
+def click(PSMRL, region=REGION_VSCODE):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
     return region.click(PSMRL)      
 
 
-def drag_drop(PSMRL, region, PSMRL_region=region_vscode):
+def drag_drop(PSMRL, region, PSMRL_region=REGION_VSCODE):
     if isinstance(PSMRL, str):
         PSMRL = find(PSMRL, PSMRL_region)
     return PSMRL_region.dragDrop(PSMRL, region)     
 
 
-def type(PSMRL, text, region=region_vscode, modifiers=None):
+def type(PSMRL, text, region=REGION_VSCODE, modifiers=None):
     if isinstance(PSMRL, str):
         PSMRL = find(get_image(PSMRL), PSMRL_region)
     if modifiers:
@@ -339,11 +348,13 @@ def type(PSMRL, text, region=region_vscode, modifiers=None):
 
 
 def save_all(wait_time=1.5):
+    ACTION()
     send_k("s")
     wait(wait_time)
+    CUT()
 
 
-def escape(PSMRL=focus_vscode):
+def escape(PSMRL=FOCUS_VSCODE):
     if isinstance(PSMRL, str):
         PSMRL = get_image(PSMRL)
         
@@ -374,13 +385,11 @@ def raw_name(output_file, format):
     return output_file + "_raw." + format
 
 
-def start_ffmpeg(output_file, 
-        format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
+def start_ffmpeg(
+                    movie_base_name, 
+                    format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
 
-    if not os.path.isabs(output_file):
-        output_file = os.path.join(output_file)
-
-    output_file = raw_name(output_file, format)
+    output_file = raw_name(movie_base_name, format)
 
     try:
         if os.path.exists(output_file):
@@ -401,87 +410,39 @@ def start_ffmpeg(output_file,
     subprocess.Popen(arg)
 
 
-def make_linking_bat(output_file, format=MOVIES_FORMAT):
-    fade_time = 1
-    fade_n = int(round(fade_time * MOVIES_FRAM_RATE))
-    script = '''
-ffmpeg -y -i {0} -vf "fade=in:0:{3:d}" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart {2}_faded.{1}
-ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy ../../../docs/_static/{2}.{1}
-    '''.format(
-        raw_name(output_file, format), format, output_file, fade_n)
+def make_linking_bat(movie_base_name, cwd, play=False, format=MOVIES_FORMAT):
+    FADE_TIME = 1
+    fade_n = int(round(FADE_TIME * MOVIES_FRAM_RATE))
 
-    with open("link.bat", "w+") as f:
+    movie_raw_file = raw_name(movie_base_name, format)
+    movie_faded_file = movie_base_name + "_faded." + format
+    movie_file = os.path.join(
+            DOCS_STATIC, os.path.basename(movie_base_name) + "." + format)
+
+    script = '''
+ffmpeg -y -i {0} -vf "fade=in:0:{1:d}" -c:v libx264 -crf 23  -pix_fmt yuv420p -movflags faststart {2}
+ffmpeg -y -f concat -safe 0 -i concat_list.txt -c copy {3}
+    '''.format(
+        movie_raw_file, fade_n, movie_faded_file, movie_file)
+
+    if play:
+        script = script + '''
+ffplay {}
+    '''.format(movie_file)
+
+    with open(os.path.join(cwd, "link.bat"), "w+") as f:
         f.write(script)
 
 
-class Terminal():
-    def is_shown(self):
-        return exists("terminal/TERMINAL", region_vscode)
-
-    def set_hight(self):
-        top_border = exists("terminal/TERMINAL")
-        if top_border:
-            drag_drop(top_border.offset(0, -15), region_column_border)
-
-    def show(self):
-        if not self.is_shown():
-            # region_menu_bar.type(
-            #     region_menu_bar, "b", sikuli.Key.CTRL + sikuli.Key.ALT)
-            # find("terminal/TERMINAL").click()
-            region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
-
-    def hide(self):
-        if self.is_shown():
-            region_menu_bar.type(region_menu_bar, "j", sikuli.Key.CTRL)
-
-    def new(self):
-        region_menu_bar.type(
-            region_menu_bar, "b", sikuli.Key.CTRL + sikuli.Key.ALT)
-        self.set_hight()
-
-    def type(self, text, new_line=True):
-        self.show()
-        if new_line:
-            text = text + "\n"
-        region_vscode.type(
-            get_image("terminal/TERMINAL"), text)
-
-    def maximize(self):
-        if not self.is_shown():
-            return
-        button = region_vscode.exists(get_image("terminal/maximize"))
-        if button:
-            button.click()
-            region_vscode.type(
-                    get_image("terminal/TERMINAL"), 
-                    sikuli.Key.HOME, sikuli.Key.CTRL)
-        
-    def minimize(self):
-        if not self.is_shown():
-            return
-        button = region_vscode.exists(get_image("terminal/minimize"))
-        if button:
-            button.click()
-            region_vscode.type(
-                                get_image("terminal/TERMINAL"), 
-                                sikuli.Key.HOME, sikuli.Key.CTRL)        
-
-    def scroll_down(self, count):
-        region_vscode.type(sikuli.Key.HOME, sikuli.Key.CTRL)
-        for i in range(0, count):
-            region_vscode.type(sikuli.Key.DOWN, sikuli.Key.CTRL)
-            time.sleep(0.5)
-          
-
 def go_top():
-    region_menu_bar.type(
-            region_menu_bar, sikuli.Key.HOME, sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(
+            FOCUS_VSCODE, sikuli.Key.HOME, sikuli.Key.CTRL)
 
 
 def go_bottom():
-    region_menu_bar.type(
-            region_menu_bar, sikuli.Key.END, sikuli.Key.CTRL)
+    FOCUS_VSCODE.type(
+            FOCUS_VSCODE, sikuli.Key.END, sikuli.Key.CTRL)
 
 
 def close_current_editor():
-    region_vscode.type(sikuli.Key.F4, sikuli.Key.CTRL)
+    REGION_VSCODE.type(sikuli.Key.F4, sikuli.Key.CTRL)
