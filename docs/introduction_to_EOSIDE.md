@@ -1,4 +1,4 @@
-# EOSIDE - Overview of the Main Features
+# Overview of the Main Features
 
 #### EOSIDE is an Integrated Development Environment for EOSIO smart-contracts.
 
@@ -12,8 +12,9 @@ EOSIDE has the following features:
 - automatic availability of standard libraries,
 - dependency management,
 - [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense) code completion,
-- compilation and building,
-- testing,
+- compilation and building of EOSIO contracts,
+- testing -- both functional and native,
+- native debugging,
 - deployment.
 
 Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4) demonstrating EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World* test.
@@ -22,7 +23,7 @@ Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4
 
 EOSIDE's user interface is composed of two views.
 
-The standard view is named `EOSIDE` and is displayed when VSC is started empty, i.e. with the `code -n ""` command.
+The entry view is named `EOSIDE` and is displayed when VSC is started empty, i.e. with the `code -n ""` command.
 
 ![Get Started view](images/get_started.png)
 

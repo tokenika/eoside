@@ -1,5 +1,6 @@
 import sys
 import time
+import inspect
 import org.sikuli.script as sikuli
 import definitions as de
     
@@ -13,8 +14,7 @@ import definitions as de
 
 def show_shortcut_view(
     detector, key, ctrl, begin_msg=None,
-    PS=None, region=de.REGION_VSCODE, seconds=3, wait=0, score=0, 
-    module_level=3):
+    PS=None, region=de.REGION_VSCODE, seconds=3, wait=0, score=0):
 
     if not PS:
         PS = detector
@@ -23,7 +23,7 @@ def show_shortcut_view(
     begin_msg = begin_msg + ", return region '{}':".format(PS) \
                                     if not PS == detector else begin_msg + "."
 
-    function_name = de.ACTION(begin_msg, module_level)
+    function_name = inspect.stack()[1][3].replace("_", " ")
     de.FOCUS_VSCODE.type(de.FOCUS_VSCODE, key, ctrl)
 
     print "{} waits for {}".format(function_name, PS),
@@ -32,7 +32,6 @@ def show_shortcut_view(
     detected1 = de.wait_image(detector, seconds=20)
     detected = detected1 if PS == detector else de.wait_image(
                                             PS, region, seconds, wait, score)
-    de.CUT(module_level)
 
     if PS == detector:
         return
@@ -58,6 +57,12 @@ def show_explorer(
         PS, region, seconds, wait, score)
 
 
+def is_side_bar_hidden():
+    region_side_margin = sikuli.Region(de.X, de.Y, 10, de.H)
+    side_margin_empty = de.exists("side_margin_empty", region_side_margin)
+    return side_margin_empty and side_margin_empty.getScore() > 0.9
+
+
 def maximize_editor_group():
     de.ACTION()
 
@@ -65,9 +70,7 @@ def maximize_editor_group():
                     de.FOCUS_VSCODE, "q", sikuli.Key.CTRL + sikuli.Key.ALT)
     de.wait(1)
 
-    region_side_margin = sikuli.Region(de.X, de.Y, 10, de.H)
-    side_margin_empty = de.exists("side_margin_empty", region_side_margin)
-    if side_margin_empty and side_margin_empty.getScore > 0.9:
+    if is_side_bar_hidden():
         de.CUT()
     else:
         de.exit('''
@@ -78,20 +81,11 @@ Cannot hide the side bar.
 def hide_side_bar():
     de.ACTION()
 
-    region_detector = sikuli.Region(de.X, de.Y + 25, 120, 30)
-    images = [
-        de.get_image("hide_side_bar/explorer"), 
-        de.get_image("hide_side_bar/extensions"),
-        de.get_image("hide_side_bar/debug"),
-        de.get_image("hide_side_bar/search"),
-        de.get_image("hide_side_bar/scm")
-        ]
-    detector = region_detector.findAny(images)
-    if detector:
+    if not is_side_bar_hidden():
         print("Toggling the Side Bar.")
         de.FOCUS_VSCODE.type(de.FOCUS_VSCODE, "b", sikuli.Key.CTRL)
-        de.wait(1)
-        if not region_detector.exists(detector[0].getImageFilename()):
+        de.wait(0.5)
+        if not not is_side_bar_hidden():
             de.CUT()
         else:
             de.exit('''
@@ -159,3 +153,22 @@ def new_bash_terminal(
         "x", sikuli.Key.CTRL + sikuli.Key.ALT,
         None,
         PS, region, seconds, wait, score)
+
+
+def open_folder_right(
+        folder_name,
+        PS=None, region=de.REGION_VSCODE, seconds=3, wait=0, score=0):
+    de.ACTION()
+
+    input_box = de.wait_image("open_folder/input_box1")
+    input_box.type(input_box.offset(-80, -25), folder_name)
+    de.sleep(2)
+    input_box.type(input_box.offset(-80, -25), "\n")
+    input_box.waitVanish(de.get_image("open_folder/input_box1"), 3)
+    detected = None
+    if PS:
+        detected = de.wait_image(PS, region, seconds, wait, score)
+
+    hide_terminal_panel()
+    de.CUT()
+    return detected

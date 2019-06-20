@@ -80,7 +80,7 @@
                 },
                 "eoside.highlights": {
                     "type": "string",
-                    "default": "https://eosfactory.io/eoside/html/index.html",
+                    "default": "https://eosfactory.io/eoside_dev/html/highlights/highlights.html",
                     "description": "Set to null to remove the Highlights entry from the EOSIDE view."
                 }
             }
@@ -134,6 +134,11 @@
             {
                 "command": "eoside.Zip",
                 "title": "zip",
+                "category": "EOSIDE"
+            },
+            {
+                "command": "eoside.ReleaseNotes",
+                "title": "release notes",
                 "category": "EOSIDE"
             }
         ],

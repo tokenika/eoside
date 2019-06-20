@@ -19,7 +19,7 @@ Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4
 
 ## User Documentation
 
-Please refer to the [this document](https://eosfactory.io/eoside/html/index.html).
+Please refer to [this document](https://eosfactory.io/eoside/html/index.html).
 
 ## Contact us
 

@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as def from './definitions'
 import * as inst from './install'
-import * as deb from './native_debugger'
+import * as deb from './nativedebugger'
 
 const INCLUDE = "includePath"
 const LIBS = "libs"
@@ -279,7 +279,7 @@ function body(extensionPath:string){
 }
 
 
-export function compile(test_mode=false){
+export function compile(test_options=false){
     let terminalName = "compile"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
@@ -291,15 +291,15 @@ export function compile(test_mode=false){
                     vscode.workspace.workspaceFolders[0].uri.fsPath,
                     ".vscode/c_cpp_properties.json")}' `
             + ' --compile'
-        if(test_mode && vscode.workspace.getConfiguration().eoside.testMode){
-            cl += ' --test_mode'
+        if(test_options && vscode.workspace.getConfiguration().eoside.testMode){
+            cl += ' --test_options'
         }
         terminal.sendText(cl)
     }    
 }
 
 
-export function build(test_mode=false){
+export function build(test_options=false){
     let terminalName = "build"
     if(vscode.workspace.workspaceFolders){
         let terminal = def.getTerminal(terminalName, true, true)
@@ -311,19 +311,19 @@ export function build(test_mode=false){
             + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
             + ` --c_cpp_prop`
             + ` '${c_cpp_propertiesPath}'`
-        if(test_mode && vscode.workspace.getConfiguration().eoside.testMode){
-            cl += " --test_mode"
+        if(test_options && vscode.workspace.getConfiguration().eoside.testMode){
+            cl += " --test_options"
         }                    
         terminal.sendText(cl)
 
-        if(test_mode){
+        if(test_options){
             deb.createEosideLaunchConfig(readProperties(c_cpp_propertiesPath))
             let cl = 
             `${def.PYTHON} -m eosfactory.build` 
             + ` '${vscode.workspace.workspaceFolders[0].uri.fsPath}'`
             + " --c_cpp_prop"
             + ` '${c_cpp_propertiesPath}'`
-            + " --test_mode"
+            + " --test_options"
             + " --execute"
             terminal.sendText(" ")
             terminal.sendText(cl)
@@ -512,21 +512,23 @@ abstract class Dependencies extends Base{
     }
 
     public items(clazz=""){
-        let entries: string[] = []
+        var entries: string[] = []
         this.read()
-        let temp = this.getEntries()
+        var temp = this.getEntries()
         if(temp){
             entries = temp
         }
         
-        let root = inst.root()
+        var root = inst.root()
+        var pattern = new RegExp(root, 'i')
         if(root){
             for(let i = 0; i < entries.length; i++){
-                entries[i] = entries[i].replace(root, "${root)");
+
+                entries[i] = entries[i].replace(pattern, "${root)");
             }            
         }
 
-        let items = ""
+        var items = ""
         for(let i = 0; i < entries.length; i++){
             items += setupEntry(i, entries[i], clazz,)
         }

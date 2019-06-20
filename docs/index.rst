@@ -28,7 +28,9 @@ Highlights
 .. toctree::
     :maxdepth: 1
 
-    highlights/native_tests
+    highlights/highlights
+
+
 
 Release Notes
 -------------

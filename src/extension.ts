@@ -17,11 +17,15 @@
 // vsce login TOKENIKA
 // vsce publish
 
+import * as path from 'path'
+import * as fs from 'fs'
 import * as vscode from 'vscode'
+
 import * as setup from './setup'
 import InstallPanel from "./install"
 import GetStartedPanel from "./getstarted"
 import SetupPanel from "./setup"
+import ReleaseNotes from "./releasenotes"
 
 export var extensionPath = ""
 
@@ -87,10 +91,27 @@ export function activate(context: vscode.ExtensionContext) {
         'eoside.Zip', () => {
             setup.zip()
         }
+    ))
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        'eoside.ReleaseNotes', () => {
+            ReleaseNotes.createOrShow()
+        }
     ))    
+
     
     InstallPanel.createOrShow(false)
     GetStartedPanel.createOrShow()
+
+    var releaseFile = path.join(context.extensionPath, "releasenotes")
+    if(fs.existsSync(releaseFile)){
+        ReleaseNotes.createOrShow()
+        
+        // try {
+        //     fs.unlinkSync(releaseFile)
+        // } catch(err) {
+        // }
+    }
 }
 
 

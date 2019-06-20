@@ -1,4 +1,4 @@
-# EOSIDE - Installation Guide
+# Installation Guide
 
 We've tested EOSIDE on the following platforms:
 
