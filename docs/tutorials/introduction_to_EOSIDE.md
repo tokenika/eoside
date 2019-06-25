@@ -18,7 +18,7 @@ EOSIDE implements the following features:
 - project packaging,
 - deployment.
 
-Watch a short [video](https://eosfactory.io/eoside_dev/html/_static/five_minutes.mp4) demonstrating EOSIDE in action. And here is another [video](https://eosfactory.io/eoside_dev/html/_static/installing.mp4) demonstrating the setup process and a *Hello World* test.
+Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4) demonstrating EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World* test.
 
 ## User interface
 

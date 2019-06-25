@@ -20,4 +20,4 @@ EOSIDE can be uninstalled as any other VSC extension. In the `Extensions` view s
 
 ## Video guide
 
-There is a short video [available](https://eosfactory.io/eoside_dev/html/_static/installing.mp4), demonstrating the installation process.
+There is a short video [available](https://eosfactory.io/eoside/html/_static/installing.mp4), demonstrating the installation process.
