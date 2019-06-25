@@ -107,10 +107,10 @@ export function activate(context: vscode.ExtensionContext) {
     if(fs.existsSync(releaseFile)){
         ReleaseNotes.createOrShow()
         
-        // try {
-        //     fs.unlinkSync(releaseFile)
-        // } catch(err) {
-        // }
+        try {
+            fs.unlinkSync(releaseFile)
+        } catch(err) {
+        }
     }
 }
 

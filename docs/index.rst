@@ -14,23 +14,18 @@ It's part of development tools created by `TOKENIKA <https://tokenika.io>`_.
    :maxdepth: 2
    :caption: Contents:
 
-.. toctree::
-    :maxdepth: 1
-
-    installing_EOSIDE
-    installing_movie
-    introduction_to_EOSIDE
-    five_minutes_movie
-
-Highlights
-----------
+Tutorials
+---------
 
 .. toctree::
     :maxdepth: 1
 
-    highlights/highlights
-
-
+    tutorials/installing_EOSIDE
+    tutorials/installing_movie
+    tutorials/introduction_to_EOSIDE
+    tutorials/five_minutes_movie
+    tutorials/native_tests
+    tutorials/packaging_tool
 
 Release Notes
 -------------

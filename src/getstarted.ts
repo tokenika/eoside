@@ -9,8 +9,6 @@ const TEMPLATE = "template"
 const RECENT = "recent"
 const RECENT_JSON = RECENT + ".json"
 const GET_STARTED = "getstarted"
-const HIGHLIGHTS = "highlights"
-const HIGHLIGHTS_COLOR = "yellow"
 const GET_STARTED_JSON = GET_STARTED + ".json"
 const OPEN = "open"
 
@@ -85,11 +83,6 @@ export default class GetStartedPanel extends def.Panel {
                     ? message.title: message.class.split(" ")[1].trim()
 
             switch (caseSeletor) {
-                case HIGHLIGHTS:
-                    vscode.commands.executeCommand(
-                                                'vscode.open', 
-                                                vscode.Uri.parse(message.id))
-                    break
                 case TEMPLATE:
                     Templates.createOrGet(this._extensionPath)
                         .action(message.id)
@@ -209,14 +202,6 @@ function body(extensionPath:string){
                 <div>
                     <p style="color: unset; font-size: 35px;">Get Started</p>`
 
-    body += vscode.workspace.getConfiguration().eoside.highlights
-                ?
-                `
-                <em style="color: ${HIGHLIGHTS_COLOR}"> ${def.clickable(
-                vscode.workspace.getConfiguration().eoside.highlights, 
-                "Open the document", "Highlights", HIGHLIGHTS)}</em>
-                `
-                : ``
     body += `
                 ${GetStarted.createOrGet(extensionPath).list()}
                 </div>

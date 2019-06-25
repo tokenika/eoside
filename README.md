@@ -2,7 +2,7 @@
 
 EOSIDE organizes the workflow of development process for [EOSIO](https://eos.io/) smart-contracts. It leverages the functionality of [EOSFactory](https://eosfactory.io/). EOSIDE is implemented as a [Visual Studio Code](https://code.visualstudio.com/) (VSC) extension.
 
-EOSIDE has the following features:
+EOSIDE implements the following features:
 
 - project standardization,
 - easy access to project archive,
@@ -11,11 +11,12 @@ EOSIDE has the following features:
 - dependency management,
 - [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense) code completion,
 - compilation and building,
-- native compilation, execution and debugging of unit tests,
-- functional testing,
+- native compilation, execution and debugging of native unit tests,
+- functional unit testing,
+- project packaging,
 - deployment.
 
-Watch a short [video](https://eosfactory.io/eoside/html/_static/five_minutes.mp4) demonstrating EOSIDE in action. And here is another [video](https://eosfactory.io/eoside/html/_static/installing.mp4) demonstrating the setup process and a *Hello World* test.
+Watch a short [video](https://eosfactory.io/eoside_dev/html/_static/five_minutes.mp4) demonstrating EOSIDE in action. And here is another [video](https://eosfactory.io/eoside_dev/html/_static/installing.mp4) demonstrating the setup process and a *Hello World* test.
 
 ## User Documentation
 

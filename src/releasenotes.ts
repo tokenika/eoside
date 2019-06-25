@@ -4,29 +4,6 @@ import * as vscode from 'vscode'
 import * as def from './definitions'
 
 
-function htmlContents(){
-    var version = ''
-    var packageFile = JSON.parse(fs.readFileSync(
-                    path.join(def.getExtensionPath(), "package.json"), 'utf8'))
-    if (packageFile) {
-        version = " " + packageFile.version
-    }
-
-    return `
-
-<div style="max-width:500px; word-wrap:break-word;">
-<h1>EOSIDE${version}: Release Notes</h1>
-
-<h2>Native unit tests and debugging of EOSIO smart contracts</h2>
-
-EOSIO Contract Development Toolkit supports native compilation of contracts and offers a unit test
-API, as it is briefly explained <a href="https://github.com/EOSIO/eosio.cdt/blob/master/docs/guides/native-tester.md">there</a>
-
-EOSIDE encapsulates these processes. Also, it facilitates native debugging of EOSIO contracts.
-</div>
-`    
-}
-
 export default class ReleaseNotes extends def.Panel {
     /**
      * Track the currently panel. Only allow a single panel to exist at a time.
@@ -34,6 +11,7 @@ export default class ReleaseNotes extends def.Panel {
     public static currentPanel: ReleaseNotes | undefined
     public static readonly viewType = "ReleaseNotes"
 
+    
     public static createOrShow() {
 
         const column = vscode.window.activeTextEditor 
@@ -62,6 +40,7 @@ export default class ReleaseNotes extends def.Panel {
         }
     }
 
+
     protected constructor(panel: vscode.WebviewPanel) {
         super(panel)
         // Set the webview's html content
@@ -73,13 +52,27 @@ export default class ReleaseNotes extends def.Panel {
         }, null, this._disposables)
     }
 
+
     public dispose() {
         super.dispose()
         ReleaseNotes.currentPanel = undefined
     }
 
+
     private _getHtmlForWebview() {
-        return def.htmlForWebview(
-                        this._extensionPath, "Release Notes", htmlContents())
+        var version = ''
+        var packageFile = JSON.parse(fs.readFileSync(
+                        path.join(def.getExtensionPath(), "package.json"), 'utf8'))
+        if (packageFile) {
+            version = packageFile.version
+        }
+        const htmlBase = vscode.Uri.file(path.join(
+            def.getExtensionPath(), def.RESOURCE_DIR, '/')).with({scheme: 'vscode-resource'})
+    
+        var html = fs.readFileSync(
+                    path.join(def.getExtensionPath(), "media", "releasenotes.html")).toString()
+        return html.replace("${version}", version)
+                    .replace("${nonce", def.getNonce())
+                    .replace("htmlBase", htmlBase.toString())
     }
 }

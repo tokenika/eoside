@@ -1,11 +1,9 @@
-# Release Notes - v1.1.0
+# Release Notes - v1.2.0
 
 ## Compatibility
 
-EOSIDE v1.1.0 is compatible with 
-EOSFactory [v3.1.3](https://github.com/tokenika/eosfactory/releases/tag/v3.1.3)
+EOSIDE v1.2.0 is compatible with 
+EOSFactory [v3.2.0](https://github.com/tokenika/eosfactory/releases/tag/v3.2.0)
 
-## New features in v1.1.0
+## New features in v1.2.0
 
-* Warning if the version of EOSFactory package does not match expectations.
-* README section in EOSIDE view.

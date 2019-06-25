@@ -133,14 +133,14 @@ export function javaPath(convPath:string){
 
 
 export function htmlForWebview(
-    extensionPath: string, title: string, htmlContents: string){
+        extensionPath: string, title: string, htmlContents: string){
 
 const htmlBase = vscode.Uri.file(path.join(
-extensionPath, RESOURCE_DIR, '/')).with({scheme: 'vscode-resource'})
+        extensionPath, RESOURCE_DIR, '/')).with({scheme: 'vscode-resource'})
 const cssPageUri = vscode.Uri.file(path.join(
-extensionPath, RESOURCE_DIR, STYLES)).with({scheme: 'vscode-resource'})
+        extensionPath, RESOURCE_DIR, STYLES)).with({scheme: 'vscode-resource'})
 const scriptUri = vscode.Uri.file(path.join(
-extensionPath, RESOURCE_DIR, SCRIPTS)).with({scheme: 'vscode-resource'})
+        extensionPath, RESOURCE_DIR, SCRIPTS)).with({scheme: 'vscode-resource'})
 const nonce = getNonce()
 
 var html = `
@@ -166,8 +166,6 @@ var html = `
 
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <title>EOSIDE install page</title>
     </head>
         <body class="body">
         <script nonce="${nonce}" src="${scriptUri}"></script>

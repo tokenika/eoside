@@ -15,7 +15,7 @@ SETUP = '''
 
 * eosio version 1.7.1
 * eosio.cdt version 1.6.1
-* EOSFactory version 3.1.4
+* EOSFactory version 3.2.0
 * EOSIDE version 1.1.1
 '''
 
@@ -197,7 +197,7 @@ def open_folder(
 
     REGION_VSCODE.type(FOCUS_VSCODE, "ko", sikuli.Key.CTRL)
     folder = REGION_VSCODE.wait(get_image("open_folder/folder"))
-    REGION_VSCODE.type(folder, path)
+    REGION_VSCODE.type(folder, path + "\n")
     REGION_VSCODE.click(get_image("open_folder/select_folder"))
 
     detected = None

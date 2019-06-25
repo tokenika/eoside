@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Release Notes</title>
+        <base href="${htmlBase}">
+        <meta charset="utf-8">
+
+        <!--
+        Use a content security policy to only allow loading images from https 
+        or from our extension directory,
+        and only allow scripts that have a specific nonce.
+        -->
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'nonce-${nonce}' 'unsafe-inline';
+        style-src 'unsafe-inline';
+        img-src vscode-resource: https:; 
+        ">
+
+        <style>
+            .body {
+                background-color: beige;
+                color: black; 
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                max-width: 500px;
+                word-wrap: break-word;
+            }
+        </style>
+
+    </head>
+    <body class="body">
+        <div>
+            <h1>EOSIDE v${version} New Release Notes</h1>
+            <h2>EOSFactory version 3.2.0</h2>
+            <p>
+New features of <em>EOSIDE</em> depend on changes introduced to 
+<em>EOSFactory</em>. Please update it: 
+            </p>
+            <p>
+<pre>pip install eosfactory-tokenika</pre>
+            </p>
+            
+            <h2>Native unit tests and debugging of EOSIO smart contracts</h2>
+            
+            <p>
+Contract Development Toolkit supports native compilation of contracts and 
+offers a unit test API, as it is briefly explained 
+<a href="https://github.com/EOSIO/eosio.cdt/blob/master/docs/guides/native-tester.md">
+    there</a>
+
+<em>EOSIDE</em> encapsulates these processes. Also, it facilitates native 
+debugging of <em>EOSIO</em> contracts.                
+            </p>
+            <p>
+Please, see a short 
+<a href="https://eosfactory.io/eoside_dev/html/_static/native_debugger.mp4">
+    video</a> 
+that shows <em>EOSIDE</em> in action, explaining the basis of the unit test API.
+            </p>
+
+            <h2>Packaging utility for EOSIO smart contract projects</h2>
+            <p>
+Usually, a project contains binaries and private data and therefore it has to 
+be processed prior to distribution. <em>EOSFactory</em> has a tool for 
+automatization of of the processing.
+            </p>
+            <p>
+<em>EOSIDE</em> implements the <em>EOSFactory</em> tool with the <em>Zip</em> 
+(ctrl/cmd+alt+z) button in the <em>Setup</em> view -- for compression, and 
+<em>Open Zip file...</em> in the <em>EOSIDE</em> view -- for creating a new 
+project from a zip file.
+            </p>
+            <p>                
+See a <a href="https://eosfactory.io/eoside_dev/html/tutorials/packaging_tool.html">
+    tutorial</a> on the issue.
+            </p>
+
+            <h2>New Release Notes</h2>
+            <p>
+The current view is automatically displayed once on updating <em>EOSIDE</em>. 
+It can be shown again: (ctrl/cmd+shift+p EOSIDE: release notes).
+            </p>
+        </div>    
+    </body>
+</html>

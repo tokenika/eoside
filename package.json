@@ -1,7 +1,7 @@
 {
     "name": "eoside",
     "displayName": "EOSIDE",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "publisher": "TOKENIKA",
     "description": "Integrated Development Environment for EOSIO smart contracts",
     "author": {
@@ -77,11 +77,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "If set, display the native test buttons and test compiler options."
-                },
-                "eoside.highlights": {
-                    "type": "string",
-                    "default": "https://eosfactory.io/eoside_dev/html/highlights/highlights.html",
-                    "description": "Set to null to remove the Highlights entry from the EOSIDE view."
                 }
             }
         },
