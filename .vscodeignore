@@ -14,3 +14,4 @@ node_modules
 package-lock.json
 .gitignore
 eoside.ps1
+statistics.md

@@ -29,6 +29,7 @@ import ReleaseNotes from "./releasenotes"
 
 export var extensionPath = ""
 
+const RL_TRIGGER = "releasenotes.md"
 
 export function activate(context: vscode.ExtensionContext) {
     exports.extensionPath = context.extensionPath
@@ -103,7 +104,7 @@ export function activate(context: vscode.ExtensionContext) {
     InstallPanel.createOrShow(false)
     GetStartedPanel.createOrShow()
 
-    var releaseFile = path.join(context.extensionPath, "releasenotes")
+    var releaseFile = path.join(context.extensionPath, RL_TRIGGER)
     if(fs.existsSync(releaseFile)){
         ReleaseNotes.createOrShow()
         
