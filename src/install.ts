@@ -9,7 +9,7 @@ export var config: any = undefined
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
-const EOSFACTORY_VERSION_MIN = "3.2.0"
+const EOSFACTORY_VERSION_MIN = "3.2.1"
 const ERROR_COLOR = "indianred"
 const WARNING_COLOR = "yellow"
 

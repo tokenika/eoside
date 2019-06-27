@@ -15,7 +15,7 @@ SETUP = '''
 
 * eosio version 1.7.1
 * eosio.cdt version 1.6.1
-* EOSFactory version 3.2.0
+* EOSFactory version 3.2.1
 * EOSIDE version 1.1.1
 '''
 
