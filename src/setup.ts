@@ -520,10 +520,10 @@ abstract class Dependencies extends Base{
         }
         
         var root = inst.root()
-        var pattern = new RegExp(root, 'i')
+        var pattern = new RegExp(
+                    '.*CanonicalGroupLimited.Ubuntu.*/LocalState/rootfs', 'i')
         if(root){
             for(let i = 0; i < entries.length; i++){
-
                 entries[i] = entries[i].replace(pattern, "${root)");
             }            
         }

@@ -28,4 +28,5 @@ sikuli_movies/narration.md
 .vscode/tasks.json
 .vscode/tasks.json
 sikuli_movies/sikuli_lib
-releasenotes
+.releasenotes.on
+temp.md

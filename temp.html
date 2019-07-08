@@ -1,0 +1,100 @@
+"
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Install EOSIDE</title>
+        <base href="vscode-resource:/c%3A/Workspaces/EOS/eoside/media/">
+        <link rel="stylesheet" href="vscode-resource:/c%3A/Workspaces/EOS/eoside/media/styles.css">
+        <meta charset="utf-8">
+
+        <!--
+        Use a content security policy to only allow loading images from https 
+        or from our extension directory,
+        and only allow scripts that have a specific nonce.
+        -->
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'nonce-poCf9oLnzwnRkAcsEudfJGbSOFGumuOW' 'unsafe-inline';
+        style-src 'unsafe-inline';
+        img-src vscode-resource: https:; 
+        ">
+
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+        <body class="body">
+        <script nonce="poCf9oLnzwnRkAcsEudfJGbSOFGumuOW" src="vscode-resource:/c%3A/Workspaces/EOS/eoside/media/scripts.js"></script>
+        <p style="color: unset; font-size: 35px;">Installing EOSIDE</p><li><em>Windows Subsystem Linux</em> version 4.4 detected.</li>
+<li><em>Python 3.6.8</em> detected.</li>
+<li><em>pip 9.0.1 </em> detected.</li>
+<li><em>eosfactory</em> package detected.</li>
+<li><em style="color: yellow"> The version of the detected EOSFactory package is 3.3.0 while EOSIDE is tested with 3.2.1. </em></li>
+<li>Configuration file is C:\Workspaces\EOS\eosfactory\config\config.json</li>
+
+<!-- ########################################################################-->
+
+<li>WSL Ubuntu version is 18.04.</li>
+<li>WSL root directory detected.</li>
+<li>Default workspace is /mnt/c/Workspaces/EOS/contracts.
+<button
+class="btn";
+id="${{CHANGE_WORKSPACE}}";
+title="${{CHANGE_WORKSPACE}}">
+Set workspace.
+</button>
+
+</li>
+<em style="color: yellow">
+    Cannot determine that eosio is installed as nodeos does not response.<br>
+    EOSFactory expects eosio version 1.8.0.
+ </em>
+    Install it:<br>
+<button
+    style="text-align:left;"
+    class="btn";
+    id="${CHANGE_WORKSPACE}";
+    title="Install eosio v1.8.0">
+        sudo apt remove eosio &&
+        wget https://github.com/eosio/eos/releases/download/v1.8.0/eosio_1.8.0-1-ubuntu-18.04_amd64.deb &&
+        apt install ./eosio_1.8.0-1-ubuntu-18.04_amd64.deb
+
+</button>
+
+
+<li>eosio.cdt version 1.6.1 detected.</li>
+
+
+<!-- ########################################################################-->
+
+        <p style="color: unset; font-size: 20px;">
+            Contract Workspace
+        </p>
+        <p>
+            <button class="btn"; id="changeWorkspace"; 
+                                                    title="changeWorkspace">
+                change
+            </button>
+            C:\Workspaces\EOS\contracts
+        </p>
+
+        <p 
+            style="color: unset; font-size: 20px;">
+            Configuration
+        </p>
+        <p>
+            <button class="btn"; id="startWithEosIde"; 
+                                                    title="configuration">
+                toggle
+            </button>
+            startWithEosIde = true
+        </p>
+        <p>
+            <button class="btn"; id="menu"; title="configuration">
+                toggle
+            </button>
+            menu = true
+        </p>
+        </body>
+
+</html>
+"

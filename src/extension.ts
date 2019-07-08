@@ -29,7 +29,7 @@ import ReleaseNotes from "./releasenotes"
 
 export var extensionPath = ""
 
-const RL_TRIGGER = "releasenotes.md"
+const RL_TRIGGER = ".releasenotes.on"
 
 export function activate(context: vscode.ExtensionContext) {
     exports.extensionPath = context.extensionPath

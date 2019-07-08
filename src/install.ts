@@ -15,6 +15,7 @@ const WARNING_COLOR = "yellow"
 
 const FIND_WSL = "findWsl"
 const CHANGE_WORKSPACE = "changeWorkspace"
+const BASH_COMMAND = "bashCommand"
 const CONFIGURATION = "configuration"
 const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
@@ -28,6 +29,10 @@ var c_cpp_prop_updated = false
 
 
 export function verify(){
+    var error_codes = "eosio,eosio_cdt,psutil,termcolor,wslroot,ubuntuversion,Ks"
+    error_codes += "wslinstalled,python,pip,"
+    // error_codes = ""
+
     var forceError = false
     var forceSetDirectory = false
     try{
@@ -46,24 +51,24 @@ export function verify(){
     var isOK = true
 
     if(def.IS_WINDOWS){
+
+////////////////////////////////////////////////////////////////////////////////
+// WSL bash.exe
+////////////////////////////////////////////////////////////////////////////////
         let version = ""
         const proc = child_process.spawnSync("bash.exe", ["--version"])
         let match = proc.stdout.toString().match(/version\s{1}(.*)\./)
         if(match){
             version = match[1]
         }
-        if(proc.status || !version){
+        if(proc.status || !version || error_codes.includes("wslinstalled")){
             errorMsg(
-`It seems that Windows Subsystem Linux is not in this System, or the 
-<em>bash.exe</em> executable is not in the System path.<br> 
+`It seems that Windows Subsystem Linux is not in this System, <br>
+or the <em>bash.exe</em> executable is not in the System path.<br> 
 EOSIDE cannot do without WSL.`)
             isOK = false           
         } else {
-            if(version >= WSL_VERSION_MIN){
-                statusMsg(
-                `<em>Windows Subsystem Linux</em> version ${version} detected.`)
-            } else {
-                
+            if(version < WSL_VERSION_MIN){                
                 errorMsg(
 `The version of the WSL installation is <em>${version}</em>, while the 
 minimum is <em>${WSL_VERSION_MIN}</em>.<br>
@@ -73,12 +78,16 @@ EOSIDE cannot do without proper WSL.`)
         }
     }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Python
+////////////////////////////////////////////////////////////////////////////////
     {
         const proc = def.IS_WINDOWS 
             ? child_process.spawnSync("bash.exe", ["-c", `${def.PYTHON} -V`])
             : child_process.spawnSync(`${def.PYTHON}`, ["-V"])
             
-        if(proc.status){
+        if(proc.status || error_codes.includes("python")){
             let msg = 
 `It seams that <em>${def.PYTHON}</em> is not in the System, as the 
 <em>${def.PYTHON}</em> executable is not in the System path.<br>
@@ -92,20 +101,21 @@ Note that the Python has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
             isOK = false
-        } else {
-            statusMsg(
-`<em>${proc.stdout.toString().trim()}</em> detected.`)
-        } 
+        }
     }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// pip
+////////////////////////////////////////////////////////////////////////////////
     {
         const proc = def.IS_WINDOWS 
             ? child_process.spawnSync("bash.exe", ["-c", `${exports.PIP} -V`])
             : child_process.spawnSync(`${exports.PIP}`, ["-V"])
-        if(proc.status){
+        if(proc.status || error_codes.includes("pip")){
             let msg = 
 `It seams that <em>${exports.PIP}</em> is not in the System, as the 
-<em>${def.PYTHON}</em> executable is not in the System path.<br>
+<em>${exports.PIP}</em> executable is not in the System path.<br>
 EOSIDE cannot do without <em>${exports.PIP}</em>.`
 
             if(def.IS_WINDOWS){
@@ -116,14 +126,13 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
             isOK = false
-        } else {
-            let msg = proc.stdout.toString().trim()
-            msg = msg.substr(0, msg.indexOf("from"))
-            statusMsg(
-`<em>${msg}</em> detected.`)
         }
     }
 
+
+/////////////////////////////////////////////////////////////////////
+// eosfactory
+/////////////////////////////////////////////////////////////////////
     {
         let cl = `${def.PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
@@ -131,26 +140,34 @@ Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             : `${cl}`
         const proc = child_process.spawnSync(clExe, [], {shell: true})
 
-        if(proc.status){
+        if(proc.status || error_codes.includes("eosfactory")){
+
+            let button = `
+<button 
+    style="text-align:left;"
+    class="btn ${BASH_COMMAND}";
+    class="btn"; 
+    id="Install eosfactory"; 
+    title="Install eosfactory. Click the button then ENTER in a newly created bash terminal window, to go."
+>
+    pip3 install --user eosfactory-tokenika
+</button>`
+
             let msg =
 `
-${clExe}
-${proc.stderr}
-${proc.stdout}
 It seems that <em>eosfactory</em> package is not installed in 
 the System, or it is corrupted.<br>
 EOSIDE cannot do without <em>eosfactory</em>.
+Install it: ${button}
 `
             if(def.IS_WINDOWS){
                 msg += 
 `<br>
 Note that the package has to be installed in the Windows Subsystem Linux.`
             }
-            errorMsg(msg)
+            errorMsg(msg )
             isOK = false
         } else {
-            statusMsg(`<em>eosfactory</em> package detected.`)
-
             const proc = def.IS_WINDOWS
             ? child_process.spawnSync(
                     `bash.exe -c "${def.PYTHON}` 
@@ -168,86 +185,62 @@ configuration file cannot be read.`)
                 exports.config = JSON.parse(proc.stdout.toString());
 
                 if(!isEosfactoryVersionOK()){
+                    let button = `
+                    <button 
+                        style="text-align:left;"
+                        class="btn ${BASH_COMMAND}";
+                        class="btn"; 
+                        id="Install eosfactory"; 
+                        title="Install eosfactory. Click the button then ENTER in a newly created bash terminal window, to go."
+                    >
+                        pip3 install --user eosfactory-tokenika==${EOSFACTORY_VERSION_MIN}
+                    </button>`
                     var msg = warning(
-`The version of the detected EOSFactory package is ${exports.config["VERSION"]} while EOSIDE wants ${EOSFACTORY_VERSION_MIN}.`)
-                } else {
-                    var msg = `<em>EOSFactory</em> ${exports.config["VERSION"]} configuration  file detected`
+`The version of the detected EOSFactory package is ${exports.config["VERSION"]} while EOSIDE is tested with ${EOSFACTORY_VERSION_MIN}.
+Install it: ${button}
+`)
+                    statusMsg(msg)
                 }
-                statusMsg(msg)
+                
 
                 statusMsg(
 `Configuration file is ${wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
                 var msg = ""
-                if(exports.config["EOSIO_VERSION"][0]){
-                    var msg = `eosio version ${exports.config["EOSIO_VERSION"][0]} detected.`
-                    if(exports.config["EOSIO_VERSION"].length > 1){
-                        exports.isWarning = true
-                        msg += warning("NOTE: EOSFactory was tested with version " 
-                            + `${exports.config["EOSIO_VERSION"][1]}`)
-                    }
-                
-                } else {
-                    exports.isWarning = true
-                    msg = warning(
-`Cannot determine that eosio is installed as nodeos does not response. EOSFactory expects eosio version ${exports.config["EOSIO_VERSION"][1]}`)
-                }
-                statusMsg(msg)
-
-                if(exports.config["EOSIO_CDT_VERSION"][0]  && !forceError){
-                    var msg = `eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][0]} detected.`
-                    if(exports.config["EOSIO_CDT_VERSION"].length > 1){
-                        exports.isWarning = true
-                        msg += warning('NOTE: EOSFactory was tested with version '
-                            + `${exports.config["EOSIO_CDT_VERSION"][1]}`)
-                    }
-                    statusMsg(msg)
-                } else {
-                    if(forceError){
-                        exports.config["EOSIO_CDT_VERSION"][1] = 
-                                        exports.config["EOSIO_CDT_VERSION"][0]
-                    }
-                    errorMsg(
-`Cannot determine that eosio.cdt is installed as eosio-cpp does not response. 
-EOSFactory expects eosio.cdt version ${exports.config["EOSIO_CDT_VERSION"][1]}`)
-                    isOK = false
-                }
-                if(def.IS_WINDOWS){
-                    if(!exports.config["WSL_ROOT"]){
-                        errorMsg(
-`Cannot determine the root of the WSL.<br>
-EOSIDE cannot do without it.`)
-                        setWslRoot()
-                        isOK = false
-                    } else {
-                        statusMsg(`<em>WSL</em> root directory detected.<br>`)
-                    } 
-                }            
-            }
-            if(exports.config && (
-                !exports.config["EOSIO_CONTRACT_WORKSPACE"] 
-                                                        || forceSetDirectory)){
-                isOK = false
-                if(forceSetDirectory){
-                    exports.config["EOSIO_CONTRACT_WORKSPACE"] = "Not set"
-                }
-                errorMsg(
-`
-Default workspace is not set. 
-<button 
-class="btn"; 
-id="${CHANGE_WORKSPACE}"; 
-title="${CHANGE_WORKSPACE}">
-Set workspace.
-</button>
-`)
             }
         }
     }
 
+
+/////////////////////////////////////////////////////////////////////
+// EOSFactory checklist
+/////////////////////////////////////////////////////////////////////
+    {
+        const proc = def.IS_WINDOWS
+        ? child_process.spawnSync(
+            `bash.exe -c "${def.PYTHON}  -m eosfactory.core.checklist --html --error ${error_codes}"`, 
+                    [], {shell: true})
+        : child_process.spawnSync(
+            `${def.PYTHON}`, ['-m', 'eosfactory.core.checklist', "--html"])
+        let html = proc.stdout.toString()
+        html = html.replace(/\$\{ERROR_COLOR\}/gi, ERROR_COLOR)
+        html = html.replace(/\$\{WARNING_COLOR\}/gi, WARNING_COLOR)
+        html = html.replace(/\$\{FIND_WSL\}/gi, FIND_WSL)
+        html = html.replace(/\$\{CHANGE_WORKSPACE\}/gi, CHANGE_WORKSPACE)
+        html = html.replace(/\$\{BASH_COMMAND\}/gi, BASH_COMMAND)
+        // vscode.window.showInformationMessage(html)
+        htmlContents += html
+        if(proc.status){
+            isOK = false
+        }
+    }
+
+
+/////////////////////////////////////////////////////////////////////
+// Is everything OK?
+/////////////////////////////////////////////////////////////////////
     if(isOK){
         exports.isError = false
         if(vscode.workspace.workspaceFolders && !c_cpp_prop_updated){
-            //Especially, update eosio.cdt version.
             c_cpp_prop_updated = true
             let c_cpp_prop_path = path.join(
                                     vscode.workspace.workspaceFolders[0].uri.fsPath, 
@@ -264,6 +257,7 @@ Set workspace.
     setHtmlBody()
 }
 
+  
 function statusMsg(msg:string){
     htmlContents += `<li>${msg}</li>\n`
 }
@@ -279,24 +273,6 @@ function errorMsg(msg:string){
         firstErrMsg = msg
     }
     htmlContents += `<p style="color: ${ERROR_COLOR}">ERROR: ${msg}</p>`
-}
-
-
-function setWslRoot(){
-    htmlContents += 
-`
-<p>
-You can indicate the WSL root in your system. Click the button below to open
-file dialog. Then navigate to a directory containing the Ubuntu file system.
-</p>
-<p>
-    <button 
-        class="btn"; 
-        id="${FIND_WSL}"; 
-        title="${FIND_WSL}">find WSL root
-    </button>
-</p>
-`
 }
 
 function changeWorkspace(){
@@ -328,6 +304,21 @@ function changeWorkspace(){
                                     } 
     }
     })
+}
+
+
+function bashCommand(message:any){
+    let lines = message.value.split("\n")
+    let command = ""
+    for(let i = 0; i < lines.length; i++){
+        let line = lines[i].trim()
+        if(line){
+            line = line.replace(/\<br\>/gi, "\n")
+            line = line.replace(/&amp;/gi, "&")
+            command += line
+        }
+    }
+    def.getTerminal(message.id, true, true).sendText(command.trim(), false)    
 }
 
 
@@ -436,7 +427,17 @@ export default class InstallPanel extends def.Panel {
         this.update(doUpdate)
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(message => {
-            switch (message.title) {
+
+            var caseSeletor = message.class.split(" ").length == 1
+                    ? message.title: message.class.split(" ")[1].trim()
+////////////////////////////////////////////////////////////////////////////////
+// On Message
+////////////////////////////////////////////////////////////////////////////////
+            switch (caseSeletor) {
+                case BASH_COMMAND: {
+                    bashCommand(message)
+                    }
+                    break
                 case FIND_WSL: {
                     let defaultUri = process.env.appdata
                     defaultUri = defaultUri ? defaultUri: ""
