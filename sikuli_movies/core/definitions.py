@@ -13,9 +13,9 @@ import sikuli_movies
 SETUP = '''
 # Setup
 
-* eosio version 1.7.1
+* eosio version 1.8.0
 * eosio.cdt version 1.6.1
-* EOSFactory version 3.2.1
+* EOSFactory version 3.4.0
 * EOSIDE version 1.1.1
 '''
 

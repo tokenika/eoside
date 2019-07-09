@@ -9,7 +9,7 @@ export var config: any = undefined
 export const PIP: string = "pip3"
 
 const WSL_VERSION_MIN = "4.3"
-const EOSFACTORY_VERSION_MIN = "3.2.1"
+const EOSFACTORY_VERSION_MIN = "3.4.0"
 const ERROR_COLOR = "indianred"
 const WARNING_COLOR = "yellow"
 
@@ -31,7 +31,7 @@ var c_cpp_prop_updated = false
 export function verify(){
     var error_codes = "eosio,eosio_cdt,psutil,termcolor,wslroot,ubuntuversion,Ks"
     error_codes += "wslinstalled,python,pip,"
-    // error_codes = ""
+    error_codes = ""
 
     var forceError = false
     var forceSetDirectory = false
@@ -183,8 +183,9 @@ configuration file cannot be read.`)
                 isOK = false
             } else {
                 exports.config = JSON.parse(proc.stdout.toString());
-
-                if(!isEosfactoryVersionOK()){
+                
+                if(!isCurrentEOSFactoryBiggerThanMinimal()){
+                    isOK = false
                     let button = `
                     <button 
                         style="text-align:left;"
@@ -193,18 +194,20 @@ configuration file cannot be read.`)
                         id="Install eosfactory"; 
                         title="Install eosfactory. Click the button then ENTER in a newly created bash terminal window, to go."
                     >
-                        pip3 install --user eosfactory-tokenika==${EOSFACTORY_VERSION_MIN}
+                        pip3 install --user eosfactory-tokenika
                     </button>`
                     var msg = warning(
 `The version of the detected EOSFactory package is ${exports.config["VERSION"]} while EOSIDE is tested with ${EOSFACTORY_VERSION_MIN}.
-Install it: ${button}
+Install it the newest: ${button}
 `)
                     statusMsg(msg)
                 }
                 
-
                 statusMsg(
-`Configuration file is ${wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
+`EOSFactory v${exports.config["VERSION"]}`
+                )
+                statusMsg(
+`EOSFactory configuration file is ${wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
                 var msg = ""
             }
         }
@@ -217,10 +220,13 @@ Install it: ${button}
     {
         const proc = def.IS_WINDOWS
         ? child_process.spawnSync(
-            `bash.exe -c "${def.PYTHON}  -m eosfactory.core.checklist --html --error ${error_codes}"`, 
+            `bash.exe -c "${def.PYTHON}  -m eosfactory.config --html --error ${"dummy," + error_codes}"`, 
                     [], {shell: true})
         : child_process.spawnSync(
             `${def.PYTHON}`, ['-m', 'eosfactory.core.checklist', "--html"])
+        if(proc.stderr.toString()){
+            vscode.window.showErrorMessage(proc.stderr.toString())
+        }
         let html = proc.stdout.toString()
         html = html.replace(/\$\{ERROR_COLOR\}/gi, ERROR_COLOR)
         html = html.replace(/\$\{WARNING_COLOR\}/gi, WARNING_COLOR)
@@ -608,7 +614,7 @@ export function wslMapWindowsLinux(originalPath:string){
 }
 
 
-function isEosfactoryVersionOK(){
+function isCurrentEOSFactoryBiggerThanMinimal(){
     var versionMin = EOSFACTORY_VERSION_MIN.split('.')
     var version = exports.config["VERSION"].split('.')
      

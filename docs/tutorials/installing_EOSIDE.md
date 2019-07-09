@@ -8,7 +8,7 @@ We've tested EOSIDE on the following platforms:
 
 ## Prerequisites
 
-The only thing EOSIDE requires is [EOSFactory v3.2.1](<https://github.com/tokenika/eosfactory/releases/tag/v3.0.2>) (or higher), with its dependencies. For further information please refer to the EOSFactory [installation guide](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html).
+The only thing EOSIDE requires is [EOSFactory v3.4.0](<https://github.com/tokenika/eosfactory/releases/tag/v3.4.0>) (or higher), with its dependencies. For further information please refer to the EOSFactory [installation guide](https://eosfactory.io/build/html/tutorials/01.InstallingEOSFactory.html).
 
 ## Extension to VSC
 
@@ -20,4 +20,4 @@ EOSIDE can be uninstalled as any other VSC extension. In the `Extensions` view s
 
 ## Video guide
 
-There is a short video [available](https://eosfactory.io/eoside/html/_static/installing.mp4), demonstrating the installation process.
+There is a short video [available](https://eosfactory.io/eoside_dev/html/_static/installing.mp4), demonstrating the installation process.
