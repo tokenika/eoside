@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as child_process from 'child_process'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+import * as net from 'net'
 
 import * as def from './definitions'
 
@@ -20,35 +21,30 @@ const CONFIGURATION = "configuration"
 const START_WITH_EOSIDE = "startWithEosIde"
 const MENU = "menu"
 const TITLE = '<p style="color: unset; font-size: 35px;">Installing EOSIDE</p>'
+const NO_ERROR = 0
+const IS_ERROR = 2
+const IS_WARNING = 1
 
-export var isError = true
-export var isWarning = false
+export var isError = NO_ERROR
 var htmlContents: any = undefined
 var firstErrMsg: any = undefined
-var c_cpp_prop_updated = false
 
 
 export function verify(){
-    var error_codes = "eosio,eosio_cdt,psutil,termcolor,wslroot,ubuntuversion,Ks"
-    error_codes += "wslinstalled,python,pip,"
-    error_codes = ""
+    exports.isError = NO_ERROR
 
-    var forceError = false
-    var forceSetDirectory = false
-    try{
-        forceError = vscode.workspace.getConfiguration().eoside
+    var error_codes = ""
+    if(vscode.workspace.getConfiguration().eoside.specialEffects.length){
+        error_codes = vscode.workspace.getConfiguration().eoside
                                                             .specialEffects[0]
-        forceSetDirectory = vscode.workspace.getConfiguration()
-                                                    .eoside.specialEffects[1]
-    } catch(err){
     }
+
+    // error_codes = "eosio,eosio_cdt,psutil,termcolor,wslroot,ubuntuversion,"
+    // error_codes += "wslinstalled,python,pip,workspace,"
+    // error_codes = "workspace,"
 
     htmlContents = TITLE
     firstErrMsg = ''
-
-    exports.isError = true
-    exports.isWarning = false
-    var isOK = true
 
     if(def.IS_WINDOWS){
 
@@ -66,14 +62,14 @@ export function verify(){
 `It seems that Windows Subsystem Linux is not in this System, <br>
 or the <em>bash.exe</em> executable is not in the System path.<br> 
 EOSIDE cannot do without WSL.`)
-            isOK = false           
+            exports.isError = IS_ERROR
         } else {
             if(version < WSL_VERSION_MIN){                
                 errorMsg(
 `The version of the WSL installation is <em>${version}</em>, while the 
 minimum is <em>${WSL_VERSION_MIN}</em>.<br>
 EOSIDE cannot do without proper WSL.`)
-            isOK = false
+            exports.isError = IS_ERROR
             }            
         }
     }
@@ -100,7 +96,7 @@ EOSIDE cannot do without <em>${def.PYTHON}</em>.`
 Note that the Python has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
-            isOK = false
+            exports.isError = IS_ERROR
         }
     }
 
@@ -125,14 +121,14 @@ EOSIDE cannot do without <em>${exports.PIP}</em>.`
 Note that the Python Pip has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg)
-            isOK = false
+            exports.isError = IS_ERROR
         }
     }
 
 
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // eosfactory
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
     {
         let cl = `${def.PYTHON} -c 'import eosfactory'`
         let clExe = def.IS_WINDOWS
@@ -166,7 +162,7 @@ Install it: ${button}
 Note that the package has to be installed in the Windows Subsystem Linux.`
             }
             errorMsg(msg )
-            isOK = false
+            exports.isError = IS_ERROR
         } else {
             const proc = def.IS_WINDOWS
             ? child_process.spawnSync(
@@ -180,12 +176,12 @@ Note that the package has to be installed in the Windows Subsystem Linux.`
                 errorMsg(
 `It seems that the eosfactory package is not installed or corrupted, as its 
 configuration file cannot be read.`)
-                isOK = false
+                exports.isError = IS_ERROR
             } else {
                 exports.config = JSON.parse(proc.stdout.toString());
                 
                 if(!isCurrentEOSFactoryBiggerThanMinimal()){
-                    isOK = false
+                    exports.isError = IS_ERROR
                     let button = `
                     <button 
                         style="text-align:left;"
@@ -209,54 +205,33 @@ Install it the newest: ${button}
                 statusMsg(
 `EOSFactory configuration file is ${wslMapLinuxWindows(exports.config["CONFIG_FILE"])}`)
                 var msg = ""
-            }
-        }
-    }
 
-
-/////////////////////////////////////////////////////////////////////
-// EOSFactory checklist
-/////////////////////////////////////////////////////////////////////
-    {
-        const proc = def.IS_WINDOWS
-        ? child_process.spawnSync(
-            `bash.exe -c "${def.PYTHON}  -m eosfactory.config --html --error ${"dummy," + error_codes}"`, 
-                    [], {shell: true})
-        : child_process.spawnSync(
-            `${def.PYTHON}`, ['-m', 'eosfactory.core.checklist', "--html"])
-        if(proc.stderr.toString()){
-            vscode.window.showErrorMessage(proc.stderr.toString())
-        }
-        let html = proc.stdout.toString()
-        html = html.replace(/\$\{ERROR_COLOR\}/gi, ERROR_COLOR)
-        html = html.replace(/\$\{WARNING_COLOR\}/gi, WARNING_COLOR)
-        html = html.replace(/\$\{FIND_WSL\}/gi, FIND_WSL)
-        html = html.replace(/\$\{CHANGE_WORKSPACE\}/gi, CHANGE_WORKSPACE)
-        html = html.replace(/\$\{BASH_COMMAND\}/gi, BASH_COMMAND)
-        // vscode.window.showInformationMessage(html)
-        htmlContents += html
-        if(proc.status){
-            isOK = false
-        }
-    }
-
-
-/////////////////////////////////////////////////////////////////////
-// Is everything OK?
-/////////////////////////////////////////////////////////////////////
-    if(isOK){
-        exports.isError = false
-        if(vscode.workspace.workspaceFolders && !c_cpp_prop_updated){
-            c_cpp_prop_updated = true
-            let c_cpp_prop_path = path.join(
-                                    vscode.workspace.workspaceFolders[0].uri.fsPath, 
-                                    ".vscode", "c_cpp_properties.json")
-    
-            if(fs.existsSync(c_cpp_prop_path)){
-                let cl = `${def.PYTHON} -m eosfactory.core.vscode `
-                + `--c_cpp_prop_path '${c_cpp_prop_path}' `
-    
-                def.callEosfactory(cl)
+////////////////////////////////////////////////////////////////////////////////
+// If EOSFactory is installed, EOSFactory checklist
+////////////////////////////////////////////////////////////////////////////////
+                {
+                    const proc = def.IS_WINDOWS
+                    ? child_process.spawnSync(
+                        `bash.exe -c "${def.PYTHON}  -m eosfactory.config --html --error ${"dummy," + error_codes}"`, 
+                                [], {shell: true})
+                    : child_process.spawnSync(
+                        `${def.PYTHON}`, ['-m', 'eosfactory.core.checklist', "--html"])
+                    if(proc.stderr.toString()){
+                        vscode.window.showErrorMessage(proc.stderr.toString())
+                    }
+                    let html = proc.stdout.toString()
+                    html = html.replace(/\$\{ERROR_COLOR\}/gi, ERROR_COLOR)
+                    html = html.replace(/\$\{WARNING_COLOR\}/gi, WARNING_COLOR)
+                    html = html.replace(/\$\{FIND_WSL\}/gi, FIND_WSL)
+                    html = html.replace(
+                                /\$\{CHANGE_WORKSPACE\}/gi, CHANGE_WORKSPACE)
+                    html = html.replace(/\$\{BASH_COMMAND\}/gi, BASH_COMMAND)
+                    // vscode.window.showInformationMessage(html)
+                    htmlContents += html
+                    if(proc.status){
+                        exports.isError = proc.status
+                    }
+                }  
             }
         }
     }
@@ -324,6 +299,30 @@ function bashCommand(message:any){
             command += line
         }
     }
+    if(InstallPanel.currentPanel){
+        command = 
+`<< ////
+
+ENTER to start the following command line. The last sub-command in the line 
+issues a signal to the view 'Installing EOSIDE'
+
+////
+` + command
+        command += " &&\\\n" + InstallPanel.currentPanel.updatingCommand()
+    } else {
+        command = 
+`
+<< ////
+
+ENTER to start the following command line. Refresh the view 'Installing EOSIDE': (ctrl/cmd+alt+i) 
+                        or (ctrl/cmd+shift+p + eoside install),
+in order to see the newest installation status.
+
+////
+` + command
+    }
+     
+
     def.getTerminal(message.id, true, true).sendText(command.trim(), false)    
 }
 
@@ -342,7 +341,11 @@ export function getContractWorkspace(){
 }
 
 
-function setHtmlBody(){  
+function setHtmlBody(){
+    if(exports.isError >= IS_ERROR){
+        return
+    }
+
     htmlContents += 
 `
         <p style="color: unset; font-size: ${def.HEADER_SIZE};">
@@ -397,7 +400,7 @@ export default class InstallPanel extends def.Panel {
 
         if(!show){
             verify()
-            if(!exports.isError && !exports.isWarning){
+            if(!exports.isError){
                 return
             }
         }
@@ -426,8 +429,25 @@ export default class InstallPanel extends def.Panel {
         }
     }
 
+    private server: net.Server
+    private port = ""
+
+    public updatingCommand(){
+        return `nc localhost ${this.port} <<< "Refresh the view 'Installing EOSIO'"`
+    }
+
     protected constructor(panel: vscode.WebviewPanel, doUpdate: boolean=true) {
         super(panel)
+        this.server = createServer(
+`Refreshing the view 'Installing EOSIO...'
+`)
+        this.server.listen(() => {
+            let addr = this.server.address()
+            if(typeof addr !== 'string'){
+                this.port = addr.port.toString()
+            }  
+      })
+    
         // Set the webview's html content
         this._panel.webview.html = this._getHtmlForWebview()
         this.update(doUpdate)
@@ -508,6 +528,7 @@ misses the 'home' directory.
 
     public dispose() {
         super.dispose()
+        this.server.close()
         InstallPanel.currentPanel = undefined
     }
 
@@ -626,3 +647,36 @@ function isCurrentEOSFactoryBiggerThanMinimal(){
 
     return true
 }
+
+
+function createServer(msg:string){
+//https://www.dev2qa.com/node-js-tcp-socket-client-server-example/    
+    var server = net.createServer((client) => {
+        client.setEncoding('utf-8');
+        client.setTimeout(1000);
+        // When receive client data.
+        client.on('data', function (data) {
+            client.end(msg)
+            InstallPanel.createOrShow()
+        })
+        // When client send data complete.
+        client.on('end', function () {
+            // Get current connections count.
+            server.getConnections(function (err, count) {
+                if(err) {
+                    console.error(JSON.stringify(err));
+                }
+
+            });
+        });
+        // When client timeout.
+        client.on('timeout', function () {
+            console.log('Client request time out.');
+        })
+
+        console.log("client connected")
+    })
+    return server
+}
+
+

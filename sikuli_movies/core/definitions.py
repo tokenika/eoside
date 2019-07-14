@@ -110,6 +110,11 @@ def CUT(module_level=2):
 def set_special_effects(contract_dir, special_effects=[]):
     ACTION(": {}".format(special_effects))
 
+    if not special_effects:
+        special_effects = ["ignoreeoside,"]
+    else:
+        special_effects = ["ignoreeoside," + special_effects[0]]
+
     path = os.path.join(contract_dir, ".vscode\settings.json")
     with open (path, "r") as infile:
             settings = json.load(infile)
@@ -314,7 +319,7 @@ def hover(PSMRL, wait=0, region=None):
     if wait:
         sleep(wait)
     
-    return could_be_moved
+    return region
 
 
 def exists(PSMRL, region=REGION_VSCODE, score=0):

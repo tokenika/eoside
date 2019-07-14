@@ -307,7 +307,7 @@ class Terminal():
         if not self.is_shown():
             return
         button = de.REGION_VSCODE.exists(de.get_image("terminal/maximize"))
-        if button and button.getScore() >= 0.95:
+        if button and button.getScore() >= 0.85:
             button.click()
             de.REGION_VSCODE.type(
                     de.get_image("terminal/TERMINAL"), 

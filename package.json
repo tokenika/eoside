@@ -67,16 +67,18 @@
                 },
                 "eoside.specialEffects": {
                     "type": "array",
-                    "default": [
-                        false,
-                        false
-                    ],
+                    "default": [],
                     "description": "Configure special effects for videos. Do not change it."
                 },
                 "eoside.testMode": {
                     "type": "boolean",
                     "default": true,
                     "description": "If set, display the native test buttons and test compiler options."
+                },
+                "eoside.showReleaseNotes": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "If set, release notes are shown on update."
                 }
             }
         },

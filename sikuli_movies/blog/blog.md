@@ -43,3 +43,13 @@ There is a so called "Capture Hot Key", that can be used in these cases:
 - the captured image is inserted at the IDE's cursor position
 
 look menu File -> Preferences for the current definition (standard is CTRL-SHIFT-2)
+
+## ffmpeg remove parts without motion
+
+Use the select FFMPEG filter with the scene expression, that compares the similarity of consecutive frames: select=gt(scene\,0.003) for instance. The higher the number, the more change between frames is ignored, in quick testing you might need to go as low as 0.00001-0.00005 depending on the kind of footage you're dealing with.
+
+Combine that with the setpts filter, that modifies the "start time" of video frames, and you'd end up with something like (for a 25fps video):
+
+```
+ffmpeg -i input.mp4 -vf "select=gt(scene\,0.003),setpts=N/(25*TB)" output.mp4
+```
