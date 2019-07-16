@@ -7,5 +7,5 @@ EOSFactory [v3.4.0](https://github.com/tokenika/eosfactory/releases/tag/v3.4.0)
 
 ## New features in v1.2.5
 
-* Improved *Installing EOSIDE* view: better control of all the dependencies.
+* Improved *Installing EOSIDE* view: better control of missing and/or outdated dependencies.
 

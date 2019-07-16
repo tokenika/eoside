@@ -33,6 +33,7 @@ Videos
 
     videos/installing_movie
     videos/five_minutes_movie
+    videos/native_debugger
 
 Release Notes
 -------------

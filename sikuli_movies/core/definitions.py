@@ -401,35 +401,34 @@ def escape(PSMRL=FOCUS_VSCODE):
     type(PSMRL, sikuli.Key.ESC)
 
 
+def susspend_ffmpeg():
+    subprocess.call(["pssuspend.exe", FF_MPEG])
+
+
+def resume_ffmpeg():
+    subprocess.call(["pssuspend.exe", "-r", FF_MPEG])
+
+
 def kill_ffmpeg():
-    subprocess.Popen(
-        ['taskkill', "/IM", FF_MPEG],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # This spoils the movie:
+    # subprocess.call(["taskkill", '/F', '/T', "/IM", FF_MPEG]
+    
+    subprocess.call(['taskkill', "/IM", FF_MPEG])
     time.sleep(2)
-    subprocess.Popen(
-        ['taskkill', "/IM", FF_MPEG],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-'''
-https://superuser.com/questions/859010/what-ffmpeg-command-line-produces-video-more-compatible-across-all-devices
-
-ffmpeg \
-    -f gdigrab -framerate 25 -offset_x 0 -offset_y 0 -video_size 854x480 -show_region 1 \
-    -i desktop \
-    -c:v libx264 -crf 23 -pix_fmt yuv420p \
-    -movflags faststart \
-    output.mp4
-'''
-
-def raw_name(output_file, video_format):
-    return output_file + "_raw." + video_format
+    subprocess.call(['taskkill', "/IM", FF_MPEG])
 
 
-def start_ffmpeg(
-                    movie_base_name, 
-                    video_format=MOVIES_FORMAT, frame_rate=MOVIES_FRAM_RATE):
+def raw_name(output_file, video_format, part=None):
+    if part:
+        return  "{}_raw{}.{}".format(output_file, part, video_format)
+    return "{}_raw.{}".format(output_file, video_format)
 
-    output_file = raw_name(movie_base_name, video_format)
+
+def start_ffmpeg(movie_base_name, part=None):
+    video_format = MOVIES_FORMAT
+    frame_rate = MOVIES_FRAM_RATE
+    
+    output_file = raw_name(movie_base_name, video_format, part)
 
     try:
         if os.path.exists(output_file):
@@ -440,8 +439,10 @@ def start_ffmpeg(
     video_size = "{}x{}".format(W, H)
     arg = [
         "cmd", "/c", "start", "/MIN",
-        FF_MPEG, "-f", "gdigrab", "-framerate", str(frame_rate), 
-        "-offset_x", str(X), "-offset_y", str(Y), "-video_size", video_size, "-show_region", str(1), 
+        FF_MPEG, "-hide_banner", "-loglevel", "panic", "-f", "gdigrab", 
+        "-framerate", str(frame_rate), 
+        "-offset_x", str(X), "-offset_y", str(Y), "-video_size", video_size, 
+        "-show_region", str(1), 
         "-i", "desktop", 
         "-c:v", "libx264", "-crf", str(23), "-pix_fmt", "yuv420p", 
         output_file]
