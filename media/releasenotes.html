@@ -6,7 +6,7 @@
         <meta charset="utf-8">
 
         <!--
-        Use a content security policy to only allow loading images from https 
+        Use a content security policy to only allow loading images from https
         or from our extension directory,
         and only allow scripts that have a specific nonce.
         -->
@@ -14,13 +14,13 @@
         default-src 'none';
         script-src 'nonce-${nonce}' 'unsafe-inline';
         style-src 'unsafe-inline';
-        img-src vscode-resource: https:; 
+        img-src vscode-resource: https:;
         ">
 
         <style>
             .body {
                 background-color: beige;
-                color: black; 
+                color: black;
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 14px;
                 max-width: 500px;
@@ -32,37 +32,34 @@
     <body class="body">
         <div>
             <h1>EOSIDE v${version} New Release Notes</h1>
-            <h2>EOSFactory version 3.3.0</h2>
+            <h2>Compatibility  with EOSFactory version 3.3.0 and higher</h2>
             <p>
-New features of <em>EOSIDE</em> depend on changes introduced to 
-<em>EOSFactory</em>. Please update it: 
+The newest <em>EOSIDE</em> features depend on the changes introduced in the
+<em>EOSFactory</em> version 3.3.0. In order to use those features, update EOSFactory using:
             </p>
             <p>
 <pre>pip install eosfactory-tokenika</pre>
             </p>
             <p>
-New features is better user interface of the view 
-<em>Installing EOSIDE</em>. There, missing or outdated dependencies are clearly indicated, and automatic fix is offered. See a <a href="https://eosfactory.io/eoside_dev/html/_static/installing.mp4">
-    video</a>.
+<em>EOSIDE installation</em> view has been updated. Missing and outdated dependencies are now clearly indicated, automatic fix (if possible) is offered. See this <a href="https://eosfactory.io/eoside_dev/html/_static/installing.mp4">
+    video</a> for more information on the new installation view.
 
             </p>
-            
+
             <h2>Video gallery</h2>
-            
+
             <p>
-There is a new chapter in the <a href="https://eosfactory.io/eoside_dev/html/_static/installing.mp4">
-    documentation of EOSIDE</a>, named <em>Videos</em>
-Its contents will grow. We are going to produce easy-to-consume instructions to
-various aspects of the EOSIO smart-contract technology. We call for 
-suggestions of interesting issues.
-</a>          
+<em>Videos</em> chapter has been added to the <a href="https://eosfactory.io/eoside_dev/html/_static/installing.mp4">
+ EOSIDE documentation</a>.
+This gallery will include How-To video guides that will help you to understand EOSIO smart-contract technology and the EOSIDE instructions. We will update this gallery frequently with additional useful content.
+Any suggestions are highly appreciated.
             </p>
 
             <h2>New Release Notes</h2>
             <p>
-The current view is automatically displayed once on updating <em>EOSIDE</em>. 
-It can be shown again: (ctrl/cmd+shift+p EOSIDE: release notes).
+The new <em>EOSIDE installation</em> view is automatically displayed during the <em>EOSIDE</em> update.
+In order to display this view again, please use: ctrl/cmd+shift+p EOSIDE: release notes.
             </p>
-        </div>    
+        </div>
     </body>
 </html>
