@@ -21,13 +21,21 @@ Tutorials
     :maxdepth: 1
 
     tutorials/installing_EOSIDE
-    tutorials/installing_movie
     tutorials/introduction_to_EOSIDE
-    tutorials/five_minutes_movie
     tutorials/native_tests
     tutorials/packaging_tool
 
-Release Notes
+Videos
+------
+
+.. toctree::
+    :maxdepth: 1
+
+    videos/installing_movie
+    videos/five_minutes_movie
+    videos/native_debugger
+
+Release notes
 -------------
 
 .. toctree::

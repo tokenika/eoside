@@ -29,7 +29,7 @@ import ReleaseNotes from "./releasenotes"
 
 export var extensionPath = ""
 
-const RL_TRIGGER = "releasenotes.md"
+const RL_TRIGGER = ".releasenotes"
 
 export function activate(context: vscode.ExtensionContext) {
     exports.extensionPath = context.extensionPath
@@ -105,7 +105,8 @@ export function activate(context: vscode.ExtensionContext) {
     GetStartedPanel.createOrShow()
 
     var releaseFile = path.join(context.extensionPath, RL_TRIGGER)
-    if(fs.existsSync(releaseFile)){
+    if(fs.existsSync(releaseFile) 
+                && vscode.workspace.getConfiguration().eoside.showReleaseNotes){
         ReleaseNotes.createOrShow()
         
         try {

@@ -307,7 +307,7 @@ class Terminal():
         if not self.is_shown():
             return
         button = de.REGION_VSCODE.exists(de.get_image("terminal/maximize"))
-        if button and button.getScore() >= 0.95:
+        if button and button.getScore() >= 0.85:
             button.click()
             de.REGION_VSCODE.type(
                     de.get_image("terminal/TERMINAL"), 
@@ -379,7 +379,7 @@ def run_test(test_name, scroll_count):
     terminal = Terminal()
     terminal.new(maximize=True)
     terminal.type(" python3 tests/{}".format(test_name))
-    de.wait_image("terminal/local_node_stopped2", seconds=25, score=0.85)
+    de.wait_image("terminal/end", seconds=25, score=0.85)
 
     de.wait(2)
     terminal.scroll_down(scroll_count)

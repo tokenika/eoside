@@ -146,6 +146,14 @@ Cannot hide the terminal panel.
     de.CUT()
 
 
+def terminal_set_hight():
+    de.ACTION()
+    top_border = de.exists("terminal/TERMINAL")
+    if top_border:
+        de.drag_drop(top_border.offset(0, -15), de.REGION_COLUMN_BORDER)
+    de.CUT()
+
+
 def new_bash_terminal(                
                 PS=None, region=de.REGION_VSCODE, seconds=3, wait=0, score=0):
     return show_shortcut_view(

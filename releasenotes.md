@@ -1,1 +1,0 @@
-Launch Release Notes View

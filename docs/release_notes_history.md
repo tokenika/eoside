@@ -10,3 +10,9 @@
 
     * Warning if the version of EOSFactory package does not match expectations.
     * README section in EOSIDE view.
+
+* Release 1.2.4 on 27 Jun 2019
+
+    * Support for native unit tests and debugging of smart contracts.
+    * Removed README section in EOSIDE view.
+    * Support for EOSFactory packaging utility.
