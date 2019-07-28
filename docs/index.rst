@@ -35,7 +35,7 @@ Videos
     videos/five_minutes_movie
     videos/native_debugger
 
-Release Notes
+Release notes
 -------------
 
 .. toctree::

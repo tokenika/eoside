@@ -22,7 +22,7 @@ The values of options have to be taken from the list given by the command `eosio
 
 * --src \<list of source file paths, absolute or relative to the project directory\> - A list of sources, if not set, they are found automatically.
 * --verbose - If set, print the command line.
-file:///C:/Workspaces/EOS/eosfactory.io/eoside_dev/html/highlights/highlights.html
+file:///C:/Workspaces/EOS/eosfactory.io/eoside/html/highlights/highlights.html
 
 ## Working example
 

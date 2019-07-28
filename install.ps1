@@ -1,6 +1,6 @@
 # Start Windows PowerShell with the "Run as administrator" option.
 # set-executionpolicy remotesigned (A)
-# https://eosfactory.io/eoside_dev/html/_static/eoside-1.0.2.vsix
+# https://eosfactory.io/eoside/html/_static/eoside-1.0.2.vsix
 
 
 Write-Host "
